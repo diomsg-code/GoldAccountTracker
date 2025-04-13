@@ -35,7 +35,7 @@ end
 
 local function SlashCommand(msg, editbox)
     if not msg or msg:trim() == "" then
-        Settings.OpenToCategory("Gold Account Balance")
+        Settings.OpenToCategory("Account Gold Tracker")
     elseif msg:trim() == "overview" then
         accountGoldTracker:ShowGoldOverview()
 	else
@@ -68,7 +68,7 @@ function accountGoldTrackerFrame:PLAYER_ENTERING_WORLD(...)
     accountGoldTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
     SaveGold()
 
-    if accountGoldTracker.options["open-on-login"] then
+    if accountGoldTracker.options["QKywRlN7-open-on-login"] then
         accountGoldTracker:ShowGoldOverview()
     end
 end
