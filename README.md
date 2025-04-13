@@ -18,6 +18,6 @@ Further features are planned.
 
 To open the addon option window, type `/gat` or `/GoldAccountTracker` into your chat and hit enter. To open the gold overview, use the following command:`/gat overview` or `/GoldAccountTracker overview`
 
-### Translation support
+### Translation Support
 
 If you would like to help me with the translation, I would be very pleased.
