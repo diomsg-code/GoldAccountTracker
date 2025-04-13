@@ -42,4 +42,4 @@ jobs:
       - name: Package and publish for Wago
         uses: BigWigsMods/packager@master
         with:
-          args: -a QKywRlN7
+          args: -a EGPXP3G1
