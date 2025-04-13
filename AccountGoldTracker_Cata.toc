@@ -15,6 +15,7 @@
 ## SavedVariables: AccountGoldTracker_Options, AccountGoldTracker_DataGoldBalance
 
 locals.xml
+data.xml
 core.xml
 
 AccountGoldTracker.lua

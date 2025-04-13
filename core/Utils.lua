@@ -3,7 +3,7 @@ local _, accountGoldTracker = ...
 local L = accountGoldTracker.localization
 
 function accountGoldTracker:PrintDebug(msg)
-    if self.options["debug"] then
+    if self.options["QKywRlN7-debug"] then
         local notfound = true
 
         for i = 1, NUM_CHAT_WINDOWS do 
