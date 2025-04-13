@@ -1,9 +1,9 @@
-# Account Gold Tracker
+# Gold Account Tracker
 
 [![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/AccountGoldTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/AccountGoldTracker/releases)
 [![GitHub Release Date](https://img.shields.io/github/release-date/diomsg-code/AccountGoldTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/AccountGoldTracker/releases)
 
-Account Gold Tracker is an addon that saves the gold balance and can display it historically.
+The Gold Account Tracker is an addon that saves the gold balance and can display it historically.
 
 ### Features
 
@@ -16,7 +16,7 @@ Further features are planned.
 
 ### Quick Start
 
-To open the addon option window, type `/agt` or `/AccountGoldTracker` into your chat and hit enter. To open the gold overview, use the following command:`/agt overview` or `/AccountGoldTracker overview`
+To open the addon option window, type `/gat` or `/GoldAccountTracker` into your chat and hit enter. To open the gold overview, use the following command:`/gat overview` or `/GoldAccountTracker overview`
 
 ### Translation support
 

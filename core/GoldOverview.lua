@@ -1,6 +1,6 @@
-local _, accountGoldTracker = ...
+local _, goldAccountTracker = ...
 
-local L = accountGoldTracker.localization
+local L = goldAccountTracker.localization
 
 local currentMonthOffset = 0
 
@@ -21,13 +21,13 @@ goldOverviewFrame:EnableMouse(true)
 goldOverviewFrame:RegisterForDrag("LeftButton")
 goldOverviewFrame:SetScript("OnDragStart", goldOverviewFrame.StartMoving)
 goldOverviewFrame:SetScript("OnDragStop", goldOverviewFrame.StopMovingOrSizing)
-goldOverviewFrame:SetTitle("Account Gold Tracker")
+goldOverviewFrame:SetTitle("Gold Account Tracker")
 
 goldOverviewFrame:Hide()
 
 goldOverviewFrame.portrait = goldOverviewFrame:GetPortrait()
 goldOverviewFrame.portrait:SetPoint('TOPLEFT', -5, 8)
-goldOverviewFrame.portrait:SetTexture(accountGoldTracker.MEDIA_PATH .. "iconRound.blp")
+goldOverviewFrame.portrait:SetTexture(goldAccountTracker.MEDIA_PATH .. "iconRound.blp")
 
 goldOverviewFrame.header = goldOverviewFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 goldOverviewFrame.header:SetPoint("TOP", 0, -40)
@@ -51,7 +51,7 @@ goldOverviewFrame.nextButton:SetSize(100, 21)
 goldOverviewFrame.nextButton:SetText(L["button-next"])
 goldOverviewFrame.nextButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset - 1
-    accountGoldTracker:UpdateGoldOverview()
+    goldAccountTracker:UpdateGoldOverview()
 end)
 
 goldOverviewFrame.previousButton = CreateFrame("Button", nil, goldOverviewFrame, "UIPanelButtonTemplate")
@@ -60,7 +60,7 @@ goldOverviewFrame.previousButton:SetSize(100, 21)
 goldOverviewFrame.previousButton:SetText(L["button-previous"])
 goldOverviewFrame.previousButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset + 1
-    accountGoldTracker:UpdateGoldOverview()
+    goldAccountTracker:UpdateGoldOverview()
 end)
 
 ----------------------
@@ -163,12 +163,12 @@ end
 --- Main funtions ---
 ---------------------
 
-function accountGoldTracker:ShowGoldOverview()
+function goldAccountTracker:ShowGoldOverview()
     self:UpdateGoldOverview()
     goldOverviewFrame:Show()
 end
 
-function accountGoldTracker:UpdateGoldOverview()
+function goldAccountTracker:UpdateGoldOverview()
     local realm, name = GetCharacterInfo()
     local data = self.goldBalance and self.goldBalance[realm] and self.goldBalance[realm][name]
     local entries = {}
