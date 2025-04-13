@@ -1,4 +1,4 @@
-name: Package and release Account Gold Tracker (Alpha)
+name: Package and release Gold Account Tracker (Alpha)
 
 on:
   push:
