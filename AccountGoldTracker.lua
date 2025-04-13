@@ -2,8 +2,6 @@ local addonName, accountGoldTracker = ...
 
 local L = accountGoldTracker.localization
 
-accountGoldTracker.goldBalance = GoldAccountBalance_DataGoldBalance
-
 ----------------------
 --- Local funtions ---
 ----------------------
@@ -92,8 +90,6 @@ local function CreateHistoryWindow()
     historyFrame.content.text:SetText(table.concat(lines, "\n"))
 end
 
-
-
 local function SlashCommand(msg, editbox)
     if not msg or msg:trim() == "" then
         Settings.OpenToCategory("Gold Account Balance")
@@ -112,8 +108,6 @@ local accountGoldTrackerFrame = CreateFrame("Frame", "GoldAccountBalance")
 ---------------------
 --- Main funtions ---
 ---------------------
-
-
 
 function accountGoldTrackerFrame:OnEvent(event, ...)
 	self[event](self, event, ...)

@@ -3,17 +3,17 @@ local addonName, accountGoldTracker = ...
 local L = accountGoldTracker.localization
 
 function accountGoldTracker:LoadOptions()
-    if (not GoldAccountBalance_Options) then
-        GoldAccountBalance_Options = {}
+    if (not AccountGoldTracker_Options) then
+        AccountGoldTracker_Options = {}
     end
 
-    self.options = GoldAccountBalance_Options
+    self.options = AccountGoldTracker_Options
 
-    if (not GoldAccountBalance_DataGoldBalance) then
-        GoldAccountBalance_DataGoldBalance = {}
+    if (not AccountGoldTracker_DataGoldBalance) then
+        AccountGoldTracker_DataGoldBalance = {}
     end
 
-    self.goldBalance = GoldAccountBalance_DataGoldBalance
+    self.goldBalance = AccountGoldTracker_DataGoldBalance
 
     local variableTable = self.options
     local category, layout = Settings.RegisterVerticalLayoutCategory("Gold Account Balance")
