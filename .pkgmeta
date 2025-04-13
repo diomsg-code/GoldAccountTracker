@@ -1,4 +1,4 @@
-package-as: AccountGoldTracker
+package-as: GoldAccountTracker
 
 ignore:
   - README.md
