@@ -15,7 +15,7 @@ local MONTH_KEYS = {
 
 local goldOverviewFrame = CreateFrame("Frame", "GoldOverview", UIParent, "ButtonFrameTemplate")
 goldOverviewFrame:SetPoint("CENTER")
-goldOverviewFrame:SetSize(400, 500)
+goldOverviewFrame:SetSize(450, 550)
 goldOverviewFrame:SetMovable(true)
 goldOverviewFrame:EnableMouse(true)
 goldOverviewFrame:RegisterForDrag("LeftButton")
@@ -31,7 +31,6 @@ goldOverviewFrame.portrait:SetTexture(accountGoldTracker.MEDIA_PATH .. "iconRoun
 
 goldOverviewFrame.header = goldOverviewFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 goldOverviewFrame.header:SetPoint("TOP", 0, -40)
-goldOverviewFrame.header:SetText("???")
 
 goldOverviewFrame.scrollFrame = CreateFrame("ScrollFrame", nil, goldOverviewFrame, "UIPanelScrollFrameTemplate")
 goldOverviewFrame.scrollFrame:SetPoint("TOPLEFT", 10, -65)
@@ -46,20 +45,20 @@ goldOverviewFrame.scrollFrame.content = CreateFrame("Frame", nil, goldOverviewFr
 goldOverviewFrame.scrollFrame.content:SetSize(1, 1)
 goldOverviewFrame.scrollFrame:SetScrollChild(goldOverviewFrame.scrollFrame.content)
 
-goldOverviewFrame.closeButton = CreateFrame("Button", nil, goldOverviewFrame, "UIPanelButtonTemplate")
-goldOverviewFrame.closeButton:SetPoint("BOTTOM", goldOverviewFrame, "BOTTOMRIGHT", -55, 4)
-goldOverviewFrame.closeButton:SetSize(100, 21)
-goldOverviewFrame.closeButton:SetText(L["button-next"])
-goldOverviewFrame.closeButton:SetScript("OnClick", function()
+goldOverviewFrame.nextButton = CreateFrame("Button", nil, goldOverviewFrame, "UIPanelButtonTemplate")
+goldOverviewFrame.nextButton:SetPoint("BOTTOM", goldOverviewFrame, "BOTTOMRIGHT", -55, 4)
+goldOverviewFrame.nextButton:SetSize(100, 21)
+goldOverviewFrame.nextButton:SetText(L["button-next"])
+goldOverviewFrame.nextButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset - 1
     accountGoldTracker:UpdateGoldOverview()
 end)
 
-goldOverviewFrame.closeButton = CreateFrame("Button", nil, goldOverviewFrame, "UIPanelButtonTemplate")
-goldOverviewFrame.closeButton:SetPoint("BOTTOM", goldOverviewFrame, "BOTTOMLEFT", 55, 4)
-goldOverviewFrame.closeButton:SetSize(100, 21)
-goldOverviewFrame.closeButton:SetText(L["button-previous"])
-goldOverviewFrame.closeButton:SetScript("OnClick", function()
+goldOverviewFrame.previousButton = CreateFrame("Button", nil, goldOverviewFrame, "UIPanelButtonTemplate")
+goldOverviewFrame.previousButton:SetPoint("BOTTOM", goldOverviewFrame, "BOTTOMLEFT", 55, 4)
+goldOverviewFrame.previousButton:SetSize(100, 21)
+goldOverviewFrame.previousButton:SetText(L["button-previous"])
+goldOverviewFrame.previousButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset + 1
     accountGoldTracker:UpdateGoldOverview()
 end)
@@ -119,9 +118,45 @@ local function FormatGold(copper)
     local copper = copper % 100
 
     return string.format(
-        "%s|TInterface\\MoneyFrame\\UI-GoldIcon:14:14:0:0|t %02d|TInterface\\MoneyFrame\\UI-SilverIcon:14:14:0:0|t %02d|TInterface\\MoneyFrame\\UI-CopperIcon:14:14:0:0|t",
+        "%s |TInterface\\MoneyFrame\\UI-GoldIcon:14:14:0:0|t %02d |TInterface\\MoneyFrame\\UI-SilverIcon:14:14:0:0|t %02d |TInterface\\MoneyFrame\\UI-CopperIcon:14:14:0:0|t",
         FormatThousands(gold), silver, copper
     )
+end
+
+local function FormatGoldDiff(diff)
+    local sign = diff > 0 and "+" or diff < 0 and "-" or "±"
+    local absVal = math.abs(diff)
+    return sign .. " " .. FormatGold(absVal)
+end
+
+local function FindLastEntryBeforeMonth(data, prefix)
+    local lastEntry = nil
+    for dateStr, value in pairs(data) do
+        if dateStr < prefix then
+            if not lastEntry or dateStr > lastEntry.date then
+                lastEntry = {date = dateStr, value = value}
+            end
+        end
+    end
+    return lastEntry
+end
+
+local function HasAnyDataBeforeMonth(data, currentPrefix)
+    for dateStr in pairs(data) do
+        if dateStr < currentPrefix then
+            return true
+        end
+    end
+    return false
+end
+
+local function HasAnyDataAfterMonth(data, currentPrefix)
+    for dateStr in pairs(data) do
+        if dateStr > currentPrefix .. "-31" then
+            return true
+        end
+    end
+    return false
 end
 
 ---------------------
@@ -143,8 +178,10 @@ function accountGoldTracker:UpdateGoldOverview()
 
     if goldOverviewFrame.scrollFrame.content.rows then
         for _, row in ipairs(goldOverviewFrame.scrollFrame.content.rows) do
-            row:Hide()
-            row:SetParent(nil)
+            for _, element in pairs(row) do
+                element:Hide()
+                element:SetParent(nil)
+            end
         end
     end
 
@@ -163,21 +200,73 @@ function accountGoldTracker:UpdateGoldOverview()
         local row = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         row:SetPoint("TOPLEFT", 10, -10)
         row:SetText(L["no-entries"])
-        table.insert(goldOverviewFrame.scrollFrame.content.rows, row)
+        table.insert(goldOverviewFrame.scrollFrame.content.rows, {row})
         return
     end
+
+    local previousEntry = FindLastEntryBeforeMonth(data, filterPrefix)
 
     local offsetY = -10
     local spacing = 6
 
-    for i, entry in ipairs(entries) do
-        local row = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        row:SetPoint("TOPLEFT", 10, offsetY)
-        row:SetWidth(400)
-        row:SetJustifyH("LEFT")
-        row:SetText(entry.date .. ":  " .. FormatGold(entry.value))
+    local headerDate = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    headerDate:SetPoint("TOPLEFT", 10, offsetY)
+    headerDate:SetText(L["date"])
 
-        offsetY = offsetY - row:GetStringHeight() - math.abs(spacing)
-        table.insert(goldOverviewFrame.scrollFrame.content.rows, row)
+    local headerAmount = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    headerAmount:SetPoint("TOPLEFT", 100, offsetY)
+    headerAmount:SetText(L["amount"])
+
+    local headerDiff = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    headerDiff:SetPoint("TOPLEFT", 250, offsetY)
+    headerDiff:SetText(L["difference"])
+
+    table.insert(goldOverviewFrame.scrollFrame.content.rows, {headerDate, headerAmount, headerDiff})
+    offsetY = offsetY - 20
+
+    for i, entry in ipairs(entries) do
+        local rowDate = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        rowDate:SetPoint("TOPLEFT", 10, offsetY)
+        rowDate:SetText(entry.date)
+
+        local rowAmount = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        rowAmount:SetPoint("TOPLEFT", 100, offsetY)
+        rowAmount:SetText(FormatGold(entry.value))
+
+        local rowDiff = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        rowDiff:SetPoint("TOPLEFT", 250, offsetY)
+
+        local prev
+        if i < #entries then
+            prev = entries[i + 1]
+        elseif previousEntry then
+            prev = previousEntry
+        end
+
+        if prev then
+            local diff = entry.value - prev.value
+            rowDiff:SetText(FormatGoldDiff(diff))
+            if diff > 0 then
+                rowDiff:SetTextColor(0, 1, 0)
+            elseif diff < 0 then
+                rowDiff:SetTextColor(1, 0.2, 0.2)
+            else
+                rowDiff:SetTextColor(1, 1, 1)
+            end
+        else
+            rowDiff:SetText("-")
+        end
+
+        table.insert(goldOverviewFrame.scrollFrame.content.rows, {rowDate, rowAmount, rowDiff})
+        offsetY = offsetY - 18 - spacing
+    end
+
+    if data then
+        local currentPrefix = GetYearMonthString(currentMonthOffset)
+        goldOverviewFrame.previousButton:SetEnabled(HasAnyDataBeforeMonth(data, currentPrefix))
+        goldOverviewFrame.nextButton:SetEnabled(HasAnyDataAfterMonth(data, currentPrefix))
+    else
+        goldOverviewFrame.previousButton:SetEnabled(false)
+        goldOverviewFrame.nextButton:SetEnabled(false)
     end
 end

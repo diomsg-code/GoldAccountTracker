@@ -17,3 +17,7 @@ Further features are planned.
 ### Quick Start
 
 To open the addon option window, type `/agt` or `/AccountGoldTracker` into your chat and hit enter. To open the gold overview, use the following command:`/agt overview` or `/AccountGoldTracker overview`
+
+### Translation support
+
+If you would like to help me with the translation, I would be very pleased.

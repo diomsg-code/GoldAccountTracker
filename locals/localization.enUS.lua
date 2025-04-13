@@ -23,6 +23,10 @@ L["December"] = "December"
 L["button-next"] = "Next"
 L["button-previous"] = "Previous"
 
+L["date"] = "Date"
+L["amount"] = "Amount"
+L["difference"] = "Difference"
+
 L["no-entries"] = "No entries for this month."
 
 L["general-options"] = "General options"

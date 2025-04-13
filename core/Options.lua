@@ -1,23 +1,23 @@
-local addonName, accountGoldTracker = ...
+local _, goldAccountTracker = ...
 
-local L = accountGoldTracker.localization
+local L = goldAccountTracker.localization
 
-function accountGoldTracker:LoadOptions()
-    if (not AccountGoldTracker_Options) then
-        AccountGoldTracker_Options = {}
+function goldAccountTracker:LoadOptions()
+    if (not GoldAccountTracker_Options) then
+        GoldAccountTracker_Options = {}
     end
 
-    self.options = AccountGoldTracker_Options
+    self.options = GoldAccountTracker_Options
 
-    if (not AccountGoldTracker_DataGoldBalance) then
-        AccountGoldTracker_DataGoldBalance = {}
+    if (not GoldAccountTracker_DataGoldBalance) then
+        GoldAccountTracker_DataGoldBalance = {}
     end
 
-    self.goldBalance = AccountGoldTracker_DataGoldBalance
+    self.goldBalance = GoldAccountTracker_DataGoldBalance
 
     local variableTable = self.options
-    local category, layout = Settings.RegisterVerticalLayoutCategory("Account Gold Tracker")
-    category.ID = "Account Gold Tracker"
+    local category, layout = Settings.RegisterVerticalLayoutCategory("Gold Account Tracker")
+    category.ID = "Gold Account Tracker"
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L["general-options"]))
 
