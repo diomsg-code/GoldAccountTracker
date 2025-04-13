@@ -1,7 +1,7 @@
 # Gold Account Tracker
 
-[![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/AccountGoldTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/AccountGoldTracker/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date/diomsg-code/AccountGoldTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/AccountGoldTracker/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/GoldAccountTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldAccountTracker/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/diomsg-code/GoldAccountTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldAccountTracker/releases)
 
 The Gold Account Tracker is an addon that saves the gold balance and can display it historically.
 
