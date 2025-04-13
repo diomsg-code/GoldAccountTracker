@@ -1,8 +1,8 @@
-local addonName, goldAccountBalance = ...
+local addonName, accountGoldTracker = ...
 
-local L = goldAccountBalance.localization
+local L = accountGoldTracker.localization
 
-goldAccountBalance.goldBalance = GoldAccountBalance_DataGoldBalance
+accountGoldTracker.goldBalance = GoldAccountBalance_DataGoldBalance
 
 ----------------------
 --- Local funtions ---
@@ -27,12 +27,12 @@ local function SaveGold()
     local today = GetToday()
     local gold = GetGold()
 
-    goldAccountBalance.goldBalance = goldAccountBalance.goldBalance or {}
-    goldAccountBalance.goldBalance[realm] = goldAccountBalance.goldBalance[realm] or {}
-    goldAccountBalance.goldBalance[realm][name] = goldAccountBalance.goldBalance[realm][name] or {}
-    goldAccountBalance.goldBalance[realm][name][today] = gold
+    accountGoldTracker.goldBalance = accountGoldTracker.goldBalance or {}
+    accountGoldTracker.goldBalance[realm] = accountGoldTracker.goldBalance[realm] or {}
+    accountGoldTracker.goldBalance[realm][name] = accountGoldTracker.goldBalance[realm][name] or {}
+    accountGoldTracker.goldBalance[realm][name][today] = gold
 
-    goldAccountBalance:PrintDebug("Gold balance saved.")
+    accountGoldTracker:PrintDebug("Gold balance saved.")
 end
 
 local function FormatGold(copper)
@@ -77,7 +77,7 @@ local function CreateHistoryWindow()
     historyFrame.content.text:SetWidth(240)
 
     local realm, name = GetCharacterInfo()
-    local data = goldAccountBalance.goldBalance and goldAccountBalance.goldBalance[realm] and goldAccountBalance.goldBalance[realm][name]
+    local data = accountGoldTracker.goldBalance and accountGoldTracker.goldBalance[realm] and accountGoldTracker.goldBalance[realm][name]
     local lines = {}
 
     if data then
@@ -100,14 +100,14 @@ local function SlashCommand(msg, editbox)
     elseif msg:trim() == "overview" then
         CreateHistoryWindow()
 	else
-        goldAccountBalance:PrintDebug("These arguments are not accepted.")
+        accountGoldTracker:PrintDebug("These arguments are not accepted.")
 	end
 end
 --------------
 --- Frames ---
 --------------
 
-local goldAccountBalanceFrame = CreateFrame("Frame", "GoldAccountBalance")
+local accountGoldTrackerFrame = CreateFrame("Frame", "GoldAccountBalance")
 
 ---------------------
 --- Main funtions ---
@@ -115,32 +115,32 @@ local goldAccountBalanceFrame = CreateFrame("Frame", "GoldAccountBalance")
 
 
 
-function goldAccountBalanceFrame:OnEvent(event, ...)
+function accountGoldTrackerFrame:OnEvent(event, ...)
 	self[event](self, event, ...)
 end
 
-function goldAccountBalanceFrame:ADDON_LOADED(_, addOnName)
+function accountGoldTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
-        goldAccountBalance:LoadOptions()
-        goldAccountBalance:PrintDebug("Addon fully loaded.")
+        accountGoldTracker:LoadOptions()
+        accountGoldTracker:PrintDebug("Addon fully loaded.")
     end
 end
 
-function goldAccountBalanceFrame:PLAYER_ENTERING_WORLD(...)
-    goldAccountBalance:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
+function accountGoldTrackerFrame:PLAYER_ENTERING_WORLD(...)
+    accountGoldTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
     SaveGold()
 end
 
-function goldAccountBalanceFrame:PLAYER_MONEY(...)
-    goldAccountBalance:PrintDebug("Event 'PLAYER_MONEY' fired.")
+function accountGoldTrackerFrame:PLAYER_MONEY(...)
+    accountGoldTracker:PrintDebug("Event 'PLAYER_MONEY' fired.")
     SaveGold()
 end
 
-goldAccountBalanceFrame:RegisterEvent("ADDON_LOADED")
-goldAccountBalanceFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-goldAccountBalanceFrame:RegisterEvent("PLAYER_MONEY")
-goldAccountBalanceFrame:SetScript("OnEvent", goldAccountBalanceFrame.OnEvent)
+accountGoldTrackerFrame:RegisterEvent("ADDON_LOADED")
+accountGoldTrackerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+accountGoldTrackerFrame:RegisterEvent("PLAYER_MONEY")
+accountGoldTrackerFrame:SetScript("OnEvent", accountGoldTrackerFrame.OnEvent)
 
-SLASH_GoldAccountBalance1, SLASH_GoldAccountBalance2 = '/gab', '/GoldAccountBalance'
+SLASH_GoldAccountBalance1, SLASH_GoldAccountBalance2 = '/agt', '/AccountGoldTracker'
 
-SlashCmdList["GoldAccountBalance"] = SlashCommand
+SlashCmdList["AccountGoldTracker"] = SlashCommand

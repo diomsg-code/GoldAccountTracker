@@ -1,8 +1,8 @@
-local _, goldAccountBalance = ...
+local _, accountGoldTracker = ...
 
-local L = goldAccountBalance.localization
+local L = accountGoldTracker.localization
 
-function goldAccountBalance:PrintDebug(msg)
+function accountGoldTracker:PrintDebug(msg)
     if self.options["debug"] then
         local notfound = true
 

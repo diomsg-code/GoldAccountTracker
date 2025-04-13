@@ -1,9 +1,9 @@
-# Gold Account Balance
+# Account Gold Tracker
 
-[![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/GoldAccountBalance?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldAccountBalance/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date/diomsg-code/GoldAccountBalance?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldAccountBalance/releases)
+[![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/AccountGoldTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/AccountGoldTracker/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/diomsg-code/AccountGoldTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/AccountGoldTracker/releases)
 
-Gold Account Balance is an addon that saves the gold balance and can display it historically.
+Account Gold Tracker is an addon that saves the gold balance and can display it historically.
 
 ### Features
 
@@ -16,4 +16,4 @@ Further features are planned.
 
 ### Quick Start
 
-To open the addon option window, type `/gab` or `/GoldAccountBalance` into your chat and hit enter.
+To open the addon option window, type `/agt` or `/AccountGoldTracker` into your chat and hit enter.

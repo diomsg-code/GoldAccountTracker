@@ -1,8 +1,8 @@
-local addonName, goldAccountBalance = ...
+local addonName, accountGoldTracker = ...
 
-local L = goldAccountBalance.localization
+local L = accountGoldTracker.localization
 
-function goldAccountBalance:LoadOptions()
+function accountGoldTracker:LoadOptions()
     if (not GoldAccountBalance_Options) then
         GoldAccountBalance_Options = {}
     end

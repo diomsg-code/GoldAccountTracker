@@ -1,11 +1,11 @@
-local _, goldAccountBalance = ...
+local _, accountGoldTracker = ...
 
-goldAccountBalance.localization = setmetatable({},{__index=function(self,key)
+accountGoldTracker.localization = setmetatable({},{__index=function(self,key)
         geterrorhandler()("Gold Account Balance: Missing entry for '" .. tostring(key) .. "'")
         return key
     end})
 
-local L = goldAccountBalance.localization
+local L = accountGoldTracker.localization
 
 L["other-options"] = "Other Options"
 L["debug.name"] = "Enable Debug Mode"
