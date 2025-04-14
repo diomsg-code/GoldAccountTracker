@@ -1,30 +1,47 @@
-local addonName, goldAccountTracker = ...
+local addonName, goldCurrencyTracker = ...
 
-goldAccountTracker.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
+goldCurrencyTracker.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
 
-goldAccountTracker.currencyGroupOrder = {
-    "classic",
-    "burningCrusade",
-    "wrath",
-    "cataclysm",
-    "mists",
-    "wod",
-    "legion",
-    "bfa",
-    "shadowlands",
-    "dragonflight"
+goldCurrencyTracker.currencyCategoryOrder = {
+    "misc",         -- 1
+    "pvp",          -- 2
+    "dungeonraid", -- 22
+    --"classic",      -- 4
+    --"tbc",          -- 23
+    --"wotlk",        -- 21
+    --"cata",         -- 81
+    --"mop",          -- 133
+    --"wod",          -- 137
+    --"legion",       -- 141
+    --"bfa",          -- 143
+    --"sl",           -- 245
+    --"df",           -- 250
+    "tww"           -- 260
 }
 
-goldAccountTracker.currencyGroups = {
-    classic = { 1792 },
-    burningCrusade = { 1191 },
-    wrath = { 1900 },
-    cataclysm = { 395 },
-    mists = { 697 },
-    wod = { 994 },
-    legion = { 1220 },
-    bfa = { 1560 },
-    shadowlands = { 1813 },
-    dragonflight = { 2003, 2245 },
+goldCurrencyTracker.currencyCategories = {
+    misc = {
+        515,    -- Gewinnlos des Dunkelmond-Jahrmarkts
+        2032,	-- Händlerdevisen
+        2588	-- Abzeichen: Reiter v. Azeroth        
+    },
+    pvp = {
+        391,    -- Belobigungsabzeichen von Tol Barad
+        1602,	-- Eroberung
+        2123,	-- Blutige Abzeichen
+        1792	-- Ehre
+    },
+    dungeonraid = {
+        1166	-- Zeitverzerrtes Abzeichen
+    },
+    tww = {
+        2815,	-- Resonanzkristalle
+        3055,	-- Angelfestabzeichen von Mereldar
+        3056,	-- Kej
+        3090,	-- Flammengesegnetes Eisen
+        3149,	-- Versetzte verderbte Andenken
+        3218,   -- Leere Kaja'Cola-Dose
+        3220,   -- Altertümliche Kaja'Cola-Dose
+        3226	-- Marktforschung
+    }
 }
-

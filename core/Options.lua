@@ -1,29 +1,29 @@
-local _, goldAccountTracker = ...
+local _, goldCurrencyTracker = ...
 
-local L = goldAccountTracker.localization
+local L = goldCurrencyTracker.localization
 
-function goldAccountTracker:LoadOptions()
-    if (not GoldAccountTracker_Options) then
-        GoldAccountTracker_Options = {}
+function goldCurrencyTracker:LoadOptions()
+    if (not GoldCurrencyTracker_Options) then
+        GoldCurrencyTracker_Options = {}
     end
 
-    self.options = GoldAccountTracker_Options
+    self.options = GoldCurrencyTracker_Options
 
-    if (not GoldAccountTracker_DataGoldBalance) then
-        GoldAccountTracker_DataGoldBalance = {}
+    if (not GoldCurrencyTracker_DataGoldBalance) then
+        GoldCurrencyTracker_DataGoldBalance = {}
     end
 
-    self.goldBalance = GoldAccountTracker_DataGoldBalance
+    self.goldBalance = GoldCurrencyTracker_DataGoldBalance
 
-    if (not GoldAccountTracker_DataCurrencyBalance) then
-        GoldAccountTracker_DataCurrencyBalance = {}
+    if (not GoldCurrencyTracker_DataCurrencyBalance) then
+        GoldCurrencyTracker_DataCurrencyBalance = {}
     end
 
-    self.currencyBalance = GoldAccountTracker_DataCurrencyBalance
+    self.currencyBalance = GoldCurrencyTracker_DataCurrencyBalance
 
     local variableTable = self.options
-    local category, layout = Settings.RegisterVerticalLayoutCategory("Gold Account Tracker")
-    category.ID = "Gold Account Tracker"
+    local category, layout = Settings.RegisterVerticalLayoutCategory("Gold & Currency Tracker")
+    category.ID = "Gold & Currency Tracker"
 
     layout:AddInitializer(CreateSettingsListSectionHeaderInitializer(L["general-options"]))
 

@@ -1,8 +1,8 @@
-local _, goldAccountTracker = ...
+local _, goldCurrencyTracker = ...
 
-local L = goldAccountTracker.localization
+local L = goldCurrencyTracker.localization
 
-function goldAccountTracker:PrintDebug(msg)
+function goldCurrencyTracker:PrintDebug(msg)
     if self.options["QKywRlN7-debug"] then
         local notfound = true
 
@@ -10,14 +10,14 @@ function goldAccountTracker:PrintDebug(msg)
             local name, _, _, _, _, _, shown, locked, docked, uni = GetChatWindowInfo(i)
 
             if name == "Debug" and docked ~= nil then
-                _G['ChatFrame' .. i]:AddMessage(WrapTextInColorCode("Gold Account Tracker (Debug): ", "ffFF8040") .. msg)
+                _G['ChatFrame' .. i]:AddMessage(WrapTextInColorCode("Gold & Currency Tracker (Debug): ", "ffFF8040") .. msg)
                 notfound = false
                 break
             end
         end
 
         if notfound then
-            DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode("Gold Account Tracker (Debug): ", "ffFF8040")  .. msg)
+            DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode("Gold & Currency Tracker (Debug): ", "ffFF8040")  .. msg)
         end
 	end
 end

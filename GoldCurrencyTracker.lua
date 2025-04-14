@@ -1,6 +1,6 @@
-local addonName, goldAccountTracker = ...
+local addonName, goldCurrencyTracker = ...
 
-local L = goldAccountTracker.localization
+local L = goldCurrencyTracker.localization
 
 ----------------------
 --- Local funtions ---
@@ -17,49 +17,51 @@ end
 local function GetCharacterInfo()
     local name = UnitName("player")
     local realm = GetRealmName()
+
     return realm, name
 end
 
-local function SaveGold()
+local function TrackGold()
     local realm, name = GetCharacterInfo()
     local today = GetToday()
     local gold = GetGold()
 
-    goldAccountTracker.goldBalance = goldAccountTracker.goldBalance or {}
-    goldAccountTracker.goldBalance[realm] = goldAccountTracker.goldBalance[realm] or {}
-    goldAccountTracker.goldBalance[realm][name] = goldAccountTracker.goldBalance[realm][name] or {}
-    goldAccountTracker.goldBalance[realm][name][today] = gold
+    goldCurrencyTracker.goldBalance = goldCurrencyTracker.goldBalance or {}
+    goldCurrencyTracker.goldBalance[realm] = goldCurrencyTracker.goldBalance[realm] or {}
+    goldCurrencyTracker.goldBalance[realm][name] = goldCurrencyTracker.goldBalance[realm][name] or {}
+    goldCurrencyTracker.goldBalance[realm][name][today] = gold
 
-    goldAccountTracker:PrintDebug("Gold balance saved.")
+    goldCurrencyTracker:PrintDebug("Gold balance saved.")
 end
 
-function TrackCurrencies()
+local function TrackCurrencies()
     local realm, name = GetCharacterInfo()
-    goldAccountTracker.currencyBalance = goldAccountTracker.currencyBalance or {}
-    goldAccountTracker.currencyBalance[realm] = goldAccountTracker.currencyBalance[realm] or {}
-    goldAccountTracker.currencyBalance[realm][name] = goldAccountTracker.currencyBalance[realm][name] or {}
+    local today = GetToday()
 
-    local dateKey = date("%Y-%m-%d")
-    goldAccountTracker.currencyBalance[realm][name][dateKey] = goldAccountTracker.currencyBalance[realm][name][dateKey] or {}
+    goldCurrencyTracker.currencyBalance = goldCurrencyTracker.currencyBalance or {}
+    goldCurrencyTracker.currencyBalance[realm] = goldCurrencyTracker.currencyBalance[realm] or {}
+    goldCurrencyTracker.currencyBalance[realm][name] = goldCurrencyTracker.currencyBalance[realm][name] or {}
+    goldCurrencyTracker.currencyBalance[realm][name][today] = goldCurrencyTracker.currencyBalance[realm][name][today] or {}
 
-
-    for _, currencies in pairs(goldAccountTracker.currencyGroups) do
+    for _, currencies in pairs(goldCurrencyTracker.currencyCategories) do
         for _, currencyID in ipairs(currencies) do
             local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
             if info then
-                goldAccountTracker.currencyBalance[realm][name][dateKey][currencyID] = info.quantity
+                goldCurrencyTracker.currencyBalance[realm][name][today][currencyID] = info.quantity
             end
         end
     end
+
+    goldCurrencyTracker:PrintDebug("Currency balance saved.")
 end
 
 local function SlashCommand(msg, editbox)
     if not msg or msg:trim() == "" then
-        Settings.OpenToCategory("Gold Account Tracker")
+        Settings.OpenToCategory("Gold & Currency Tracker")
     elseif msg:trim() == "overview" then
-        goldAccountTracker:ShowGoldOverview()
+        goldCurrencyTracker:ShowGoldCurrencyOverview()
 	else
-        goldAccountTracker:PrintDebug("These arguments are not accepted.")
+        goldCurrencyTracker:PrintDebug("These arguments are not accepted.")
 	end
 end
 
@@ -67,43 +69,52 @@ end
 --- Frames ---
 --------------
 
-local goldAccountTrackerFrame = CreateFrame("Frame", "GoldAccountTracker")
+local goldCurrencyTrackerFrame = CreateFrame("Frame", "GoldCurrencyTracker")
 
 ---------------------
 --- Main funtions ---
 ---------------------
 
-function goldAccountTrackerFrame:OnEvent(event, ...)
+function goldCurrencyTrackerFrame:OnEvent(event, ...)
 	self[event](self, event, ...)
 end
 
-function goldAccountTrackerFrame:ADDON_LOADED(_, addOnName)
+function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
-        goldAccountTracker:LoadOptions()
-        goldAccountTracker:PrintDebug("Addon fully loaded.")
+        goldCurrencyTracker:LoadOptions()
+        goldCurrencyTracker:PrintDebug("Addon fully loaded.")
     end
 end
 
-function goldAccountTrackerFrame:PLAYER_ENTERING_WORLD(...)
-    goldAccountTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
-    SaveGold()
+function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(...)
+    goldCurrencyTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
+
+    TrackGold()
     TrackCurrencies()
 
-    if goldAccountTracker.options["QKywRlN7-open-on-login"] then
-        goldAccountTracker:ShowGoldOverview()
+    if goldCurrencyTracker.options["QKywRlN7-open-on-login"] then
+        goldCurrencyTracker:ShowGoldCurrencyOverview()
     end
 end
 
-function goldAccountTrackerFrame:PLAYER_MONEY(...)
-    goldAccountTracker:PrintDebug("Event 'PLAYER_MONEY' fired.")
-    SaveGold()
+function goldCurrencyTrackerFrame:PLAYER_MONEY(...)
+    goldCurrencyTracker:PrintDebug("Event 'PLAYER_MONEY' fired.")
+
+    TrackGold()
 end
 
-goldAccountTrackerFrame:RegisterEvent("ADDON_LOADED")
-goldAccountTrackerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-goldAccountTrackerFrame:RegisterEvent("PLAYER_MONEY")
-goldAccountTrackerFrame:SetScript("OnEvent", goldAccountTrackerFrame.OnEvent)
+function goldCurrencyTrackerFrame:CURRENCY_DISPLAY_UPDATE(...)
+    goldCurrencyTracker:PrintDebug("Event 'CURRENCY_DISPLAY_UPDATE' fired.")
 
-SLASH_GoldAccountTracker1, SLASH_GoldAccountTracker2 = '/gat', '/GoldAccountTracker'
+    TrackCurrencies()
+end
 
-SlashCmdList["GoldAccountTracker"] = SlashCommand
+goldCurrencyTrackerFrame:RegisterEvent("ADDON_LOADED")
+goldCurrencyTrackerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+goldCurrencyTrackerFrame:RegisterEvent("PLAYER_MONEY")
+goldCurrencyTrackerFrame:RegisterEvent("CURRENCY_DISPLAY_UPDATE")
+goldCurrencyTrackerFrame:SetScript("OnEvent", goldCurrencyTrackerFrame.OnEvent)
+
+SLASH_GoldCurrencyTracker1, SLASH_GoldCurrencyTracker2 = '/gct', '/GoldCurrencyTracker'
+
+SlashCmdList["GoldCurrencyTracker"] = SlashCommand
