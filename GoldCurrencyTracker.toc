@@ -1,21 +1,21 @@
 ## Interface: 110100, 110105
-## Title: Gold Account Tracker
+## Title: Gold Currency Tracker
 ## Author: diomsg (Diom-Antonidas EU)
 ## Version: @project-version@
-## IconTexture: Interface\AddOns\GoldAccountTracker\media\icon.blp
+## IconTexture: Interface\AddOns\GoldCurrencyTracker\media\icon.blp
 ## X-Flavor: Retail
 ## X-BuildDate: @build-date@
 ## X-E-Mail: feedback@wow-addon.dev
-## X-Github: https://github.com/diomsg-code/GoldAccountTracker
+## X-Github: https://github.com/diomsg-code/GoldCurrencyTracker
 ## Notes: A World of Warcraft addon that saves the gold balance and can display it historically. 
 ## Notes-deDE: Ein World of Warcraft Addon, das den Goldbestand speichert und ihn histroisch darstellen kann.
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## AllowLoadGameType: mainline
-## SavedVariables: GoldAccountTracker_Options, GoldAccountTracker_DataGoldBalance
+## SavedVariables: GoldCurrencyTracker_Options, GoldCurrencyTracker_DataGoldBalance, GoldCurrencyTracker_DataCurrencyBalance
 
 locals.xml
 data.xml
 core.xml
 
-GoldAccountTracker.lua
+GoldCurrencyTracker.lua

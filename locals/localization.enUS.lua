@@ -20,6 +20,8 @@ L["October"] = "October"
 L["November"] = "November"
 L["December"] = "December"
 
+L["Gold"] = "Gold"
+
 L["button-next"] = "Next"
 L["button-previous"] = "Previous"
 

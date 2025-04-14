@@ -33,6 +33,26 @@ local function SaveGold()
     goldAccountTracker:PrintDebug("Gold balance saved.")
 end
 
+function TrackCurrencies()
+    local realm, name = GetCharacterInfo()
+    goldAccountTracker.currencyBalance = goldAccountTracker.currencyBalance or {}
+    goldAccountTracker.currencyBalance[realm] = goldAccountTracker.currencyBalance[realm] or {}
+    goldAccountTracker.currencyBalance[realm][name] = goldAccountTracker.currencyBalance[realm][name] or {}
+
+    local dateKey = date("%Y-%m-%d")
+    goldAccountTracker.currencyBalance[realm][name][dateKey] = goldAccountTracker.currencyBalance[realm][name][dateKey] or {}
+
+
+    for _, currencies in pairs(goldAccountTracker.currencyGroups) do
+        for _, currencyID in ipairs(currencies) do
+            local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
+            if info then
+                goldAccountTracker.currencyBalance[realm][name][dateKey][currencyID] = info.quantity
+            end
+        end
+    end
+end
+
 local function SlashCommand(msg, editbox)
     if not msg or msg:trim() == "" then
         Settings.OpenToCategory("Gold Account Tracker")
@@ -67,6 +87,7 @@ end
 function goldAccountTrackerFrame:PLAYER_ENTERING_WORLD(...)
     goldAccountTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
     SaveGold()
+    TrackCurrencies()
 
     if goldAccountTracker.options["QKywRlN7-open-on-login"] then
         goldAccountTracker:ShowGoldOverview()

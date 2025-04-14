@@ -3,10 +3,24 @@ local _, goldAccountTracker = ...
 local L = goldAccountTracker.localization
 
 local currentMonthOffset = 0
+local selectedCurrency = "gold"
 
 local MONTH_KEYS = {
     "January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"
+}
+
+local GROUP_NAMES = {
+    classic = "Classic",
+    burningCrusade = "The Burning Crusade",
+    wrath = "Wrath of the Lich King",
+    cataclysm = "Cataclysm",
+    mists = "Mists of Pandaria",
+    wod = "Warlords of Draenor",
+    legion = "Legion",
+    bfa = "Battle for Azeroth",
+    shadowlands = "Shadowlands",
+    dragonflight = "Dragonflight",
 }
 
 --------------
@@ -30,7 +44,7 @@ goldOverviewFrame.portrait:SetPoint('TOPLEFT', -5, 8)
 goldOverviewFrame.portrait:SetTexture(goldAccountTracker.MEDIA_PATH .. "iconRound.blp")
 
 goldOverviewFrame.header = goldOverviewFrame:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-goldOverviewFrame.header:SetPoint("TOP", 0, -40)
+goldOverviewFrame.header:SetPoint("TOPLEFT", 70, -40)
 
 goldOverviewFrame.scrollFrame = CreateFrame("ScrollFrame", nil, goldOverviewFrame, "UIPanelScrollFrameTemplate")
 goldOverviewFrame.scrollFrame:SetPoint("TOPLEFT", 10, -65)
@@ -62,6 +76,9 @@ goldOverviewFrame.previousButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset + 1
     goldAccountTracker:UpdateGoldOverview()
 end)
+
+goldOverviewFrame.currencyDropdown = CreateFrame("Frame", "GoldTrackerDropdown", goldOverviewFrame, "UIDropDownMenuTemplate")
+goldOverviewFrame.currencyDropdown:SetPoint("TOPRIGHT", goldOverviewFrame, "TOPRIGHT", 10, -30)
 
 ----------------------
 --- Local funtions ---
@@ -159,18 +176,92 @@ local function HasAnyDataAfterMonth(data, currentPrefix)
     return false
 end
 
+local function formatAmount(val)
+    if selectedCurrency == "gold" then
+        return FormatGold(val)
+    else
+        return BreakUpLargeNumbers(val or 0)
+    end
+end
+
+local function formatDiff(diff)
+    if selectedCurrency == "gold" then
+        return FormatGoldDiff(diff)
+    else
+        return (diff >= 0 and "+" or "") .. BreakUpLargeNumbers(diff)
+    end
+end
+
+local function InitializeCurrencyDropdown()
+    UIDropDownMenu_SetWidth(goldOverviewFrame.currencyDropdown, 180)
+    UIDropDownMenu_SetText(goldOverviewFrame.currencyDropdown, L["Gold"])
+
+    UIDropDownMenu_Initialize(goldOverviewFrame.currencyDropdown , function(self, level)
+        if level == 1 then
+            local goldInfo = UIDropDownMenu_CreateInfo()
+            goldInfo.text = L["Gold"]
+            goldInfo.notCheckable = true
+            goldInfo.func = function()
+                selectedCurrency = "gold"
+                UIDropDownMenu_SetText(goldOverviewFrame.currencyDropdown , L["Gold"])
+                goldAccountTracker:UpdateGoldOverview()
+                CloseDropDownMenus()
+            end
+            UIDropDownMenu_AddButton(goldInfo, level)
+
+            for _, key in ipairs(goldAccountTracker.currencyGroupOrder) do
+                local info = UIDropDownMenu_CreateInfo()
+                info.text = GROUP_NAMES[key] or key
+                info.hasArrow = true
+                info.notCheckable = true
+                info.menuList = goldAccountTracker.currencyGroups[key]
+                UIDropDownMenu_AddButton(info, level)
+            end
+
+        elseif level == 2 then
+            local sortedList = {}
+
+            for _, currencyID in ipairs(self.menuList) do
+                local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
+                if info then
+                    table.insert(sortedList, { id = currencyID, name = info.name, icon = info.iconFileID })
+                end
+            end
+
+            table.sort(sortedList, function(a, b)
+                return a.name < b.name
+            end)
+
+            for _, entry in ipairs(sortedList) do
+                local info = UIDropDownMenu_CreateInfo()
+                info.text = entry.name
+                info.icon = entry.icon
+                info.notCheckable = true
+                info.func = function()
+                    selectedCurrency = entry.id
+                    UIDropDownMenu_SetText(goldOverviewFrame.currencyDropdown , entry.name)
+                    goldAccountTracker:UpdateGoldOverview()
+                    CloseDropDownMenus()
+                end
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end
+    end)
+end
+
 ---------------------
 --- Main funtions ---
 ---------------------
 
 function goldAccountTracker:ShowGoldOverview()
     self:UpdateGoldOverview()
+    InitializeCurrencyDropdown()
     goldOverviewFrame:Show()
 end
 
 function goldAccountTracker:UpdateGoldOverview()
     local realm, name = GetCharacterInfo()
-    local data = self.goldBalance and self.goldBalance[realm] and self.goldBalance[realm][name]
+    local data
     local entries = {}
     local filterPrefix = GetYearMonthString(currentMonthOffset)
 
@@ -186,6 +277,20 @@ function goldAccountTracker:UpdateGoldOverview()
     end
 
     goldOverviewFrame.scrollFrame.content.rows = {}
+
+    if selectedCurrency == "gold" then
+        data = self.goldBalance and self.goldBalance[realm] and self.goldBalance[realm][name]
+    else
+        local allData = self.currencyBalance and self.currencyBalance[realm] and self.currencyBalance[realm][name]
+        if allData then
+            data = {}
+            for dateStr, currencies in pairs(allData) do
+                if currencies[selectedCurrency] ~= nil then
+                    data[dateStr] = currencies[selectedCurrency]
+                end
+            end
+        end
+    end
 
     if data then
         for dateStr, gold in pairs(data) do
@@ -231,7 +336,7 @@ function goldAccountTracker:UpdateGoldOverview()
 
         local rowAmount = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rowAmount:SetPoint("TOPLEFT", 100, offsetY)
-        rowAmount:SetText(FormatGold(entry.value))
+        rowAmount:SetText(formatAmount(entry.value))
 
         local rowDiff = goldOverviewFrame.scrollFrame.content:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rowDiff:SetPoint("TOPLEFT", 250, offsetY)
@@ -245,7 +350,7 @@ function goldAccountTracker:UpdateGoldOverview()
 
         if prev then
             local diff = entry.value - prev.value
-            rowDiff:SetText(FormatGoldDiff(diff))
+            rowDiff:SetText(formatDiff(diff))
             if diff > 0 then
                 rowDiff:SetTextColor(0, 1, 0)
             elseif diff < 0 then
