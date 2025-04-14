@@ -52,7 +52,7 @@ goldCurrencyOverviewFrame.nextButton:SetSize(100, 21)
 goldCurrencyOverviewFrame.nextButton:SetText(L["button-next"])
 goldCurrencyOverviewFrame.nextButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset - 1
-    goldCurrencyTracker:UpdateGoldOverview()
+    goldCurrencyTracker:UpdateGoldCurrencyOverview()
 end)
 
 goldCurrencyOverviewFrame.prevButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame, "UIPanelButtonTemplate")
@@ -61,7 +61,7 @@ goldCurrencyOverviewFrame.prevButton:SetSize(100, 21)
 goldCurrencyOverviewFrame.prevButton:SetText(L["button-prev"])
 goldCurrencyOverviewFrame.prevButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset + 1
-    goldCurrencyTracker:UpdateGoldOverview()
+    goldCurrencyTracker:UpdateGoldCurrencyOverview()
 end)
 
 goldCurrencyOverviewFrame.currencyDropdown = CreateFrame("Frame", "GoldTrackerDropdown", goldCurrencyOverviewFrame, "UIDropDownMenuTemplate")
@@ -174,7 +174,77 @@ local function HasAnyDataAfterMonth(data, currentPrefix)
     return false
 end
 
-local function UpdateGoldCurrencyOverview()
+local function InitializeGoldCurrencyDropdown()
+    UIDropDownMenu_SetWidth(goldCurrencyOverviewFrame.currencyDropdown, 180)
+    UIDropDownMenu_SetText(goldCurrencyOverviewFrame.currencyDropdown, L["currency-category.gold"])
+
+    UIDropDownMenu_Initialize(goldCurrencyOverviewFrame.currencyDropdown , function(self, level)
+        if level == 1 then
+            local goldInfo = UIDropDownMenu_CreateInfo()
+            goldInfo.text = L["currency-category.gold"]
+            goldInfo.notCheckable = true
+            goldInfo.func = function()
+                selectedCurrency = "gold"
+                UIDropDownMenu_SetText(goldCurrencyOverviewFrame.currencyDropdown , L["currency-category.gold"])
+                goldCurrencyTracker:UpdateGoldCurrencyOverview()
+                CloseDropDownMenus()
+            end
+
+            UIDropDownMenu_AddButton(goldInfo, level)
+
+            for _, key in ipairs(goldCurrencyTracker.currencyCategoryOrder) do
+                local info = UIDropDownMenu_CreateInfo()
+                info.text = L["currency-category." .. key]
+                info.hasArrow = true
+                info.notCheckable = true
+                info.menuList = goldCurrencyTracker.currencyCategories[key]
+                UIDropDownMenu_AddButton(info, level)
+            end
+        elseif level == 2 then
+            local sortedList = {}
+
+            for _, currencyID in ipairs(self.menuList) do
+                local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
+                if info then
+                    table.insert(sortedList, { id = currencyID, name = info.name, icon = info.iconFileID })
+                else
+                    goldCurrencyTracker:PrintDebug(tostring("The following currency ID does not exist: " .. currencyID))
+                end
+            end
+
+            table.sort(sortedList, function(a, b)
+                return a.id < b.id
+            end)
+
+            for _, entry in ipairs(sortedList) do
+                local info = UIDropDownMenu_CreateInfo()
+                info.text = entry.name
+                info.icon = entry.icon
+                info.notCheckable = true
+                info.func = function()
+                    selectedCurrency = entry.id
+                    UIDropDownMenu_SetText(goldCurrencyOverviewFrame.currencyDropdown, entry.name)
+                    goldCurrencyTracker:UpdateGoldCurrencyOverview()
+                    CloseDropDownMenus()
+                end
+                UIDropDownMenu_AddButton(info, level)
+            end
+        end
+    end)
+end
+
+---------------------
+--- Main funtions ---
+---------------------
+
+function goldCurrencyTracker:ShowGoldCurrencyOverview()
+    InitializeGoldCurrencyDropdown()
+    goldCurrencyTracker:UpdateGoldCurrencyOverview()
+
+    goldCurrencyOverviewFrame:Show()
+end
+
+function goldCurrencyTracker:UpdateGoldCurrencyOverview()
     local realm, name = GetCharacterInfo()
     local data
     local entries = {}
@@ -290,74 +360,4 @@ local function UpdateGoldCurrencyOverview()
         goldCurrencyOverviewFrame.prevButton:SetEnabled(false)
         goldCurrencyOverviewFrame.nextButton:SetEnabled(false)
     end
-end
-
-local function InitializeGoldCurrencyDropdown()
-    UIDropDownMenu_SetWidth(goldCurrencyOverviewFrame.currencyDropdown, 180)
-    UIDropDownMenu_SetText(goldCurrencyOverviewFrame.currencyDropdown, L["currency-category.gold"])
-
-    UIDropDownMenu_Initialize(goldCurrencyOverviewFrame.currencyDropdown , function(self, level)
-        if level == 1 then
-            local goldInfo = UIDropDownMenu_CreateInfo()
-            goldInfo.text = L["currency-category.gold"]
-            goldInfo.notCheckable = true
-            goldInfo.func = function()
-                selectedCurrency = "gold"
-                UIDropDownMenu_SetText(goldCurrencyOverviewFrame.currencyDropdown , L["currency-category.gold"])
-                UpdateGoldCurrencyOverview()
-                CloseDropDownMenus()
-            end
-
-            UIDropDownMenu_AddButton(goldInfo, level)
-
-            for _, key in ipairs(goldCurrencyTracker.currencyCategoryOrder) do
-                local info = UIDropDownMenu_CreateInfo()
-                info.text = L["currency-category." .. key]
-                info.hasArrow = true
-                info.notCheckable = true
-                info.menuList = goldCurrencyTracker.currencyCategories[key]
-                UIDropDownMenu_AddButton(info, level)
-            end
-        elseif level == 2 then
-            local sortedList = {}
-
-            for _, currencyID in ipairs(self.menuList) do
-                local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
-                if info then
-                    table.insert(sortedList, { id = currencyID, name = info.name, icon = info.iconFileID })
-                else
-                    goldCurrencyTracker:PrintDebug(tostring("The following currency ID does not exist: " .. currencyID))
-                end
-            end
-
-            table.sort(sortedList, function(a, b)
-                return a.id < b.id
-            end)
-
-            for _, entry in ipairs(sortedList) do
-                local info = UIDropDownMenu_CreateInfo()
-                info.text = entry.name
-                info.icon = entry.icon
-                info.notCheckable = true
-                info.func = function()
-                    selectedCurrency = entry.id
-                    UIDropDownMenu_SetText(goldCurrencyOverviewFrame.currencyDropdown, entry.name)
-                    UpdateGoldCurrencyOverview()
-                    CloseDropDownMenus()
-                end
-                UIDropDownMenu_AddButton(info, level)
-            end
-        end
-    end)
-end
-
----------------------
---- Main funtions ---
----------------------
-
-function goldCurrencyTracker:ShowGoldCurrencyOverview()
-    InitializeGoldCurrencyDropdown()
-    UpdateGoldCurrencyOverview()
-
-    goldCurrencyOverviewFrame:Show()
 end
