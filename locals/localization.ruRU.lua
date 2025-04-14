@@ -33,8 +33,8 @@ L["currency-category.sl"] = "Темные Земли"
 L["currency-category.df"] = "Драконы"
 L["currency-category.tww"] = "Война Внутри"
 
-L["button-next"] = "Следующий"
-L["button-prev"] = "Предыдущий"
+L["button-next"] = "Вперёд"
+L["button-prev"] = "Назад"
 
 L["date"] = "Дата"
 L["amount"] = "Количество"
