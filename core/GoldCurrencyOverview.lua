@@ -15,6 +15,9 @@ local monthKeys = {
 --------------
 
 local goldCurrencyOverviewFrame = CreateFrame("Frame", "GoldCurrencyOverview", UIParent, "ButtonFrameTemplate")
+
+tinsert(UISpecialFrames, "GoldCurrencyOverview")
+
 goldCurrencyOverviewFrame:SetPoint("CENTER")
 goldCurrencyOverviewFrame:SetSize(450, 550)
 goldCurrencyOverviewFrame:SetMovable(true)
@@ -361,3 +364,4 @@ function goldCurrencyTracker:UpdateGoldCurrencyOverview()
         goldCurrencyOverviewFrame.nextButton:SetEnabled(false)
     end
 end
+

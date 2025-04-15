@@ -21,6 +21,12 @@ function goldCurrencyTracker:LoadOptions()
 
     self.currencyBalance = GoldCurrencyTracker_DataCurrencyBalance
 
+    if (not GoldCurrencyTracker_DataBalance) then
+        GoldCurrencyTracker_DataBalance = {}
+    end
+
+    self.balance = GoldCurrencyTracker_DataBalance
+
     local variableTable = self.options
     local category, layout = Settings.RegisterVerticalLayoutCategory("Gold & Currency Tracker")
     category.ID = "Gold & Currency Tracker"

@@ -12,7 +12,7 @@
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## AllowLoadGameType: mainline
-## SavedVariables: GoldCurrencyTracker_Options, GoldCurrencyTracker_DataGoldBalance, GoldCurrencyTracker_DataCurrencyBalance
+## SavedVariables: GoldCurrencyTracker_Options, GoldCurrencyTracker_DataGoldBalance, GoldCurrencyTracker_DataCurrencyBalance, GoldCurrencyTracker_DataBalance
 
 locals.xml
 data.xml

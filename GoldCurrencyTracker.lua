@@ -82,6 +82,8 @@ end
 function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
         goldCurrencyTracker:LoadOptions()
+        --goldCurrencyTracker:MigrateOldData()
+        --goldCurrencyTracker:CleanupZeroBalances()
         goldCurrencyTracker:PrintDebug("Addon fully loaded.")
     end
 end
@@ -118,3 +120,71 @@ goldCurrencyTrackerFrame:SetScript("OnEvent", goldCurrencyTrackerFrame.OnEvent)
 SLASH_GoldCurrencyTracker1, SLASH_GoldCurrencyTracker2 = '/gct', '/GoldCurrencyTracker'
 
 SlashCmdList["GoldCurrencyTracker"] = SlashCommand
+
+function goldCurrencyTracker:MigrateOldData()
+    self.balance = self.balance or {}
+
+    if self.goldBalance then
+        for realm, realmData in pairs(self.goldBalance) do
+            self.balance[realm] = self.balance[realm] or {}
+
+            for charName, charData in pairs(realmData) do
+                self.balance[realm][charName] = self.balance[realm][charName] or {}
+
+                for dateStr, goldValue in pairs(charData) do
+                    self.balance[realm][charName][dateStr] = self.balance[realm][charName][dateStr] or {}
+                    self.balance[realm][charName][dateStr]["gold"] = goldValue
+                end
+            end
+        end
+    end
+
+    if self.currencyBalance then
+        for realm, realmData in pairs(self.currencyBalance) do
+            self.balance[realm] = self.balance[realm] or {}
+
+            for charName, charData in pairs(realmData) do
+                self.balance[realm][charName] = self.balance[realm][charName] or {}
+
+                for dateStr, history in pairs(charData) do
+                    for currencyID, amount in pairs(history) do
+                        local key = "c-" .. tostring(currencyID)
+                        self.balance[realm][charName][dateStr] = self.balance[realm][charName][dateStr] or {}
+                        self.balance[realm][charName][dateStr][key] = amount
+                    end
+                end
+            end
+        end
+    end
+
+    --wipe(self.goldBalance)
+    --wipe(self.currencyBalance)
+    --self.goldBalance = nil
+    --self.currencyBalance = nil
+end
+
+function goldCurrencyTracker:CleanupZeroBalances()
+    for realm, realmData in pairs(self.balance or {}) do
+        for char, charData in pairs(realmData) do
+            local datesToRemove = {}
+
+            for dateStr, resources in pairs(charData) do
+                local keysToRemove = {}
+
+                for resource, amount in pairs(resources) do
+                    if amount == 0 then
+                        table.insert(keysToRemove, resource)
+                    end
+                end
+
+                for _, key in ipairs(keysToRemove) do
+                    resources[key] = nil
+                end
+            end
+
+            for _, dateStr in ipairs(datesToRemove) do
+                charData[dateStr] = nil
+            end
+        end
+    end
+end
