@@ -9,7 +9,7 @@ The Gold & Currency Tracker is an addon that saves the account balance of gold a
 
 *   Daily and monthly overview of your gold and currency balance
 *   Separate saving and display for each character
-*   Supported languages: English, German
+*   Supported languages: English, German, Russian
 
 Further features are planned.
 
