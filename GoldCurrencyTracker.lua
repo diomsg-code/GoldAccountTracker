@@ -88,25 +88,25 @@ function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     end
 end
 
-function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(...)
-    goldCurrencyTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired.")
+function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
+    goldCurrencyTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired. Payload: isInitialLogin=" .. tostring(isInitialLogin) .. ", isReloadingUi=" .. tostring(isReloadingUi))
 
     TrackGold()
     TrackCurrencies()
 
-    if goldCurrencyTracker.options["QKywRlN7-open-on-login"] then
+    if goldCurrencyTracker.options["QKywRlN7-open-on-login"] and (isInitialLogin or isReloadingUi) then
         goldCurrencyTracker:ShowGoldCurrencyOverview()
     end
 end
 
 function goldCurrencyTrackerFrame:PLAYER_MONEY(...)
-    goldCurrencyTracker:PrintDebug("Event 'PLAYER_MONEY' fired.")
+    goldCurrencyTracker:PrintDebug("Event 'PLAYER_MONEY' fired. No payload.")
 
     TrackGold()
 end
 
 function goldCurrencyTrackerFrame:CURRENCY_DISPLAY_UPDATE(...)
-    goldCurrencyTracker:PrintDebug("Event 'CURRENCY_DISPLAY_UPDATE' fired.")
+    goldCurrencyTracker:PrintDebug("Event 'CURRENCY_DISPLAY_UPDATE' fired. No payload.")
 
     TrackCurrencies()
 end
