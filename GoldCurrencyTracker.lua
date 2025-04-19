@@ -65,7 +65,7 @@ local function SaveBalance()
 
     goldCurrencyTracker.balance[realm][char][today]["gold"] = currentGold
 
-    goldCurrencyTracker:PrintDebug("gold - " .. tostring(currentGold))
+    --goldCurrencyTracker:PrintDebug("gold - " .. tostring(currentGold))
 
     for _, currencies in pairs(goldCurrencyTracker.characterCurrencies) do
         for _, currencyID in ipairs(currencies) do
@@ -75,7 +75,7 @@ local function SaveBalance()
             if info then
                 goldCurrencyTracker.balance[realm][char][today][key] = info.quantity
 
-                goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
+                --goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
         end
     end
@@ -88,7 +88,7 @@ local function SaveBalance()
             if info then
                 goldCurrencyTracker.balance["Warband"][today][key] = info.quantity
 
-                goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
+                --goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
         end
     end
