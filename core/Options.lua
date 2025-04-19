@@ -3,30 +3,6 @@ local _, goldCurrencyTracker = ...
 local L = goldCurrencyTracker.localization
 
 function goldCurrencyTracker:LoadOptions()
-    if (not GoldCurrencyTracker_Options) then
-        GoldCurrencyTracker_Options = {}
-    end
-
-    self.options = GoldCurrencyTracker_Options
-
-    if (not GoldCurrencyTracker_DataGoldBalance) then
-        GoldCurrencyTracker_DataGoldBalance = {}
-    end
-
-    self.goldBalance = GoldCurrencyTracker_DataGoldBalance
-
-    if (not GoldCurrencyTracker_DataCurrencyBalance) then
-        GoldCurrencyTracker_DataCurrencyBalance = {}
-    end
-
-    self.currencyBalance = GoldCurrencyTracker_DataCurrencyBalance
-
-    if (not GoldCurrencyTracker_DataBalance) then
-        GoldCurrencyTracker_DataBalance = {}
-    end
-
-    self.balance = GoldCurrencyTracker_DataBalance
-
     local variableTable = self.options
     local category, layout = Settings.RegisterVerticalLayoutCategory("Gold & Currency Tracker")
     category.ID = "Gold & Currency Tracker"

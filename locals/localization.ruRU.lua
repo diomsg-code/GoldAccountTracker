@@ -18,6 +18,8 @@ L["nov"] = "Ноябрь"
 L["dec"] = "Декабрь"
 
 L["currency-category.gold"] = "Золото"
+L["currency-category.warband"] = "Warband Currencies"
+L["currency-category.character"] = "Character Currencies"
 L["currency-category.misc"] = "Разное"
 L["currency-category.pvp"] = "Игрок против игрока"
 L["currency-category.dungeonraid"] = "Подземелье и рейд"
@@ -32,6 +34,9 @@ L["currency-category.bfa"] = "Битва за Азерот"
 L["currency-category.sl"] = "Темные Земли"
 L["currency-category.df"] = "Драконы"
 L["currency-category.tww"] = "Война Внутри"
+
+L["tab.character"] = "Character"
+L["tab.account"] = "Account"
 
 L["button-next"] = "Вперёд"
 L["button-prev"] = "Назад"

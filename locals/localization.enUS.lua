@@ -21,6 +21,8 @@ L["nov"] = "November"
 L["dec"] = "December"
 
 L["currency-category.gold"] = "Gold"
+L["currency-category.warband"] = "Warband Currencies"
+L["currency-category.character"] = "Character Currencies"
 L["currency-category.misc"] = "Miscellaneous"
 L["currency-category.pvp"] = "Player vs. Player"
 L["currency-category.dungeonraid"] = "Dungeon and Raid"
@@ -35,6 +37,9 @@ L["currency-category.bfa"] = "Battle for Azeroth"
 L["currency-category.sl"] = "Shadowlands"
 L["currency-category.df"] = "Dragonflight"
 L["currency-category.tww"] = "The War Within"
+
+L["tab.character"] = "Character"
+L["tab.account"] = "Account"
 
 L["button-next"] = "Next"
 L["button-prev"] = "Previous"

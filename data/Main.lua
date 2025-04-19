@@ -5,7 +5,7 @@ goldCurrencyTracker.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\
 goldCurrencyTracker.currencyCategoryOrder = {
     "misc",         -- 1
     "pvp",          -- 2
-    "dungeonraid", -- 22
+    "dungeonraid",  -- 22
     --"classic",      -- 4
     --"tbc",          -- 23
     --"wotlk",        -- 21
@@ -19,10 +19,15 @@ goldCurrencyTracker.currencyCategoryOrder = {
     "tww"           -- 260
 }
 
-goldCurrencyTracker.currencyCategories = {
+goldCurrencyTracker.warbandCurrencies = {
+    misc = {
+        2032,	-- Händlerdevisen     
+    }
+}
+
+goldCurrencyTracker.characterCurrencies = {
     misc = {
         515,    -- Gewinnlos des Dunkelmond-Jahrmarkts
-        2032,	-- Händlerdevisen
         2588	-- Abzeichen: Reiter v. Azeroth        
     },
     pvp = {
