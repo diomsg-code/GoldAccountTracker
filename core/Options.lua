@@ -8,7 +8,7 @@ local Options = {}
 --- Main funtions ---
 ---------------------
 
-function Options:LoadOptions()
+function Options:Init()
     local variableTable = GCT.data.options
     local category, layout = Settings.RegisterVerticalLayoutCategory("Gold & Currency Tracker")
     category.ID = "Gold & Currency Tracker"

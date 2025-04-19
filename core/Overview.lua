@@ -3,6 +3,8 @@ local _, GCT = ...
 local L =  GCT.localization
 local Utils = GCT.utils
 
+local Overview = {}
+
 local currentMonthOffset = 0
 local selectedCurrency = "gold"
 
@@ -95,7 +97,6 @@ local t1_prevButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.conte
 t1_prevButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMLEFT", 55, 4)
 t1_prevButton:SetSize(100, 21)
 t1_prevButton:SetText(L["button-prev"])
-
 
 local t1_currencyDropdown = CreateFrame("Frame", "GoldCurrencyTrackerDropdown", goldCurrencyOverviewFrame.contentTab1, "UIDropDownMenuTemplate")
 t1_currencyDropdown:SetPoint("TOPRIGHT", goldCurrencyOverviewFrame.contentTab1, "TOPRIGHT", 10, -30)
@@ -336,7 +337,7 @@ local function InitializeGoldCurrencyDropdown()
             goldInfo.func = function()
                 selectedCurrency = "gold"
                 UIDropDownMenu_SetText(t1_currencyDropdown, L["currency-category.gold"])
-                 GCT:UpdateGoldCurrencyOverview()
+                UpdateGoldCurrencyOverview()
                 CloseDropDownMenus()
             end
             UIDropDownMenu_AddButton(goldInfo, level)
@@ -433,21 +434,27 @@ t1_prevButton:SetScript("OnClick", function()
     currentMonthOffset = currentMonthOffset + 1
     UpdateGoldCurrencyOverview()
 end)
+
 ---------------------
 --- Main funtions ---
 ---------------------
 
-function GCT:ShowGoldCurrencyOverview()
+function Overview:Init()
     InitializeGoldCurrencyDropdown()
+end
+
+function Overview:Show()
     UpdateGoldCurrencyOverview()
-    
+
     goldCurrencyOverviewFrame:Show()
 end
 
-function GCT:HideGoldCurrencyOverview()
+function Overview:Hide()
     goldCurrencyOverviewFrame:Hide()
 end
 
-function GCT:IsShownGoldCurrencyOverview()
+function Overview:IsShown()
     return goldCurrencyOverviewFrame:IsShown()
 end
+
+GCT.overview = Overview

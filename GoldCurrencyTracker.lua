@@ -3,6 +3,7 @@ local addonName, GCT = ...
 local L = GCT.localization
 local Utils = GCT.utils
 local Options = GCT.options
+local Overview = GCT.overview
 
 ----------------------
 --- Local funtions ---
@@ -49,7 +50,7 @@ local function SlashCommand(msg, editbox)
     if not msg or msg:trim() == "" then
         Settings.OpenToCategory("Gold & Currency Tracker")
     elseif msg:trim() == "overview" then
-        GCT:ShowGoldCurrencyOverview()
+        Overview:Show()
 	else
         Utils:PrintDebug("These arguments are not accepted.")
 	end
@@ -67,10 +68,10 @@ local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("GoldCurrencyTracker", {
     icon     = "Interface\\AddOns\\GoldCurrencyTracker\\media\\iconRound.blp",
     OnClick  = function(self, button)
         if button == "LeftButton" then
-            if GCT:IsShownGoldCurrencyOverview() then
-                GCT:HideGoldCurrencyOverview()
+            if Overview:IsShown() then
+                Overview:Hide()
             else
-                GCT:ShowGoldCurrencyOverview()
+                Overview:Show()
             end
         elseif button == "RightButton" then
             Settings.OpenToCategory("Gold & Currency Tracker")
@@ -102,7 +103,8 @@ function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
         Utils:InitDatabase()
         Utils:BuildDateIndex(GCT.data.balance)
 
-        Options:LoadOptions()
+        Options:Init()
+        Overview:Init()
 
         Utils:PrintDebug("Addon fully loaded.")
     end
@@ -117,7 +119,7 @@ function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(_, isInitialLogin, isRel
         end)
 
         if GCT.data.options["QKywRlN7-open-on-login"]then
-            GCT:ShowGoldCurrencyOverview()
+            Overview:Show()
         end
     end
 end
