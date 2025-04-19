@@ -1,4 +1,8 @@
-**1.2.0 (@build-date@)**
+**1.3.0 (@build-date@)**
+- Added: Minimap Button
+- Minor code adjustments
+
+**1.2.0 (2025-04-19)**
 - Changed: Separation of character and warband currencies in the selection dropdown
 - Changed: New database structure, the previous data is migrated
 

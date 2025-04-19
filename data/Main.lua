@@ -1,8 +1,12 @@
-local addonName, goldCurrencyTracker = ...
+local addonName, GCT = ...
 
-goldCurrencyTracker.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
+GCT.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
+GCT.MONTH_KEYS = {
+    "jan", "feb", "mar", "apr", "may", "jun",
+    "jul", "aug", "sep", "oct", "nov", "dec"
+}
 
-goldCurrencyTracker.currencyCategoryOrder = {
+GCT.CURRENCY_CATEGORY_ORDER = {
     "misc",         -- 1
     "pvp",          -- 2
     "dungeonraid",  -- 22
@@ -19,13 +23,13 @@ goldCurrencyTracker.currencyCategoryOrder = {
     "tww"           -- 260
 }
 
-goldCurrencyTracker.warbandCurrencies = {
+GCT.WARBAND_CURRENCIES = {
     misc = {
         2032,	-- Händlerdevisen     
     }
 }
 
-goldCurrencyTracker.characterCurrencies = {
+GCT.CHARACTER_CURRENCIES = {
     misc = {
         515,    -- Gewinnlos des Dunkelmond-Jahrmarkts
         2588	-- Abzeichen: Reiter v. Azeroth        

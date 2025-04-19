@@ -1,9 +1,15 @@
-local _, goldCurrencyTracker = ...
+local _, GCT = ...
 
-local L = goldCurrencyTracker.localization
+local L = GCT.localization
 
-function goldCurrencyTracker:LoadOptions()
-    local variableTable = self.options
+local Options = {}
+
+---------------------
+--- Main funtions ---
+---------------------
+
+function Options:LoadOptions()
+    local variableTable = GCT.data.options
     local category, layout = Settings.RegisterVerticalLayoutCategory("Gold & Currency Tracker")
     category.ID = "Gold & Currency Tracker"
 
@@ -33,3 +39,5 @@ function goldCurrencyTracker:LoadOptions()
 
     Settings.RegisterAddOnCategory(category)
 end
+
+GCT.options = Options

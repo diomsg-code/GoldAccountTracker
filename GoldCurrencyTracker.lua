@@ -1,108 +1,57 @@
-local addonName, goldCurrencyTracker = ...
+local addonName, GCT = ...
 
-local L = goldCurrencyTracker.localization
+local L = GCT.localization
+local Utils = GCT.utils
+local Options = GCT.options
 
 ----------------------
 --- Local funtions ---
 ----------------------
 
-local function GetToday()
-    return date("%Y-%m-%d")
-end
-
-local function GetGold()
-    return GetMoney()
-end
-
-local function GetCharacterInfo()
-    local char = UnitName("player")
-    local realm = GetRealmName()
-
-    return realm, char
-end
-
-local function InitDatabase()
-    local realm, char = GetCharacterInfo()
-
-    if (not GoldCurrencyTracker_Options) then
-        GoldCurrencyTracker_Options = {}
-    end
-
-    goldCurrencyTracker.options = GoldCurrencyTracker_Options
-
-    if (not GoldCurrencyTracker_DataGoldBalance) then
-        GoldCurrencyTracker_DataGoldBalance = {}
-    end
-
-    goldCurrencyTracker.goldBalance = GoldCurrencyTracker_DataGoldBalance
-
-    if (not GoldCurrencyTracker_DataCurrencyBalance) then
-        GoldCurrencyTracker_DataCurrencyBalance = {}
-    end
-
-    goldCurrencyTracker.currencyBalance = GoldCurrencyTracker_DataCurrencyBalance
-
-    if (not GoldCurrencyTracker_DataBalance) then
-        GoldCurrencyTracker_DataBalance = {}
-    end
-
-    goldCurrencyTracker.balance = GoldCurrencyTracker_DataBalance
-
-    goldCurrencyTracker.balance = goldCurrencyTracker.balance or {}
-    goldCurrencyTracker.balance["Warband"] = goldCurrencyTracker.balance["Warband"] or {}
-
-    goldCurrencyTracker.balance[realm] = goldCurrencyTracker.balance[realm] or {}
-    goldCurrencyTracker.balance[realm][char] = goldCurrencyTracker.balance[realm][char] or {}
-end
-
 local function SaveBalance()
-    local realm, char = GetCharacterInfo()
-    local today = GetToday()
-    local currentGold = GetGold()
+    local realm, char = Utils:GetCharacterInfo()
+    local today = Utils:GetToday()
+    local currentGold = Utils:GetGold()
 
-    goldCurrencyTracker.balance["Warband"][today] = goldCurrencyTracker.balance["Warband"][today] or {}
-    goldCurrencyTracker.balance[realm][char][today] = goldCurrencyTracker.balance[realm][char][today] or {}
+    GCT.data.balance["Warband"][today] = GCT.data.balance["Warband"][today] or {}
+    GCT.data.balance[realm][char][today] = GCT.data.balance[realm][char][today] or {}
 
-    goldCurrencyTracker.balance[realm][char][today]["gold"] = currentGold
+    GCT.data.balance[realm][char][today]["gold"] = currentGold
 
-    --goldCurrencyTracker:PrintDebug("gold - " .. tostring(currentGold))
-
-    for _, currencies in pairs(goldCurrencyTracker.characterCurrencies) do
+    for _, currencies in pairs(GCT.CHARACTER_CURRENCIES) do
         for _, currencyID in ipairs(currencies) do
             local key = "c-" .. tostring(currencyID)
             local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
 
             if info then
-                goldCurrencyTracker.balance[realm][char][today][key] = info.quantity
-
-                --goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
+                 GCT.data.balance[realm][char][today][key] = info.quantity
+                 --Utils:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
         end
     end
 
-    for _, currencies in pairs(goldCurrencyTracker.warbandCurrencies) do
+    for _, currencies in pairs(GCT.WARBAND_CURRENCIES) do
         for _, currencyID in ipairs(currencies) do
             local key = "w-" .. tostring(currencyID)
             local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
 
             if info then
-                goldCurrencyTracker.balance["Warband"][today][key] = info.quantity
-
-                --goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
+                 GCT.data.balance["Warband"][today][key] = info.quantity
+                 --Utils:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
         end
     end
 
-    goldCurrencyTracker:PrintDebug("Gold and curreny balance saved.")
+    Utils:PrintDebug("Gold and curreny balance saved.")
 end
 
 local function SlashCommand(msg, editbox)
     if not msg or msg:trim() == "" then
         Settings.OpenToCategory("Gold & Currency Tracker")
     elseif msg:trim() == "overview" then
-        goldCurrencyTracker:ShowGoldCurrencyOverview()
+        GCT:ShowGoldCurrencyOverview()
 	else
-        goldCurrencyTracker:PrintDebug("These arguments are not accepted.")
+        Utils:PrintDebug("These arguments are not accepted.")
 	end
 end
 
@@ -111,6 +60,34 @@ end
 --------------
 
 local goldCurrencyTrackerFrame = CreateFrame("Frame", "GoldCurrencyTracker")
+
+local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("GoldCurrencyTracker", {
+    type     = "launcher",
+    text     = "GoldTracker",
+    icon     = "Interface\\AddOns\\GoldCurrencyTracker\\media\\iconRound.blp",
+    OnClick  = function(self, button)
+        if button == "LeftButton" then
+            if GCT:IsShownGoldCurrencyOverview() then
+                GCT:HideGoldCurrencyOverview()
+            else
+                GCT:ShowGoldCurrencyOverview()
+            end
+        elseif button == "RightButton" then
+            Settings.OpenToCategory("Gold & Currency Tracker")
+        end
+    end,
+    OnTooltipShow = function(tooltip)
+        tooltip:AddLine("Gold & Currency Tracker")
+        tooltip:AddLine("Linksklick zum Öffnen und Rechtsklick für die Einstellungen", 1,1,1)
+    end,
+})
+
+local zone = {}
+zone.hide = false
+zone.minimapPos = 225
+
+local LDBIcon = LibStub("LibDBIcon-1.0")
+LDBIcon:Register("GoldCurrencyTracker", LDB, zone)
 
 ---------------------
 --- Main funtions ---
@@ -122,36 +99,37 @@ end
 
 function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
-        InitDatabase()
+        Utils:InitDatabase()
+        Utils:BuildDateIndex(GCT.data.balance)
 
-        goldCurrencyTracker:LoadOptions()
-        goldCurrencyTracker:MigrateOldData()
-        goldCurrencyTracker:PrintDebug("Addon fully loaded.")
+        Options:LoadOptions()
+
+        Utils:PrintDebug("Addon fully loaded.")
     end
 end
 
 function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
-    goldCurrencyTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired. Payload: isInitialLogin=" .. tostring(isInitialLogin) .. ", isReloadingUi=" .. tostring(isReloadingUi))
+    Utils:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired. Payload: isInitialLogin=" .. tostring(isInitialLogin) .. ", isReloadingUi=" .. tostring(isReloadingUi))
 
     if (isInitialLogin or isReloadingUi) then
         C_Timer.After(10, function()
             SaveBalance()
         end)
 
-        if goldCurrencyTracker.options["QKywRlN7-open-on-login"]then
-            goldCurrencyTracker:ShowGoldCurrencyOverview()
+        if GCT.data.options["QKywRlN7-open-on-login"]then
+            GCT:ShowGoldCurrencyOverview()
         end
     end
 end
 
 function goldCurrencyTrackerFrame:PLAYER_MONEY(...)
-    goldCurrencyTracker:PrintDebug("Event 'PLAYER_MONEY' fired. No payload.")
+    GCT.util:PrintDebug("Event 'PLAYER_MONEY' fired. No payload.")
 
     SaveBalance()
 end
 
 function goldCurrencyTrackerFrame:CURRENCY_DISPLAY_UPDATE(...)
-    goldCurrencyTracker:PrintDebug("Event 'CURRENCY_DISPLAY_UPDATE' fired. No payload.")
+    Utils:PrintDebug("Event 'CURRENCY_DISPLAY_UPDATE' fired. No payload.")
 
     SaveBalance()
 end
@@ -165,49 +143,3 @@ goldCurrencyTrackerFrame:SetScript("OnEvent", goldCurrencyTrackerFrame.OnEvent)
 SLASH_GoldCurrencyTracker1, SLASH_GoldCurrencyTracker2 = '/gct', '/GoldCurrencyTracker'
 
 SlashCmdList["GoldCurrencyTracker"] = SlashCommand
-
---------------------------------------------------------------
-
-function goldCurrencyTracker:MigrateOldData()
-    self.balance = self.balance or {}
-
-    if self.goldBalance then
-        for realm, realmData in pairs(self.goldBalance) do
-            self.balance[realm] = self.balance[realm] or {}
-
-            for charName, charData in pairs(realmData) do
-                self.balance[realm][charName] = self.balance[realm][charName] or {}
-
-                for dateStr, goldValue in pairs(charData) do
-                    self.balance[realm][charName][dateStr] = self.balance[realm][charName][dateStr] or {}
-                    self.balance[realm][charName][dateStr]["gold"] = goldValue
-                end
-            end
-        end
-    end
-
-    if self.currencyBalance then
-        for realm, realmData in pairs(self.currencyBalance) do
-            self.balance[realm] = self.balance[realm] or {}
-
-            for charName, charData in pairs(realmData) do
-                self.balance[realm][charName] = self.balance[realm][charName] or {}
-
-                for dateStr, history in pairs(charData) do
-                    for currencyID, amount in pairs(history) do
-                        if currencyID ~= 2032 then
-                            local key = "c-" .. tostring(currencyID)
-                            self.balance[realm][charName][dateStr] = self.balance[realm][charName][dateStr] or {}
-                            self.balance[realm][charName][dateStr][key] = amount
-                        end
-                    end
-                end
-            end
-        end
-    end
-
-    wipe(self.goldBalance)
-    wipe(self.currencyBalance)
-    self.goldBalance = nil
-    self.currencyBalance = nil
-end
