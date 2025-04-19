@@ -65,6 +65,8 @@ local function SaveBalance()
 
     goldCurrencyTracker.balance[realm][char][today]["gold"] = currentGold
 
+    goldCurrencyTracker:PrintDebug("gold - " .. tostring(currentGold))
+
     for _, currencies in pairs(goldCurrencyTracker.characterCurrencies) do
         for _, currencyID in ipairs(currencies) do
             local key = "c-" .. tostring(currencyID)
@@ -72,6 +74,8 @@ local function SaveBalance()
 
             if info then
                 goldCurrencyTracker.balance[realm][char][today][key] = info.quantity
+
+                goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
         end
     end
@@ -83,6 +87,8 @@ local function SaveBalance()
 
             if info then
                 goldCurrencyTracker.balance["Warband"][today][key] = info.quantity
+
+                goldCurrencyTracker:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
         end
     end
@@ -127,10 +133,14 @@ end
 function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(_, isInitialLogin, isReloadingUi)
     goldCurrencyTracker:PrintDebug("Event 'PLAYER_ENTERING_WORLD' fired. Payload: isInitialLogin=" .. tostring(isInitialLogin) .. ", isReloadingUi=" .. tostring(isReloadingUi))
 
-    SaveBalance()
+    if (isInitialLogin or isReloadingUi) then
+        C_Timer.After(10, function()
+            SaveBalance()
+        end)
 
-    if goldCurrencyTracker.options["QKywRlN7-open-on-login"] and (isInitialLogin or isReloadingUi) then
-        goldCurrencyTracker:ShowGoldCurrencyOverview()
+        if goldCurrencyTracker.options["QKywRlN7-open-on-login"]then
+            goldCurrencyTracker:ShowGoldCurrencyOverview()
+        end
     end
 end
 
