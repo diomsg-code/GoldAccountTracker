@@ -1,11 +1,13 @@
-local _, goldCurrencyTracker = ...
+local _, GCT = ...
 
-goldCurrencyTracker.localization = setmetatable({},{__index=function(self,key)
+GCT.localization = setmetatable({},{__index=function(self,key)
         geterrorhandler()("Gold & Currency Tracker (Debug): Missing entry for '" .. tostring(key) .. "'")
         return key
     end})
 
-local L = goldCurrencyTracker.localization
+local L = GCT.localization
+
+L["addon-name"] = "Gold & Currency Tracker"
 
 L["jan"] = "January"
 L["feb"] = "February"
@@ -49,6 +51,8 @@ L["amount"] = "Amount"
 L["difference"] = "Difference"
 
 L["no-entries"] = "No entries for this month."
+
+L["minimap-button.tooltip"] = "Left-click to open the gold & currency overview. Right-click to open the settings."
 
 -- Options
 

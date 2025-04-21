@@ -4,8 +4,6 @@ local L = GCT.localization
 
 local Utils = {}
 
-
-
 ---------------------
 --- Main funtions ---
 ---------------------
@@ -70,8 +68,8 @@ function Utils:InitializeMinimapButton()
             end
         end,
         OnTooltipShow = function(tooltip)
-            tooltip:AddLine("Gold & Currency Tracker")
-            tooltip:AddLine("Linksklick zum Öffnen und Rechtsklick für die Einstellungen", 1,1,1)
+            tooltip:AddLine(L["addon-name"])
+            tooltip:AddLine(L["minimap-button.tooltip"], 1, 1, 1)
         end,
     })
 

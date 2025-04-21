@@ -1,8 +1,10 @@
-local _, goldCurrencyTracker = ...
+local _, GCT = ...
 
 if GetLocale() ~= "ruRU" then return end
 
-local L = goldCurrencyTracker.localization
+local L = GCT.localization
+
+L["addon-name"] = "Gold & Currency Tracker"
 
 L["jan"] = "Январь"
 L["feb"] = "Февраль"
@@ -46,6 +48,8 @@ L["amount"] = "Количество"
 L["difference"] = "Разница"
 
 L["no-entries"] = "Нет записей за этот месяц."
+
+L["minimap-button.tooltip"] = "Left-click to open the gold & currency overview. Right-click to open the settings."
 
 -- Options
 

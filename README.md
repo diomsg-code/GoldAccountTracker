@@ -3,12 +3,13 @@
 [![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/GoldCurrencyTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldCurrencyTracker/releases)
 [![GitHub Release Date](https://img.shields.io/github/release-date/diomsg-code/GoldCurrencyTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldCurrencyTracker/releases)
 
-The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and displays it historically.
+The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can show it over time.
 
 ### Features
 
-*   Daily and monthly overview of your gold and currency balance
-*   Separate saving and display for each character
+*   Gold & currency overview with a daily and monthly view
+*   Individual saving and view for each character
+*   Minimap button to open the gold & currency overview and settings
 *   Supported languages: English, German, Russian
 
 Further features are planned.
