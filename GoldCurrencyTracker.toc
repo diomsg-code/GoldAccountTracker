@@ -1,7 +1,7 @@
 ## Interface: 110100, 110105
 ## Title: Gold & Currency Tracker
 ## Author: diomsg (Diom-Antonidas EU)
-## Version: 1.3.0
+## Version: @project-version@
 ## IconTexture: Interface\AddOns\GoldCurrencyTracker\media\icon.blp
 ## X-Flavor: Retail
 ## X-BuildDate: @build-date@
