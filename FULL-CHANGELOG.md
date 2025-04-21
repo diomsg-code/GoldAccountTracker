@@ -1,4 +1,7 @@
-**1.3.0 (@build-date@)**
+**1.3.1 (@build-date@)**
+- Fixed: Gold changes were no longer recorded
+
+**1.3.0 (2025-04-21)**
 - Added: Minimap Button
 - Updated: deDE, enUS, ruRU localization (#3 - Thanks to Hollicsh)
 - Minor code adjustments

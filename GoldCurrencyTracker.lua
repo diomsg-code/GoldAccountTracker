@@ -97,7 +97,7 @@ function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(_, isInitialLogin, isRel
 end
 
 function goldCurrencyTrackerFrame:PLAYER_MONEY(...)
-    GCT.util:PrintDebug("Event 'PLAYER_MONEY' fired. No payload.")
+    Utils:PrintDebug("Event 'PLAYER_MONEY' fired. No payload.")
 
     SaveBalance()
 end
