@@ -50,10 +50,16 @@ L["difference"] = "Difference"
 
 L["no-entries"] = "No entries for this month."
 
-L["general-options"] = "General Options"
-L["open-on-login.name"] = "Open Overview on Login"
-L["open-on-login.tooltip"] = "Activate or deactivate the automatic opening of the gold & currency overview when logging in."
+-- Options
 
-L["other-options"] = "Other Options"
-L["debug.name"] = "Enable Debug Mode"
-L["debug.tooltip"] = "Activates or deactivates the Debug Mode."
+L["options.general"] = "General Options"
+L["options.open-on-login.name"] = "Open Overview on Login"
+L["options.open-on-login.tooltip"] = "Activate or deactivate the automatic opening of the gold & currency overview when logging in."
+L["options.minimap-button-hide.name"] = "Minimap Button"
+L["options.minimap-button-hide.tooltip"] = "Activate or deactivate the display of the minimap button."
+L["options.minimap-button-position.name"] = "Position"
+L["options.minimap-button-position.tooltip"] = "Defines the position of the minimap button."
+
+L["options.other"] = "Other Options"
+L["options.debug-mode.name"] = "Debug Mode"
+L["options.debug-mode.tooltip"] = "Activates or deactivates the debug mode."

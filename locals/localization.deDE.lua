@@ -47,10 +47,16 @@ L["difference"] = "Differenz"
 
 L["no-entries"] = "Keine Einträge für diesen Monat."
 
-L["general-options"] = "allgemeine Einstellungen"
-L["open-on-login.name"] = "Übersicht bei Login öffnen"
-L["open-on-login.tooltip"] = "Aktiviere oder deaktiviere die automatische Öffnung der Gold- und Währungsübersicht beim Login."
+-- Options
 
-L["other-options"] = "sonstige Optionen"
-L["debug.name"] = "Debugmodus aktivieren"
-L["debug.tooltip"] = "Aktiviert oder deaktiviert den Debugmodus."
+L["options.general"] = "allgemeine Einstellungen"
+L["options.open-on-login.name"] = "Übersicht bei Login öffnen"
+L["options.open-on-login.tooltip"] = "Aktiviere oder deaktiviere die automatische Öffnung der Gold- und Währungsübersicht beim Login."
+L["options.minimap-button-hide.name"] = "Minimap Button"
+L["options.minimap-button-hide.tooltip"] = "Aktiviere oder deaktiviere die Anzeige des Minimap Buttons."
+L["options.minimap-button-position.name"] = "Position"
+L["options.minimap-button-position.tooltip"] = "Legt die Position des Minimap Buttons fest."
+
+L["options.other"] = "sonstige Einstellungen"
+L["options.debug-mode.name"] = "Debugmodus"
+L["options.debug-mode.tooltip"] = "Aktiviert oder deaktiviert den Debugmodus."

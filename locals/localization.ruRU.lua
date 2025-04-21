@@ -47,10 +47,16 @@ L["difference"] = "Разница"
 
 L["no-entries"] = "Нет записей за этот месяц."
 
-L["general-options"] = "Общие параметры"
-L["open-on-login.name"] = "Открыть обзор при входе в систему"
-L["open-on-login.tooltip"] = "Активировать или деактивировать автоматическое открытие обзора золота и валюты при входе в систему."
+-- Options
 
-L["other-options"] = "Другие параметры"
-L["debug.name"] = "Включить режим отладки"
-L["debug.tooltip"] = "Активирует или деактивирует режим отладки."
+L["options.general"] = "General Options"
+L["options.open-on-login.name"] = "Open Overview on Login"
+L["options.open-on-login.tooltip"] = "Activate or deactivate the automatic opening of the gold & currency overview when logging in."
+L["options.minimap-button-hide.name"] = "Minimap Button"
+L["options.minimap-button-hide.tooltip"] = "Activate or deactivate the display of the minimap button."
+L["options.minimap-button-position.name"] = "Position"
+L["options.minimap-button-position.tooltip"] = "Defines the position of the minimap button."
+
+L["options.other"] = "Other Options"
+L["options.debug-mode.name"] = "Debug Mode"
+L["options.debug-mode.tooltip"] = "Activates or deactivates the debug mode."

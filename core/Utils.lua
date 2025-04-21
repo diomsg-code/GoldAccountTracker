@@ -4,29 +4,14 @@ local L = GCT.localization
 
 local Utils = {}
 
-----------------------
---- Local funtions ---
-----------------------
 
-local function binarySearch(dates, target)
-    local lo, hi = 1, #dates
-    while lo <= hi do
-        local mid = math.floor((lo + hi) / 2)
-        if dates[mid] < target then
-            lo = mid + 1
-        else
-            hi = mid - 1
-        end
-    end
-    return hi
-end
 
 ---------------------
 --- Main funtions ---
 ---------------------
 
 function Utils:PrintDebug(msg)
-    if GCT.data.options["QKywRlN7-debug"] then
+    if GCT.data.options["debug-mode"] then
         local notfound = true
 
         for i = 1, NUM_CHAT_WINDOWS do 
@@ -45,7 +30,7 @@ function Utils:PrintDebug(msg)
 	end
 end
 
-function Utils:InitDatabase()
+function Utils:InitializeDatabase()
     local realm, char = Utils:GetCharacterInfo()
 
     if (not GoldCurrencyTracker_Options) then
@@ -68,60 +53,35 @@ function Utils:InitDatabase()
     GCT.data.balance[realm][char] =  GCT.data.balance[realm][char] or {}
 end
 
-function Utils:BuildDateIndex(balance)
-    self.dateIndex = {}
-
-    for realmKey, realmData in pairs(balance or {}) do
-        self.dateIndex[realmKey] = {}
-
-        if realmKey == "Warband" then
-            local dates = {}
-            for dateStr in pairs(realmData) do
-                table.insert(dates, dateStr)
-            end
-            table.sort(dates)
-            self.dateIndex[realmKey]["Warband"] = dates
-        else
-            for charName, charData in pairs(realmData) do
-                local dates = {}
-                for dateStr in pairs(charData) do
-                    table.insert(dates, dateStr)
+function Utils:InitializeMinimapButton()
+    local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("GoldCurrencyTracker", {
+        type     = "launcher",
+        text     = "GoldCurrencyTracker",
+        icon     = GCT.MEDIA_PATH .. "iconRound.blp",
+        OnClick  = function(self, button)
+            if button == "LeftButton" then
+                if GCT.overview:IsShown() then
+                    GCT.overview:Hide()
+                else
+                    GCT.overview:Show()
                 end
-                table.sort(dates)
-                self.dateIndex[realmKey][charName] = dates
+            elseif button == "RightButton" then
+                Settings.OpenToCategory("Gold & Currency Tracker")
             end
-        end
-    end
-end
+        end,
+        OnTooltipShow = function(tooltip)
+            tooltip:AddLine("Gold & Currency Tracker")
+            tooltip:AddLine("Linksklick zum Öffnen und Rechtsklick für die Einstellungen", 1,1,1)
+        end,
+    })
 
-function Utils:GetPreviousValue(balance, realmKey, charName, currentDate, currencyKey)
-    local lookupChar = (realmKey == "Warband") and "Warband" or charName
-    local dates = self.dateIndex[realmKey] and self.dateIndex[realmKey][lookupChar]
-    if not dates then return nil end
+    local zone = {}
+    zone.hide = GCT.data.options["minimap-button-hide"]
+    zone.minimapPos = GCT.data.options["minimap-button-position"]
 
-    local idx = binarySearch(dates, currentDate)
-    while idx > 0 do
-        local dateStr = dates[idx]
-        local rec = (realmKey == "Warband")
-                    and balance["Warband"][dateStr]
-                    or balance[realmKey][charName][dateStr]
-        if rec then
-            local id
-            if currencyKey == "gold" then
-                id = "gold"
-            elseif currencyKey:match("^w%-(%d+)$") then
-                id = currencyKey:match("^w%-(%d+)$")
-            elseif currencyKey:match("^c%-(%d+)$") then
-                id = currencyKey:match("^c%-(%d+)$")
-            end
-            local val = rec[id]
-            if val ~= nil then
-                return val
-            end
-        end
-        idx = idx - 1
-    end
-    return nil
+    self.minimapButton = LibStub("LibDBIcon-1.0")
+    self.minimapButton:Register("GoldCurrencyTracker", LDB, zone)
+    self.minimapButton:Lock("GoldCurrencyTracker")
 end
 
 function Utils:GetToday()

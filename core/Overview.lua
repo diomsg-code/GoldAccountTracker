@@ -8,98 +8,21 @@ local Overview = {}
 local currentMonthOffset = 0
 local selectedCurrency = "gold"
 
-local tabs = {}
-local contents = {}
-
 --------------
 --- Frames ---
 --------------
 
-local goldCurrencyOverviewFrame = CreateFrame("Frame", "GoldCurrencyOverviewFrame", UIParent, "ButtonFrameTemplate")
-goldCurrencyOverviewFrame:SetPoint("CENTER")
-goldCurrencyOverviewFrame:SetSize(450, 550)
-goldCurrencyOverviewFrame:SetMovable(true)
-goldCurrencyOverviewFrame:EnableMouse(true)
-goldCurrencyOverviewFrame:RegisterForDrag("LeftButton")
-goldCurrencyOverviewFrame:SetScript("OnDragStart", goldCurrencyOverviewFrame.StartMoving)
-goldCurrencyOverviewFrame:SetScript("OnDragStop", goldCurrencyOverviewFrame.StopMovingOrSizing)
-goldCurrencyOverviewFrame:SetTitle("Gold & Currency Tracker")
-goldCurrencyOverviewFrame:Hide()
-tinsert(UISpecialFrames, "GoldCurrencyOverviewFrame")
-
-local portrait = goldCurrencyOverviewFrame:GetPortrait()
-portrait:SetPoint('TOPLEFT', -5, 8)
-portrait:SetTexture(GCT.MEDIA_PATH .. "iconRound.blp")
-
-local function ShowTab(i)
-    PanelTemplates_SetTab(goldCurrencyOverviewFrame, i)
-    for idx, c in ipairs(contents) do
-        if idx == i then c:Show() else c:Hide() end
-    end
-end
-
-for i = 1, 2 do
-    local tab = CreateFrame("Button", nil, goldCurrencyOverviewFrame, "PanelTabButtonTemplate")
-    tab:SetID(i)
-    tab:SetText(i == 1 and L["tab.character"] or L["tab.account"])
-    PanelTemplates_TabResize(tab, 0)
-    tab:SetScript("OnClick", function(self)
-        ShowTab(self:GetID())
-    end)
-    tabs[i] = tab
-
-    local content = CreateFrame("Frame", nil, goldCurrencyOverviewFrame)
-    content:SetSize(450, 550)
-    content:SetPoint("TOPLEFT", goldCurrencyOverviewFrame, "TOPLEFT", 0, 0)
-    if i ~= 1 then content:Hide() end
-
-    if i == 2 then
-        local label = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-        label:SetPoint("CENTER", 0, 0)
-        label:SetText("An account overview will follow with the next update.")
-    end
-
-    contents[i] = content
-end
-
-PanelTemplates_SetNumTabs(goldCurrencyOverviewFrame, 2)
-tabs[1]:SetPoint("TOPLEFT", goldCurrencyOverviewFrame, "BOTTOMLEFT", 10, 2)
-tabs[2]:SetPoint("LEFT", tabs[1], "RIGHT", -15, 0)
-PanelTemplates_SetTab(goldCurrencyOverviewFrame, 1)
-
-goldCurrencyOverviewFrame.contentTab1 = contents[1]
-goldCurrencyOverviewFrame.contentTab2 = contents[2]
+local goldCurrencyOverviewFrame
+local portrait
 
 -- Tab 1
 
-local t1_header = goldCurrencyOverviewFrame.contentTab1:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-t1_header:SetPoint("TOPLEFT", 70, -40)
-
-local t1_scrollFrame = CreateFrame("ScrollFrame", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelScrollFrameTemplate")
-t1_scrollFrame:SetPoint("TOPLEFT", 10, -65)
-t1_scrollFrame:SetPoint("BOTTOMRIGHT", -32, 29)
-t1_scrollFrame:EnableMouseWheel(true)
-t1_scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-    local newValue = math.max(0, math.min(self:GetVerticalScroll() - delta * 20, self:GetVerticalScrollRange()))
-    self:SetVerticalScroll(newValue)
-end)
-
-local t1_content = CreateFrame("Frame", nil, goldCurrencyOverviewFrame.contentTab1.scrollFrame)
-t1_content:SetSize(1, 1)
-t1_scrollFrame:SetScrollChild(t1_content)
-
-local t1_nextButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelButtonTemplate")
-t1_nextButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMRIGHT", -55, 4)
-t1_nextButton:SetSize(100, 21)
-t1_nextButton:SetText(L["button-next"])
-
-local t1_prevButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelButtonTemplate")
-t1_prevButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMLEFT", 55, 4)
-t1_prevButton:SetSize(100, 21)
-t1_prevButton:SetText(L["button-prev"])
-
-local t1_currencyDropdown = CreateFrame("Frame", "GoldCurrencyTrackerDropdown", goldCurrencyOverviewFrame.contentTab1, "UIDropDownMenuTemplate")
-t1_currencyDropdown:SetPoint("TOPRIGHT", goldCurrencyOverviewFrame.contentTab1, "TOPRIGHT", 10, -30)
+local t1_header
+local t1_scrollFrame
+local t1_content
+local t1_nextButton
+local t1_prevButton
+local t1_currencyDropdown
 
 -- Tab2
 
@@ -187,7 +110,80 @@ local function HasAnyDataAfterMonth(data, currentPrefix)
     return false
 end
 
-local function UpdateGoldCurrencyOverview()
+local function BuildDateIndex(balance)
+    Overview.dateIndex = {}
+
+    for realmKey, realmData in pairs(balance or {}) do
+        Overview.dateIndex[realmKey] = {}
+
+        if realmKey == "Warband" then
+            local dates = {}
+            for dateStr in pairs(realmData) do
+                table.insert(dates, dateStr)
+            end
+            table.sort(dates)
+            Overview.dateIndex[realmKey]["Warband"] = dates
+        else
+            for charName, charData in pairs(realmData) do
+                local dates = {}
+                for dateStr in pairs(charData) do
+                    table.insert(dates, dateStr)
+                end
+                table.sort(dates)
+                Overview.dateIndex[realmKey][charName] = dates
+            end
+        end
+    end
+end
+
+local function binarySearch(dates, target)
+    local lo, hi = 1, #dates
+    while lo <= hi do
+        local mid = math.floor((lo + hi) / 2)
+        if dates[mid] < target then
+            lo = mid + 1
+        else
+            hi = mid - 1
+        end
+    end
+    return hi
+end
+
+local function GetPreviousValue(balance, realmKey, charName, currentDate, currencyKey)
+    local lookupChar = (realmKey == "Warband") and "Warband" or charName
+    local dates = Overview.dateIndex[realmKey] and Overview.dateIndex[realmKey][lookupChar]
+    if not dates then return nil end
+
+    local idx = binarySearch(dates, currentDate)
+    while idx > 0 do
+        local dateStr = dates[idx]
+        local rec = (realmKey == "Warband")
+                    and balance["Warband"][dateStr]
+                    or balance[realmKey][charName][dateStr]
+        if rec then
+            local id
+            if currencyKey == "gold" then
+                id = "gold"
+            elseif currencyKey:match("^w%-(%d+)$") then
+                id = currencyKey:match("^w%-(%d+)$")
+            elseif currencyKey:match("^c%-(%d+)$") then
+                id = currencyKey:match("^c%-(%d+)$")
+            end
+            local val = rec[id]
+            if val ~= nil then
+                return val
+            end
+        end
+        idx = idx - 1
+    end
+    return nil
+end
+
+----------------------
+--- Frame funtions ---
+----------------------
+
+local function UpdateOverview()
     local realm, char = Utils:GetCharacterInfo()
     local currencyKey = selectedCurrency or "gold"
     local isWarband = currencyKey:match("^w%-%d+$")
@@ -274,7 +270,7 @@ local function UpdateGoldCurrencyOverview()
             prevValue = entries[i+1].value
         else
             if prevOutside == nil then
-                prevOutside = Utils:GetPreviousValue(
+                prevOutside = GetPreviousValue(
                     GCT.data.balance,
                     (isWarband and "Warband") or realm,
                     char,
@@ -325,7 +321,7 @@ local function UpdateGoldCurrencyOverview()
     end
 end
 
-local function InitializeGoldCurrencyDropdown()
+local function InitializeDropdown()
     UIDropDownMenu_SetWidth(t1_currencyDropdown, 180)
     UIDropDownMenu_SetText(t1_currencyDropdown, L["currency-category.gold"])
 
@@ -337,7 +333,7 @@ local function InitializeGoldCurrencyDropdown()
             goldInfo.func = function()
                 selectedCurrency = "gold"
                 UIDropDownMenu_SetText(t1_currencyDropdown, L["currency-category.gold"])
-                UpdateGoldCurrencyOverview()
+                UpdateOverview()
                 CloseDropDownMenus()
             end
             UIDropDownMenu_AddButton(goldInfo, level)
@@ -417,7 +413,7 @@ local function InitializeGoldCurrencyDropdown()
                 info.func = function()
                     selectedCurrency = entry.id
                     UIDropDownMenu_SetText(t1_currencyDropdown, entry.name)
-                    UpdateGoldCurrencyOverview()
+                    UpdateOverview()
                     CloseDropDownMenus()
                 end
                 UIDropDownMenu_AddButton(info, level)
@@ -426,25 +422,118 @@ local function InitializeGoldCurrencyDropdown()
     end)
 end
 
-t1_nextButton:SetScript("OnClick", function()
-    currentMonthOffset = currentMonthOffset - 1
-    UpdateGoldCurrencyOverview()
-end)
-t1_prevButton:SetScript("OnClick", function()
-    currentMonthOffset = currentMonthOffset + 1
-    UpdateGoldCurrencyOverview()
-end)
+local function InitializeFrames()
+    local tabs = {}
+    local contents = {}
+
+    goldCurrencyOverviewFrame = CreateFrame("Frame", "GoldCurrencyOverviewFrame", UIParent, "ButtonFrameTemplate")
+    goldCurrencyOverviewFrame:SetPoint("CENTER")
+    goldCurrencyOverviewFrame:SetSize(450, 550)
+    goldCurrencyOverviewFrame:SetMovable(true)
+    goldCurrencyOverviewFrame:EnableMouse(true)
+    goldCurrencyOverviewFrame:RegisterForDrag("LeftButton")
+    goldCurrencyOverviewFrame:SetScript("OnDragStart", goldCurrencyOverviewFrame.StartMoving)
+    goldCurrencyOverviewFrame:SetScript("OnDragStop", goldCurrencyOverviewFrame.StopMovingOrSizing)
+    goldCurrencyOverviewFrame:SetTitle("Gold & Currency Tracker")
+    goldCurrencyOverviewFrame:Hide()
+    tinsert(UISpecialFrames, "GoldCurrencyOverviewFrame")
+
+    portrait = goldCurrencyOverviewFrame:GetPortrait()
+    portrait:SetPoint('TOPLEFT', -5, 8)
+    portrait:SetTexture(GCT.MEDIA_PATH .. "iconRound.blp")
+
+    local function ShowTab(i)
+        PanelTemplates_SetTab(goldCurrencyOverviewFrame, i)
+        for idx, c in ipairs(contents) do
+            if idx == i then c:Show() else c:Hide() end
+        end
+    end
+
+    for i = 1, 2 do
+        local tab = CreateFrame("Button", nil, goldCurrencyOverviewFrame, "PanelTabButtonTemplate")
+        tab:SetID(i)
+        tab:SetText(i == 1 and L["tab.character"] or L["tab.account"])
+        PanelTemplates_TabResize(tab, 0)
+        tab:SetScript("OnClick", function(self)
+            ShowTab(self:GetID())
+        end)
+        tabs[i] = tab
+
+        local content = CreateFrame("Frame", nil, goldCurrencyOverviewFrame)
+        content:SetSize(450, 550)
+        content:SetPoint("TOPLEFT", goldCurrencyOverviewFrame, "TOPLEFT", 0, 0)
+        if i ~= 1 then content:Hide() end
+
+        if i == 2 then
+            local label = content:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+            label:SetPoint("CENTER", 0, 0)
+            label:SetText("An account overview will follow with the next update.")
+        end
+
+        contents[i] = content
+    end
+
+    PanelTemplates_SetNumTabs(goldCurrencyOverviewFrame, 2)
+    tabs[1]:SetPoint("TOPLEFT", goldCurrencyOverviewFrame, "BOTTOMLEFT", 10, 2)
+    tabs[2]:SetPoint("LEFT", tabs[1], "RIGHT", -15, 0)
+    PanelTemplates_SetTab(goldCurrencyOverviewFrame, 1)
+
+    goldCurrencyOverviewFrame.contentTab1 = contents[1]
+    goldCurrencyOverviewFrame.contentTab2 = contents[2]
+
+    -- Tab 1
+    t1_header = goldCurrencyOverviewFrame.contentTab1:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    t1_header:SetPoint("TOPLEFT", 70, -40)
+
+    t1_scrollFrame = CreateFrame("ScrollFrame", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelScrollFrameTemplate")
+    t1_scrollFrame:SetPoint("TOPLEFT", 10, -65)
+    t1_scrollFrame:SetPoint("BOTTOMRIGHT", -32, 29)
+    t1_scrollFrame:EnableMouseWheel(true)
+    t1_scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+        local newValue = math.max(0, math.min(self:GetVerticalScroll() - delta * 20, self:GetVerticalScrollRange()))
+        self:SetVerticalScroll(newValue)
+    end)
+
+    t1_content = CreateFrame("Frame", nil, goldCurrencyOverviewFrame.contentTab1.scrollFrame)
+    t1_content:SetSize(1, 1)
+    t1_scrollFrame:SetScrollChild(t1_content)
+
+    t1_nextButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelButtonTemplate")
+    t1_nextButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMRIGHT", -55, 4)
+    t1_nextButton:SetSize(100, 21)
+    t1_nextButton:SetText(L["button-next"])
+    t1_nextButton:SetScript("OnClick", function()
+        currentMonthOffset = currentMonthOffset - 1
+        UpdateOverview()
+    end)
+
+    t1_prevButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelButtonTemplate")
+    t1_prevButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMLEFT", 55, 4)
+    t1_prevButton:SetSize(100, 21)
+    t1_prevButton:SetText(L["button-prev"])
+
+    t1_currencyDropdown = CreateFrame("Frame", "GoldCurrencyTrackerDropdown", goldCurrencyOverviewFrame.contentTab1, "UIDropDownMenuTemplate")
+    t1_currencyDropdown:SetPoint("TOPRIGHT", goldCurrencyOverviewFrame.contentTab1, "TOPRIGHT", 10, -30)
+    t1_prevButton:SetScript("OnClick", function()
+        currentMonthOffset = currentMonthOffset + 1
+        UpdateOverview()
+    end)
+
+    -- Tab2
+end
 
 ---------------------
 --- Main funtions ---
 ---------------------
 
-function Overview:Init()
-    InitializeGoldCurrencyDropdown()
+function Overview:Initialize()
+    BuildDateIndex(GCT.data.balance)
+    InitializeFrames()
+    InitializeDropdown()
 end
 
 function Overview:Show()
-    UpdateGoldCurrencyOverview()
+    UpdateOverview()
 
     goldCurrencyOverviewFrame:Show()
 end

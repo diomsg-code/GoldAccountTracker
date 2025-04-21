@@ -62,34 +62,6 @@ end
 
 local goldCurrencyTrackerFrame = CreateFrame("Frame", "GoldCurrencyTracker")
 
-local LDB = LibStub("LibDataBroker-1.1"):NewDataObject("GoldCurrencyTracker", {
-    type     = "launcher",
-    text     = "GoldTracker",
-    icon     = "Interface\\AddOns\\GoldCurrencyTracker\\media\\iconRound.blp",
-    OnClick  = function(self, button)
-        if button == "LeftButton" then
-            if Overview:IsShown() then
-                Overview:Hide()
-            else
-                Overview:Show()
-            end
-        elseif button == "RightButton" then
-            Settings.OpenToCategory("Gold & Currency Tracker")
-        end
-    end,
-    OnTooltipShow = function(tooltip)
-        tooltip:AddLine("Gold & Currency Tracker")
-        tooltip:AddLine("Linksklick zum Öffnen und Rechtsklick für die Einstellungen", 1,1,1)
-    end,
-})
-
-local zone = {}
-zone.hide = false
-zone.minimapPos = 225
-
-local LDBIcon = LibStub("LibDBIcon-1.0")
-LDBIcon:Register("GoldCurrencyTracker", LDB, zone)
-
 ---------------------
 --- Main funtions ---
 ---------------------
@@ -100,11 +72,11 @@ end
 
 function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
-        Utils:InitDatabase()
-        Utils:BuildDateIndex(GCT.data.balance)
+        Utils:InitializeDatabase()
+        Utils:InitializeMinimapButton()
 
-        Options:Init()
-        Overview:Init()
+        Options:Initialize()
+        Overview:Initialize()
 
         Utils:PrintDebug("Addon fully loaded.")
     end
@@ -118,7 +90,7 @@ function goldCurrencyTrackerFrame:PLAYER_ENTERING_WORLD(_, isInitialLogin, isRel
             SaveBalance()
         end)
 
-        if GCT.data.options["QKywRlN7-open-on-login"]then
+        if GCT.data.options["open-on-login"]then
             Overview:Show()
         end
     end
