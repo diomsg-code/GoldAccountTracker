@@ -7,6 +7,8 @@ GCT.localization = setmetatable({},{__index=function(self,key)
 
 local L = GCT.localization
 
+local linkFontColor = "ff66BBFF"
+
 L["addon-name"] = "Gold & Currency Tracker"
 
 L["jan"] = "January"
@@ -52,18 +54,18 @@ L["difference"] = "Difference"
 
 L["no-entries"] = "No entries for this month."
 
-L["minimap-button.tooltip"] = "Left-click to open the gold & currency overview. Right-click to open the settings."
+L["minimap-button.tooltip"] = "|c" .. linkFontColor .. "Left-click|r to open the gold and currency overview.\n|c" .. linkFontColor .. "Right-click|r to open the options."
 
 -- Options
 
 L["options.general"] = "General Options"
-L["options.open-on-login.name"] = "Open Overview on Login"
-L["options.open-on-login.tooltip"] = "Activate or deactivate the automatic opening of the gold & currency overview when logging in."
+L["options.open-on-login.name"] = "Gold and Currency Overview"
+L["options.open-on-login.tooltip"] = "When this is enabled, the gold and currency overview opens automatically when logging in."
 L["options.minimap-button-hide.name"] = "Minimap Button"
-L["options.minimap-button-hide.tooltip"] = "Activate or deactivate the display of the minimap button."
+L["options.minimap-button-hide.tooltip"] = "When this is enabled, the minimap button is displayed."
 L["options.minimap-button-position.name"] = "Position"
-L["options.minimap-button-position.tooltip"] = "Defines the position of the minimap button."
+L["options.minimap-button-position.tooltip"] = "Determines the position of the minimap button."
 
 L["options.other"] = "Other Options"
 L["options.debug-mode.name"] = "Debug Mode"
-L["options.debug-mode.tooltip"] = "Activates or deactivates the debug mode."
+L["options.debug-mode.tooltip"] = "Enabling the debug mode displays additional information in the chat."

@@ -1,13 +1,13 @@
 ## Interface: 110100, 110105
 ## Title: Gold & Currency Tracker
 ## Author: diomsg (Diom-Antonidas EU)
-## Version: @project-version@
+## Version: 1.3.0
 ## IconTexture: Interface\AddOns\GoldCurrencyTracker\media\icon.blp
 ## X-Flavor: Retail
 ## X-BuildDate: @build-date@
 ## X-E-Mail: feedback@wow-addon.dev
 ## X-Github: https://github.com/diomsg-code/GoldCurrencyTracker
-## Notes: A World of Warcraft addon that saves the account balance of gold and various currencies and can show it over time.
+## Notes: A World of Warcraft addon that saves the account balance of gold and various currencies and can display it over time.
 ## Notes-deDE: Ein World of Warcraft Addon, das den Kontostand von Gold und verschiedenen Währungen speichert und im zeitlichen Verlauf anzeigen kann.
 ## Notes-ruRU: Аддон для World of Warcraft, сохраняющий количество золота и различных валют на аккаунте и отображающий его в истории.
 ## LoadOnDemand: 0

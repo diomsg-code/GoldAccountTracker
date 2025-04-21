@@ -68,7 +68,8 @@ function Utils:InitializeMinimapButton()
             end
         end,
         OnTooltipShow = function(tooltip)
-            tooltip:AddLine(L["addon-name"])
+            tooltip:AddDoubleLine(L["addon-name"], GCT.ADDON_VERSION)
+            tooltip:AddLine(" ")
             tooltip:AddLine(L["minimap-button.tooltip"], 1, 1, 1)
         end,
     })

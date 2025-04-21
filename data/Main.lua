@@ -1,5 +1,7 @@
 local addonName, GCT = ...
 
+GCT.ADDON_VERSION = C_AddOns.GetAddOnMetadata(addonName, "Version")
+
 GCT.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
 GCT.MONTH_KEYS = {
     "jan", "feb", "mar", "apr", "may", "jun",

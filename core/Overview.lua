@@ -434,7 +434,7 @@ local function InitializeFrames()
     goldCurrencyOverviewFrame:RegisterForDrag("LeftButton")
     goldCurrencyOverviewFrame:SetScript("OnDragStart", goldCurrencyOverviewFrame.StartMoving)
     goldCurrencyOverviewFrame:SetScript("OnDragStop", goldCurrencyOverviewFrame.StopMovingOrSizing)
-    goldCurrencyOverviewFrame:SetTitle("Gold & Currency Tracker")
+    goldCurrencyOverviewFrame:SetTitle(L["addon-name"])
     goldCurrencyOverviewFrame:Hide()
     tinsert(UISpecialFrames, "GoldCurrencyOverviewFrame")
 
