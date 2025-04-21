@@ -1,5 +1,6 @@
 **1.3.0 (@build-date@)**
 - Added: Minimap Button
+- Updated: deDE, enUS, ruRU localization (#3 - Thanks to Hollicsh)
 - Minor code adjustments
 
 **1.2.0 (2025-04-19)**
@@ -10,7 +11,7 @@
 - Fixed: The overview window also opened automatically after a zone change
 
 **1.1.0 (2025-04-17)**
-- Added: ruRU localization (#1 - Thanks to Hollicsh)
+- Added: ruRU localization (#2 - Thanks to Hollicsh)
 
 **1.0.1 (2025-04-15)**
 - Added: The overview window can now be closed with the ESC key
