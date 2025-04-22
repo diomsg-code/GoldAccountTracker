@@ -77,37 +77,52 @@ local function FormatGoldDiff(diff)
 end
 
 local function FormatCurrency(val)
+    local v = val or 0
     if selectedCurrency == "gold" then
-        return FormatGold(val)
+        return FormatGold(v)
     else
-        return BreakUpLargeNumbers(val or 0)
+        return BreakUpLargeNumbers(v)
     end
 end
 
 local function FormatCurrencyDiff(diff)
+    local d = diff or 0
     if selectedCurrency == "gold" then
-        return FormatGoldDiff(diff)
+        return FormatGoldDiff(d)
     else
-        return (diff > 0 and "+" or diff == 0 and "±" or "") .. BreakUpLargeNumbers(diff)
+        local sign = (d > 0 and "+" or d == 0 and "±" or "")
+        return sign .. BreakUpLargeNumbers(d)
     end
 end
 
-local function HasAnyDataBeforeMonth(data, currentPrefix)
-    for dateStr in pairs(data) do
-        if dateStr < currentPrefix then
-            return true
+-- Prüft, ob es Daten VOR dem aktuellen Monat gibt (aber nicht vor firstPositiveDate)
+local function HasAnyDataBeforeMonth(dates, currentPrefix, firstPositiveDate)
+    if not dates or #dates == 0 then return false end
+
+    -- finde Start‑Index ≥ firstPositiveDate
+    local startIdx = 1
+    if firstPositiveDate then
+        while startIdx <= #dates and dates[startIdx] < firstPositiveDate do
+            startIdx = startIdx + 1
         end
     end
-    return false
+
+    local firstDate = dates[startIdx]
+    return firstDate and firstDate < currentPrefix or false
 end
 
-local function HasAnyDataAfterMonth(data, currentPrefix)
-    for dateStr in pairs(data) do
-        if dateStr > currentPrefix .. "-31" then
-            return true
-        end
+-- Prüft, ob es Daten NACH dem aktuellen Monat gibt (aber nur solche ≥ firstPositiveDate)
+local function HasAnyDataAfterMonth(dates, currentPrefix, firstPositiveDate)
+    if not dates or #dates == 0 then return false end
+
+    -- falls alle Daten vor firstPositiveDate liegen, gibt es nichts
+    if firstPositiveDate and dates[#dates] < firstPositiveDate then
+        return false
     end
-    return false
+
+    local suffix   = currentPrefix .. "-31"
+    local lastDate = dates[#dates]
+    return lastDate and lastDate > suffix or false
 end
 
 local function BuildDateIndex(balance)
@@ -149,30 +164,24 @@ local function binarySearch(dates, target)
     return hi
 end
 
-local function GetPreviousValue(balance, realmKey, charName, currentDate, currencyKey)
-    local lookupChar = (realmKey == "Warband") and "Warband" or charName
-    local dates = Overview.dateIndex[realmKey] and Overview.dateIndex[realmKey][lookupChar]
+local function GetPreviousValue(balance, realm, char, currentDate, currencyKey, firstPositiveDate)
+    local charKey = (realm == "Warband") and "Warband" or char
+    local realmKey = realm
+    local dates = Overview.dateIndex[realmKey] and Overview.dateIndex[realmKey][charKey]
     if not dates then return nil end
 
     local idx = binarySearch(dates, currentDate)
     while idx > 0 do
-        local dateStr = dates[idx]
-        local rec = (realmKey == "Warband")
-                    and balance["Warband"][dateStr]
-                    or balance[realmKey][charName][dateStr]
+        local date = dates[idx]
+
+        -- Abbruch, wenn wir ins Vorfeld des ersten positiven Datums geraten
+        if firstPositiveDate and date < firstPositiveDate then
+            return nil
+        end
+
+        local rec = (realmKey == "Warband") and balance["Warband"][date] or balance[realm][char][date]
         if rec then
-            local id
-            if currencyKey == "gold" then
-                id = "gold"
-            elseif currencyKey:match("^w%-(%d+)$") then
-                id = currencyKey:match("^w%-(%d+)$")
-            elseif currencyKey:match("^c%-(%d+)$") then
-                id = currencyKey:match("^c%-(%d+)$")
-            end
-            local val = rec[id]
-            if val ~= nil then
-                return val
-            end
+            return rec[currencyKey] or 0
         end
         idx = idx - 1
     end
@@ -200,7 +209,7 @@ local function UpdateOverview()
     if not data then return end
 
     local filterPrefix = GetYearMonthString(currentMonthOffset)
-    t1_header:SetText( FormatMonthText(filterPrefix) )
+    t1_header:SetText(FormatMonthText(filterPrefix))
 
     if t1_content.rows then
         for _, row in ipairs(t1_content.rows) do
@@ -212,17 +221,18 @@ local function UpdateOverview()
     end
     t1_content.rows = {}
 
+    local firstPositiveDate
+    if not firstPositiveDate then
+        firstPositiveDate = Utils:GetFirstPositiveDate(selectedCurrency or "gold")
+    end
+
     local entries = {}
     for dateStr, rec in pairs(data) do
         if dateStr:sub(1,7) == filterPrefix then
-            local id
-            if currencyKey == "gold" then
-                id = "gold"
-            elseif isWarband or isChar then
-                id = currencyKey
+            if not firstPositiveDate or dateStr >= firstPositiveDate then
+                local raw = rec[currencyKey] or 0
+                table.insert(entries, { date = dateStr, value = raw })
             end
-            local value = rec[id]
-            table.insert(entries, { date = dateStr, value = value })
         end
     end
 
@@ -234,13 +244,6 @@ local function UpdateOverview()
         return
     else
         table.sort(entries, function(a,b) return a.date > b.date end)
-    end
-
-    local earliestDate = nil
-    for dateStr in pairs(data) do
-        if not earliestDate or dateStr < earliestDate then
-            earliestDate = dateStr
-        end
     end
 
     local offsetY = -10
@@ -270,13 +273,7 @@ local function UpdateOverview()
             prevValue = entries[i+1].value
         else
             if prevOutside == nil then
-                prevOutside = GetPreviousValue(
-                    GCT.data.balance,
-                    (isWarband and "Warband") or realm,
-                    char,
-                    entry.date,
-                    currencyKey
-                ) or 0
+                prevOutside = GetPreviousValue(GCT.data.balance, (isWarband and "Warband") or realm, char, entry.date, currencyKey, firstPositiveDate) or 0
             end
             prevValue = prevOutside
         end
@@ -292,9 +289,9 @@ local function UpdateOverview()
         local rowDifference = t1_content:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
         rowDifference:SetPoint("TOPLEFT", 225, offsetY)
 
-        if entry.date ~= earliestDate then
+        if entry.date ~= firstPositiveDate then
             local diff = currentValue - prevValue
-            rowDifference:SetText( FormatCurrencyDiff(diff) )
+            rowDifference:SetText(FormatCurrencyDiff(diff))
             if diff > 0 then
                 rowDifference:SetTextColor(0,1,0)
             elseif diff < 0 then
@@ -311,10 +308,15 @@ local function UpdateOverview()
         offsetY = offsetY - 18 - spacing
     end
 
-    if data then
-        local currentPrefix = GetYearMonthString(currentMonthOffset)
-        t1_prevButton:SetEnabled(HasAnyDataBeforeMonth(data, currentPrefix))
-        t1_nextButton:SetEnabled(HasAnyDataAfterMonth(data, currentPrefix))
+    local currentPrefix = GetYearMonthString(currentMonthOffset)
+
+    local a = (isWarband and "Warband") or realm
+    local b = (isWarband and "Warband") or char
+    local dates = Overview.dateIndex[a] and Overview.dateIndex[a][b]
+
+    if dates then
+        t1_prevButton:SetEnabled(HasAnyDataBeforeMonth(dates, currentPrefix, firstPositiveDate))
+        t1_nextButton:SetEnabled(HasAnyDataAfterMonth(dates, currentPrefix, firstPositiveDate))
     else
         t1_prevButton:SetEnabled(false)
         t1_nextButton:SetEnabled(false)

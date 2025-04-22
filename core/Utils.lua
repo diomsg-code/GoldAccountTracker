@@ -83,6 +83,68 @@ function Utils:InitializeMinimapButton()
     self.minimapButton:Lock("GoldCurrencyTracker")
 end
 
+function Utils:CleanZeroEntries()
+    for realmKey, realmData in pairs(GCT.data.balance) do
+        if realmKey == "Warband" then
+            for dateStr, rec in pairs(realmData) do
+                for key, val in pairs(rec) do
+                    if val == 0 then
+                        rec[key] = nil
+                    end
+                end
+
+            end
+        else
+            for charName, charData in pairs(realmData) do
+                for dateStr, rec in pairs(charData) do
+                    for key, val in pairs(rec) do
+                        if val == 0 then
+                            rec[key] = nil
+                        end
+                    end
+                    if next(rec) == nil then
+                        charData[dateStr] = nil
+                    end
+                end
+
+            end
+        end
+    end
+
+    Utils:PrintDebug("All zero values are adjusted.")
+end
+
+function Utils:GetFirstPositiveDate(currencyKey)
+    local bal = GCT.data.balance
+    local realm, char = self:GetCharacterInfo()
+    local isWarband = currencyKey:match("^w%-%d+$")
+
+    -- Welches Sub-Table durchsuchen?
+    local data
+    if isWarband then
+        data = bal["Warband"]
+    else
+        data = bal[realm] and bal[realm][char]
+    end
+    if not data then return nil end
+
+    local earliestDate
+
+    -- durch alle gespeicherten Tage iterieren
+    for dateStr, rec in pairs(data) do
+        -- Wert holen (nil → 0)
+        local val = rec[currencyKey] or 0
+        if val > 0 then
+            -- neues Minimum?
+            if not earliestDate or dateStr < earliestDate then
+                earliestDate = dateStr
+            end
+        end
+    end
+
+    return earliestDate
+end
+
 function Utils:GetToday()
     return date("%Y-%m-%d")
 end

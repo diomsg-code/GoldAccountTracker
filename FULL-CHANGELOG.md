@@ -1,4 +1,9 @@
-**1.3.1 (@build-date@)**
+**1.3.2 (@build-date@)**
+- Updated: ruRU localization (#5 - Thanks to Hollicsh)
+- Removed: TOC version for patch 11.1.0 (Retail)
+- Minor code adjustments
+
+**1.3.1 (2025-04-21)**
 - Fixed: Gold changes were no longer recorded
 
 **1.3.0 (2025-04-21)**

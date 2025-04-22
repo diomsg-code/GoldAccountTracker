@@ -17,14 +17,16 @@ local function SaveBalance()
     GCT.data.balance["Warband"][today] = GCT.data.balance["Warband"][today] or {}
     GCT.data.balance[realm][char][today] = GCT.data.balance[realm][char][today] or {}
 
-    GCT.data.balance[realm][char][today]["gold"] = currentGold
+    if currentGold > 0 then
+        GCT.data.balance[realm][char][today]["gold"] = currentGold
+    end
 
     for _, currencies in pairs(GCT.CHARACTER_CURRENCIES) do
         for _, currencyID in ipairs(currencies) do
             local key = "c-" .. tostring(currencyID)
             local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
 
-            if info then
+            if info and info.quantity > 0 then
                  GCT.data.balance[realm][char][today][key] = info.quantity
                  --Utils:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
@@ -36,7 +38,7 @@ local function SaveBalance()
             local key = "w-" .. tostring(currencyID)
             local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
 
-            if info then
+            if info and info.quantity > 0 then
                  GCT.data.balance["Warband"][today][key] = info.quantity
                  --Utils:PrintDebug(tostring(key) .. " - " .. tostring(info.quantity))
             end
@@ -74,7 +76,7 @@ function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
         Utils:InitializeDatabase()
         Utils:InitializeMinimapButton()
-
+        Utils:CleanZeroEntries()
         Options:Initialize()
         Overview:Initialize()
 
