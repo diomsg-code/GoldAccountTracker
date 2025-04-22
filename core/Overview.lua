@@ -95,7 +95,6 @@ local function FormatCurrencyDiff(diff)
     end
 end
 
--- Prüft, ob es Daten VOR dem aktuellen Monat gibt (aber nicht vor firstPositiveDate)
 local function HasAnyDataBeforeMonth(dates, currentPrefix, firstPositiveDate)
     if not dates or #dates == 0 then return false end
 
@@ -111,11 +110,9 @@ local function HasAnyDataBeforeMonth(dates, currentPrefix, firstPositiveDate)
     return firstDate and firstDate < currentPrefix or false
 end
 
--- Prüft, ob es Daten NACH dem aktuellen Monat gibt (aber nur solche ≥ firstPositiveDate)
 local function HasAnyDataAfterMonth(dates, currentPrefix, firstPositiveDate)
     if not dates or #dates == 0 then return false end
 
-    -- falls alle Daten vor firstPositiveDate liegen, gibt es nichts
     if firstPositiveDate and dates[#dates] < firstPositiveDate then
         return false
     end
@@ -174,7 +171,6 @@ local function GetPreviousValue(balance, realm, char, currentDate, currencyKey, 
     while idx > 0 do
         local date = dates[idx]
 
-        -- Abbruch, wenn wir ins Vorfeld des ersten positiven Datums geraten
         if firstPositiveDate and date < firstPositiveDate then
             return nil
         end
@@ -221,9 +217,9 @@ local function UpdateOverview()
     end
     t1_content.rows = {}
 
-    local firstPositiveDate
+    local firstPositiveDate = Utils:GetFirstPositiveDate(selectedCurrency or "gold")
     if not firstPositiveDate then
-        firstPositiveDate = Utils:GetFirstPositiveDate(selectedCurrency or "gold")
+        firstPositiveDate = Utils:GetToday()
     end
 
     local entries = {}
@@ -231,7 +227,7 @@ local function UpdateOverview()
         if dateStr:sub(1,7) == filterPrefix then
             if not firstPositiveDate or dateStr >= firstPositiveDate then
                 local raw = rec[currencyKey] or 0
-                table.insert(entries, { date = dateStr, value = raw })
+                table.insert(entries, {date = dateStr, value = raw})
             end
         end
     end
@@ -334,6 +330,7 @@ local function InitializeDropdown()
             goldInfo.notCheckable = true
             goldInfo.func = function()
                 selectedCurrency = "gold"
+                currentMonthOffset = 0
                 UIDropDownMenu_SetText(t1_currencyDropdown, L["currency-category.gold"])
                 UpdateOverview()
                 CloseDropDownMenus()
@@ -393,11 +390,7 @@ local function InitializeDropdown()
             for _, currencyID in ipairs(currencyList) do
                 local info = C_CurrencyInfo.GetCurrencyInfo(currencyID)
                 if info then
-                    table.insert(sortedList, {
-                        id = prefix .. currencyID,
-                        name = info.name,
-                        icon = info.iconFileID
-                    })
+                    table.insert(sortedList, {id = prefix .. currencyID, name = info.name, icon = info.iconFileID})
                 else
                      Utils:PrintDebug("Invalid currency ID: " .. tostring(currencyID))
                 end
@@ -414,6 +407,7 @@ local function InitializeDropdown()
                 info.notCheckable = true
                 info.func = function()
                     selectedCurrency = entry.id
+                    currentMonthOffset = 0
                     UIDropDownMenu_SetText(t1_currencyDropdown, entry.name)
                     UpdateOverview()
                     CloseDropDownMenus()
