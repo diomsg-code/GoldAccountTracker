@@ -70,7 +70,7 @@ function Utils:InitializeMinimapButton()
         OnTooltipShow = function(tooltip)
             tooltip:AddDoubleLine(L["addon-name"], GCT.ADDON_VERSION)
             tooltip:AddLine(" ")
-            tooltip:AddLine(L["minimap-button.tooltip"], 1, 1, 1)
+            tooltip:AddLine(L["minimap-button.tooltip"]:format(GCT.LINK_FONT_COLOR, GCT.LINK_FONT_COLOR), 1, 1, 1)
         end,
     })
 
@@ -119,7 +119,6 @@ function Utils:GetFirstPositiveDate(currencyKey)
     local realm, char = self:GetCharacterInfo()
     local isWarband = currencyKey:match("^w%-%d+$")
 
-    -- Welches Sub-Table durchsuchen?
     local data
     if isWarband then
         data = bal["Warband"]
@@ -130,12 +129,9 @@ function Utils:GetFirstPositiveDate(currencyKey)
 
     local earliestDate
 
-    -- durch alle gespeicherten Tage iterieren
     for dateStr, rec in pairs(data) do
-        -- Wert holen (nil → 0)
         local val = rec[currencyKey] or 0
         if val > 0 then
-            -- neues Minimum?
             if not earliestDate or dateStr < earliestDate then
                 earliestDate = dateStr
             end

@@ -7,8 +7,6 @@ GCT.localization = setmetatable({},{__index=function(self,key)
 
 local L = GCT.localization
 
-local linkFontColor = "ff66BBFF"
-
 L["addon-name"] = "Gold & Currency Tracker"
 
 L["jan"] = "January"
@@ -54,7 +52,7 @@ L["difference"] = "Difference"
 
 L["no-entries"] = "No entries for this month."
 
-L["minimap-button.tooltip"] = "|c" .. linkFontColor .. "Left-click|r to open the gold and currency overview.\n|c" .. linkFontColor .. "Right-click|r to open the options."
+L["minimap-button.tooltip"] = "|c%sLeft-click|r to open the gold and currency overview.\n|c%sRight-click|r to open the options."
 
 -- Options
 

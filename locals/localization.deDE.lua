@@ -4,8 +4,6 @@ if GetLocale() ~= "deDE" then return end
 
 local L = GCT.localization
 
-local linkFontColor = "ff66BBFF"
-
 L["addon-name"] = "Gold & Currency Tracker"
 
 L["jan"] = "Januar"
@@ -51,7 +49,7 @@ L["difference"] = "Differenz"
 
 L["no-entries"] = "Keine Einträge für diesen Monat."
 
-L["minimap-button.tooltip"] = "|c" .. linkFontColor .. "Linksklick|r zum Öffnen der Gold- und Währungsübersicht.\n|c" .. linkFontColor .. "Rechtsklick|r zum Öffnen der Einstellungen."
+L["minimap-button.tooltip"] = "|c%sLinksklick|r zum Öffnen der Gold- und Währungsübersicht.\n|c%sRechtsklick|r zum Öffnen der Einstellungen."
 
 -- Options
 

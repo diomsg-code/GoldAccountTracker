@@ -4,8 +4,6 @@ if GetLocale() ~= "ruRU" then return end
 
 local L = GCT.localization
 
-local linkFontColor = "ff66BBFF"
-
 L["addon-name"] = "Трекер золота и валюты"
 
 L["jan"] = "Январь"
@@ -51,7 +49,7 @@ L["difference"] = "Разница"
 
 L["no-entries"] = "Нет записей за этот месяц."
 
-L["minimap-button.tooltip"] = "|c" .. linkFontColor .. "ЛКМ|r - открыть обзор золота и валюты.\n|c" .. linkFontColor .. "ПКМ|r - открыть настройки."
+L["minimap-button.tooltip"] = "|c%sЛКМ|r - открыть обзор золота и валюты.\n|c%sПКМ|r - открыть настройки."
 
 -- Options
 
