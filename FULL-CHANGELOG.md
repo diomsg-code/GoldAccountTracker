@@ -1,4 +1,7 @@
-**1.3.2 (@build-date@)**
+**1.3.3 (@build-date@)**
+- Minor code adjustments
+
+**1.3.2 (2025-04-23)**
 - Updated: ruRU localization (#5 - Thanks to Hollicsh)
 - Removed: TOC version for patch 11.1.0 (Retail)
 - Minor code adjustments
