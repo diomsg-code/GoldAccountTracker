@@ -20,4 +20,4 @@ To open the addon option window, type `/gct` or `/GoldCurrencyTracker` into your
 
 ### Translation Support
 
-If you would like to help me with the translation, you can do so here: [!TEst)](https://legacy.curseforge.com/wow/addons/gold-currency-tracker/localization) Many thanks. :
+If you would like to help me with the translation, you can do so here: [CurseForge](https://legacy.curseforge.com/wow/addons/gold-currency-tracker/localization) - Many thanks!
