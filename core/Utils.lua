@@ -38,17 +38,23 @@ function Utils:InitializeDatabase()
     GCT.data = {}
     GCT.data.options = GoldCurrencyTracker_Options
 
-    if (not GoldCurrencyTracker_DataBalance) then
-        GoldCurrencyTracker_DataBalance = {}
+    if (not GoldCurrencyTracker_DataBalance_v2) then
+        GoldCurrencyTracker_DataBalance_v2 = {}
     end
 
-    GCT.data.balance = GoldCurrencyTracker_DataBalance
+    GCT.data.balance = GoldCurrencyTracker_DataBalance_v2
 
     GCT.data.balance =  GCT.data.balance or {}
     GCT.data.balance["Warband"] =  GCT.data.balance["Warband"] or {}
 
     GCT.data.balance[realm] =  GCT.data.balance[realm] or {}
     GCT.data.balance[realm][char] =  GCT.data.balance[realm][char] or {}
+
+    if (not GoldCurrencyTracker_DataDates) then
+        GoldCurrencyTracker_DataDates = {}
+    end
+
+    GCT.data.dates = GoldCurrencyTracker_DataDates
 end
 
 function Utils:InitializeMinimapButton()
@@ -81,64 +87,6 @@ function Utils:InitializeMinimapButton()
     self.minimapButton = LibStub("LibDBIcon-1.0")
     self.minimapButton:Register("GoldCurrencyTracker", LDB, zone)
     self.minimapButton:Lock("GoldCurrencyTracker")
-end
-
-function Utils:CleanZeroEntries()
-    for realmKey, realmData in pairs(GCT.data.balance) do
-        if realmKey == "Warband" then
-            for dateStr, rec in pairs(realmData) do
-                for key, val in pairs(rec) do
-                    if val == 0 then
-                        rec[key] = nil
-                    end
-                end
-
-            end
-        else
-            for charName, charData in pairs(realmData) do
-                for dateStr, rec in pairs(charData) do
-                    for key, val in pairs(rec) do
-                        if val == 0 then
-                            rec[key] = nil
-                        end
-                    end
-                    if next(rec) == nil then
-                        charData[dateStr] = nil
-                    end
-                end
-
-            end
-        end
-    end
-
-    Utils:PrintDebug("All zero values are adjusted.")
-end
-
-function Utils:GetFirstPositiveDate(currencyKey)
-    local bal = GCT.data.balance
-    local realm, char = self:GetCharacterInfo()
-    local isWarband = currencyKey:match("^w%-%d+$")
-
-    local data
-    if isWarband then
-        data = bal["Warband"]
-    else
-        data = bal[realm] and bal[realm][char]
-    end
-    if not data then return nil end
-
-    local earliestDate
-
-    for dateStr, rec in pairs(data) do
-        local val = rec[currencyKey] or 0
-        if val > 0 then
-            if not earliestDate or dateStr < earliestDate then
-                earliestDate = dateStr
-            end
-        end
-    end
-
-    return earliestDate
 end
 
 function Utils:GetToday()

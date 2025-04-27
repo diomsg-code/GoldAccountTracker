@@ -10,10 +10,9 @@
 ## Notes: A World of Warcraft addon that saves the account balance of gold and various currencies and can display it over time.
 ## Notes-deDE: Ein World of Warcraft Addon, das den Kontostand von Gold und verschiedenen Währungen speichert und im zeitlichen Verlauf anzeigen kann.
 ## Notes-ruRU: Аддон для World of Warcraft, сохраняющий количество золота и различных валют на аккаунте и отображающий его в истории.
-## LoadOnDemand: 0
 ## DefaultState: enabled
 ## AllowLoadGameType: mainline
-## SavedVariables: GoldCurrencyTracker_Options, GoldCurrencyTracker_DataBalance
+## SavedVariables: GoldCurrencyTracker_Options, GoldCurrencyTracker_DataBalance_v2, GoldCurrencyTracker_DataDates
 
 locals.xml
 data.xml

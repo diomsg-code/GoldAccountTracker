@@ -6,8 +6,8 @@ GCT.LINK_FONT_COLOR = "ff66BBFF"
 
 GCT.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
 GCT.MONTH_KEYS = {
-    "jan", "feb", "mar", "apr", "may", "jun",
-    "jul", "aug", "sep", "oct", "nov", "dec"
+    "month.jan", "month.feb", "month.mar", "month.apr", "month.may", "month.jun",
+    "month.jul", "month.aug", "month.sep", "month.oct", "month.nov", "month.dec"
 }
 
 GCT.CURRENCY_CATEGORY_ORDER = {

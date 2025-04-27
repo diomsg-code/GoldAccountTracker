@@ -95,93 +95,91 @@ local function FormatCurrencyDiff(diff)
     end
 end
 
-local function HasAnyDataBeforeMonth(dates, currentPrefix, firstPositiveDate)
-    if not dates or #dates == 0 then return false end
+local function BuildHistoryEntries(currencyKey)
+    local realm, char = Utils:GetCharacterInfo()
+    local isWarband = currencyKey:match("^w%-%d+$")
+    local rawData = isWarband and GCT.data.balance["Warband"] or (GCT.data.balance[realm] and GCT.data.balance[realm][char] or {})
 
-    -- finde Start‑Index ≥ firstPositiveDate
-    local startIdx = 1
-    if firstPositiveDate then
-        while startIdx <= #dates and dates[startIdx] < firstPositiveDate do
-            startIdx = startIdx + 1
+    local entries   = {}
+    local lastValue = 0
+    local dates     = GCT.data.dates
+    local startIndex
+
+    for i, date in ipairs(dates) do
+        local dayData = rawData[date] or {}
+        local v       = dayData[currencyKey]
+        if v and v > 0 then
+            startIndex = i
+            break
         end
     end
 
-    local firstDate = dates[startIdx]
-    return firstDate and firstDate < currentPrefix or false
-end
-
-local function HasAnyDataAfterMonth(dates, currentPrefix, firstPositiveDate)
-    if not dates or #dates == 0 then return false end
-
-    if firstPositiveDate and dates[#dates] < firstPositiveDate then
-        return false
+    if not startIndex then
+        local today = Utils:GetToday()
+        return {{date = today, value = 0}}
     end
 
-    local suffix   = currentPrefix .. "-31"
-    local lastDate = dates[#dates]
-    return lastDate and lastDate > suffix or false
+    for i = startIndex, #dates do
+        local date    = dates[i]
+        local dayData = rawData[date] or {}
+        local value   = dayData[currencyKey]
+
+        if value == nil then
+            value = lastValue
+        end
+
+        table.insert(entries, {date = date, value = value})
+        lastValue = value
+    end
+
+    table.sort(entries, function(a,b) return a.date < b.date end)
+    return entries
 end
 
-local function BuildDateIndex(balance)
-    Overview.dateIndex = {}
-
-    for realmKey, realmData in pairs(balance or {}) do
-        Overview.dateIndex[realmKey] = {}
-
-        if realmKey == "Warband" then
-            local dates = {}
-            for dateStr in pairs(realmData) do
-                table.insert(dates, dateStr)
-            end
-            table.sort(dates)
-            Overview.dateIndex[realmKey]["Warband"] = dates
-        else
-            for charName, charData in pairs(realmData) do
-                local dates = {}
-                for dateStr in pairs(charData) do
-                    table.insert(dates, dateStr)
-                end
-                table.sort(dates)
-                Overview.dateIndex[realmKey][charName] = dates
-            end
+local function BuildMonthEntries(history, monthPrefix)
+    local month = {}
+    for _, e in ipairs(history) do
+        if e.date:sub(1,7) == monthPrefix then
+            table.insert(month, e)
         end
     end
+
+    table.sort(month, function(a,b) return a.date > b.date end)
+    return month
 end
 
-local function binarySearch(dates, target)
-    local lo, hi = 1, #dates
+local function HasAnyDataBeforeMonth(history, monthPrefix)
+    local monthStart = monthPrefix .. "-01"
+    for i,e in ipairs(history) do
+        if e.date >= monthStart then
+            return i > 1
+        end
+    end
+    return false
+end
+
+local function HasAnyDataAfterMonth(history, monthPrefix)
+    local monthEnd = monthPrefix .. "-31"
+    for j = #history, 1, -1 do
+        if history[j].date <= monthEnd then
+            return j < #history
+        end
+    end
+    return false
+end
+
+local function GetPreviousValueFromHistory(history, currentDate)
+    local lo, hi, idx = 1, #history, 0
     while lo <= hi do
         local mid = math.floor((lo + hi) / 2)
-        if dates[mid] < target then
+        if history[mid].date < currentDate then
+            idx = mid
             lo = mid + 1
         else
             hi = mid - 1
         end
     end
-    return hi
-end
-
-local function GetPreviousValue(balance, realm, char, currentDate, currencyKey, firstPositiveDate)
-    local charKey = (realm == "Warband") and "Warband" or char
-    local realmKey = realm
-    local dates = Overview.dateIndex[realmKey] and Overview.dateIndex[realmKey][charKey]
-    if not dates then return nil end
-
-    local idx = binarySearch(dates, currentDate)
-    while idx > 0 do
-        local date = dates[idx]
-
-        if firstPositiveDate and date < firstPositiveDate then
-            return nil
-        end
-
-        local rec = (realmKey == "Warband") and balance["Warband"][date] or balance[realm][char][date]
-        if rec then
-            return rec[currencyKey] or 0
-        end
-        idx = idx - 1
-    end
-    return nil
+    return idx > 0 and history[idx].value or nil
 end
 
 ----------------------
@@ -189,89 +187,60 @@ end
 ----------------------
 
 local function UpdateOverview()
-    local realm, char = Utils:GetCharacterInfo()
-    local currencyKey = selectedCurrency or "gold"
-    local isWarband = currencyKey:match("^w%-%d+$")
-    local isChar = currencyKey:match("^c%-%d+$")
-
-    local data
-    if currencyKey == "gold" then
-        data = GCT.data.balance[realm] and GCT.data.balance[realm][char]
-    elseif isWarband then
-        data = GCT.data.balance["Warband"]
-    elseif isChar then
-        data = GCT.data.balance[realm] and GCT.data.balance[realm][char]
-    end
-    if not data then return end
-
     local filterPrefix = GetYearMonthString(currentMonthOffset)
+
+    local history = BuildHistoryEntries(selectedCurrency)
+    local entries = BuildMonthEntries(history, filterPrefix)
+
     t1_header:SetText(FormatMonthText(filterPrefix))
 
     if t1_content.rows then
         for _, row in ipairs(t1_content.rows) do
-            for _, element in pairs(row) do
+            for _, element in ipairs(row) do
                 element:Hide()
                 element:SetParent(nil)
             end
         end
     end
+
     t1_content.rows = {}
 
-    local firstPositiveDate = Utils:GetFirstPositiveDate(selectedCurrency or "gold")
-    if not firstPositiveDate then
-        firstPositiveDate = Utils:GetToday()
-    end
-
-    local entries = {}
-    for dateStr, rec in pairs(data) do
-        if dateStr:sub(1,7) == filterPrefix then
-            if not firstPositiveDate or dateStr >= firstPositiveDate then
-                local raw = rec[currencyKey] or 0
-                table.insert(entries, {date = dateStr, value = raw})
-            end
-        end
-    end
-
     if #entries == 0 then
-        local row = t1_content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        row:SetPoint("TOPLEFT", 10, -10)
-        row:SetText(L["no-entries"])
-        table.insert(t1_content.rows, {row})
+        local noEntry = t1_content:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        noEntry:SetPoint("TOPLEFT", 10, -10)
+        noEntry:SetText(L["table.no-entries"])
+        table.insert(t1_content.rows, {noEntry})
         return
-    else
-        table.sort(entries, function(a,b) return a.date > b.date end)
     end
 
     local offsetY = -10
-    local spacing = 6
+    local spacing = 10
 
     local headerDate = t1_content:CreateFontString(nil,"OVERLAY","GameFontNormal")
     headerDate:SetPoint("TOPLEFT", 10, offsetY)
-    headerDate:SetText(L["date"])
+    headerDate:SetText(L["table.date"])
 
     local headerAmount  = t1_content:CreateFontString(nil,"OVERLAY","GameFontNormal")
     headerAmount:SetPoint("TOPLEFT", 100, offsetY)
-    headerAmount:SetText(L["amount"])
+    headerAmount:SetText(L["table.amount"])
 
     local headerDifference = t1_content:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    headerDifference:SetPoint("TOPLEFT", 225, offsetY)
-    headerDifference:SetText(L["difference"])
+    headerDifference:SetPoint("TOPLEFT", 250, offsetY)
+    headerDifference:SetText(L["table.difference"])
 
     table.insert(t1_content.rows, {headerDate, headerAmount, headerDifference})
+
     offsetY = offsetY - 20
 
-    local prevOutside
-
     for i, entry in ipairs(entries) do
+        local dateStr = entry.date
         local currentValue = entry.value
+
         local prevValue
         if i < #entries then
             prevValue = entries[i+1].value
         else
-            if prevOutside == nil then
-                prevOutside = GetPreviousValue(GCT.data.balance, (isWarband and "Warband") or realm, char, entry.date, currencyKey, firstPositiveDate) or 0
-            end
-            prevValue = prevOutside
+            prevValue = GetPreviousValueFromHistory(history, dateStr) or 0
         end
 
         local rowDate = t1_content:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
@@ -283,9 +252,11 @@ local function UpdateOverview()
         rowAmount:SetText(FormatCurrency(currentValue))
 
         local rowDifference = t1_content:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-        rowDifference:SetPoint("TOPLEFT", 225, offsetY)
+        rowDifference:SetPoint("TOPLEFT", 250, offsetY)
 
-        if entry.date ~= firstPositiveDate then
+        local firstDate = history[1].date
+
+        if entry.date ~= firstDate then
             local diff = currentValue - prevValue
             rowDifference:SetText(FormatCurrencyDiff(diff))
             if diff > 0 then
@@ -301,22 +272,11 @@ local function UpdateOverview()
         end
 
         table.insert(t1_content.rows, {rowDate, rowAmount, rowDifference})
-        offsetY = offsetY - 18 - spacing
+        offsetY = offsetY - rowDate:GetHeight() - spacing
     end
 
-    local currentPrefix = GetYearMonthString(currentMonthOffset)
-
-    local a = (isWarband and "Warband") or realm
-    local b = (isWarband and "Warband") or char
-    local dates = Overview.dateIndex[a] and Overview.dateIndex[a][b]
-
-    if dates then
-        t1_prevButton:SetEnabled(HasAnyDataBeforeMonth(dates, currentPrefix, firstPositiveDate))
-        t1_nextButton:SetEnabled(HasAnyDataAfterMonth(dates, currentPrefix, firstPositiveDate))
-    else
-        t1_prevButton:SetEnabled(false)
-        t1_nextButton:SetEnabled(false)
-    end
+    t1_prevButton:SetEnabled(HasAnyDataBeforeMonth(history, filterPrefix))
+    t1_nextButton:SetEnabled(HasAnyDataAfterMonth(history, filterPrefix))
 end
 
 local function InitializeDropdown()
@@ -497,7 +457,7 @@ local function InitializeFrames()
     t1_nextButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelButtonTemplate")
     t1_nextButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMRIGHT", -55, 4)
     t1_nextButton:SetSize(100, 21)
-    t1_nextButton:SetText(L["button-next"])
+    t1_nextButton:SetText(L["button.next"])
     t1_nextButton:SetScript("OnClick", function()
         currentMonthOffset = currentMonthOffset - 1
         UpdateOverview()
@@ -506,7 +466,7 @@ local function InitializeFrames()
     t1_prevButton = CreateFrame("Button", nil, goldCurrencyOverviewFrame.contentTab1, "UIPanelButtonTemplate")
     t1_prevButton:SetPoint("BOTTOM", goldCurrencyOverviewFrame.contentTab1, "BOTTOMLEFT", 55, 4)
     t1_prevButton:SetSize(100, 21)
-    t1_prevButton:SetText(L["button-prev"])
+    t1_prevButton:SetText(L["button.prev"])
 
     t1_currencyDropdown = CreateFrame("Frame", "GoldCurrencyTrackerDropdown", goldCurrencyOverviewFrame.contentTab1, "UIDropDownMenuTemplate")
     t1_currencyDropdown:SetPoint("TOPRIGHT", goldCurrencyOverviewFrame.contentTab1, "TOPRIGHT", 10, -30)
@@ -523,7 +483,6 @@ end
 ---------------------
 
 function Overview:Initialize()
-    BuildDateIndex(GCT.data.balance)
     InitializeFrames()
     InitializeDropdown()
 end

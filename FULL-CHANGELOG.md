@@ -1,4 +1,8 @@
-**1.3.3 (@build-date@)**
+**v10 (@build-date@)**
+- Changed: The version number scheme has been changed.
+- Refactoring of the addon structure and source codes
+
+**1.3.3 (2025-04-24)**
 - Minor code adjustments
 
 **1.3.2 (2025-04-23)**
