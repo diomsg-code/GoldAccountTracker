@@ -319,13 +319,7 @@ end
 local function UpdateCharacterOverview()
     local filterPrefix = GetYearMonthString(currentMonthOffset)
 
-    local t0 = debugprofilestop()
-
     local characterHistory = BuildCharacterHistory(selectedRealm, selectedChar, t1_selectedCurrency)
-
-    local t1 = debugprofilestop()
-    print(("C-Dauer: %.3f ms"):format(t1 - t0))
-
     local monthHistory = BuildMonthHistory(characterHistory, filterPrefix)
 
     header:SetText(FormatMonthText(filterPrefix))
@@ -511,13 +505,7 @@ end
 local function UpdateAccountOverview()
     local filterPrefix = GetYearMonthString(currentMonthOffset)
 
-    local t0 = debugprofilestop()
-
     local accountHistory = BuildAccountHistory(t3_selectedCurrency)
-
-    local t1 = debugprofilestop()
-    print(("A Dauer: %.3f ms"):format(t1 - t0))
-
     local monthHistory = BuildMonthHistory(accountHistory, filterPrefix)
 
     header:SetText(FormatMonthText(filterPrefix))
@@ -1020,7 +1008,6 @@ end
 
 function Overview:Initialize()
     InitializeFrames()
-    --InitializeDropdown()
 end
 
 function Overview:Show()

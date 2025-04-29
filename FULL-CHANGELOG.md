@@ -1,4 +1,7 @@
-**v11 (@build-date@)**
+**v12 (@build-date@)**
+- Minor code adjustments
+
+**v11 (2025-04-29)**
 - Added: The sum of all currencies across all characters is now displayed in a new tab
 - Added: In the character tab, it is possible to switch between the different characters
 - Changed: The design of the overview window has been adapted to the new WoW interface since patch 11.0
