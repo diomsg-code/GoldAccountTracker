@@ -1,4 +1,4 @@
-name: Package and release Gold Currency Tracker (Release)
+name: Package and release Gold & Currency Tracker (Release)
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
 
       # Github
       - name: Package and release for Github
-        uses: BigWigsMods/packager@master
+        uses: BigWigsMods/packager@v2
 
   repository-release:
     runs-on: ubuntu-latest
@@ -33,13 +33,7 @@ jobs:
           fetch-depth: 0
 
       # CourseForge
-      - name: Package and publish for CourseForge
-        uses: BigWigsMods/packager@master
+      - name: Package and publish for CourseForge and Wago
+        uses: BigWigsMods/packager@v2
         with:
-          args: -p 1241700 -n "{package-name}-{project-version}{nolib}{classic}:{package-name}-{project-version}{classic}{nolib}.zip"
-
-      # Wago
-      - name: Package and publish for Wago
-        uses: BigWigsMods/packager@master
-        with:
-          args: -a EGPXP3G1
+          args: -p 1241700 -a EGPXP3G1
