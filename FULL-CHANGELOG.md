@@ -1,6 +1,13 @@
-**v10 (@build-date@)**
-- Changed: The version number scheme has been changed.
-- Refactoring of the addon structure and source codes
+**v11 (@build-date@)**
+- Added: The sum of all currencies across all characters is now displayed in a new tab
+- Added: In the character tab, it is possible to switch between the different characters
+- Changed: The design of the overview window has been adapted to the new WoW interface since patch 11.0
+- Changed: The character and warband currencies are now displayed in separate tabs
+- Minor code adjustments
+
+**v10 (2025-04-27)**
+- Changed: The version number scheme has been changed
+- Refactoring of the addon structure and source code
 
 **1.3.3 (2025-04-24)**
 - Minor code adjustments

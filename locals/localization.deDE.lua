@@ -38,6 +38,7 @@ L["currency-category.df"] = "Dragonflight"
 L["currency-category.tww"] = "The War Within"
 
 L["tab.character"] = "Charakter"
+L["tab.warband"] = "Kriegsmeute"
 L["tab.account"] = "Account"
 
 L["button.next"] = "Weiter"

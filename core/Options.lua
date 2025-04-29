@@ -5,9 +5,9 @@ local Utils = GCT.utils
 
 local Options = {}
 
----------------------
---- Main funtions ---
----------------------
+----------------------
+--- Local Funtions ---
+----------------------
 
 local minimapProxy = setmetatable({}, {
     __index = function(_, key)
@@ -42,7 +42,7 @@ local minimapProxy = setmetatable({}, {
 })
 
 ---------------------
---- Main funtions ---
+--- Main Funtions ---
 ---------------------
 
 function Options:Initialize()

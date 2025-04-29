@@ -5,8 +5,23 @@ local L = GCT.localization
 local Utils = {}
 
 ---------------------
---- Main funtions ---
+--- Main Funtions ---
 ---------------------
+
+function Utils:GetToday()
+    return date("%Y-%m-%d")
+end
+
+function Utils:GetGold()
+    return GetMoney()
+end
+
+function Utils:GetCharacterInfo()
+    local char = UnitName("player")
+    local realm = GetRealmName()
+
+    return realm, char
+end
 
 function Utils:PrintDebug(msg)
     if GCT.data.options["debug-mode"] then
@@ -87,21 +102,6 @@ function Utils:InitializeMinimapButton()
     self.minimapButton = LibStub("LibDBIcon-1.0")
     self.minimapButton:Register("GoldCurrencyTracker", LDB, zone)
     self.minimapButton:Lock("GoldCurrencyTracker")
-end
-
-function Utils:GetToday()
-    return date("%Y-%m-%d")
-end
-
-function Utils:GetGold()
-    return GetMoney()
-end
-
-function Utils:GetCharacterInfo()
-    local char = UnitName("player")
-    local realm = GetRealmName()
-
-    return realm, char
 end
 
 GCT.utils = Utils
