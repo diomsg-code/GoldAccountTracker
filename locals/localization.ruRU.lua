@@ -38,7 +38,7 @@ L["currency-category.df"] = "Драконы"
 L["currency-category.tww"] = "Война Внутри"
 
 L["tab.character"] = "Персонаж"
-L["tab.warband"] = "Warband"
+L["tab.warband"] = "Отряд"
 L["tab.account"] = "Аккаунт"
 
 L["button.next"] = "Вперёд"
