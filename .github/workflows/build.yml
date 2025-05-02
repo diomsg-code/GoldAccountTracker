@@ -28,6 +28,11 @@ jobs:
     name: Create Changelog
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Generiere Changelog-Ausschnitt mit Versionskopf
         run: |
           version="${{ github.event.inputs.versionTag }}"
@@ -41,6 +46,12 @@ jobs:
             in_section && /^\-/ { print }
           ' CHANGELOG.md >> tmp_changelog.md
 
+      - name: Füge neuen Block an FULL-CHANGELOG.md an
+        run: |
+            touch FULL-CHANGELOG.md
+            cat tmp_changelog.md FULL-CHANGELOG.md > FULL-CHANGELOG.new.md
+            mv FULL-CHANGELOG.new.md FULL-CHANGELOG.md
+
       - name: Commit FULL-CHANGELOG.md
         run: |
           git config user.name "github-actions"
@@ -48,15 +59,10 @@ jobs:
           git add FULL-CHANGELOG.md
           git commit -m "Update FULL-CHANGELOG.md für ${{ github.event.inputs.versionTag }}"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
-    
-      - name: Füge neuen Block an FULL-CHANGELOG.md an
-        run: |
-          touch FULL-CHANGELOG.md
-          cat tmp_changelog.md FULL-CHANGELOG.md > FULL-CHANGELOG.new.md
-          mv FULL-CHANGELOG.new.md FULL-CHANGELOG.md
-        
+            
   build-github:
     name: Build Github
+    needs: create-changelog
     runs-on: ubuntu-latest
     env:
         GITHUB_OAUTH: ${{ secrets.G_TOKEN }}  
