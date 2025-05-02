@@ -1,3 +1,9 @@
+**v14-alpha.7 (2025-05-02)**
+- Minor code adjustments
+
+**v14-alpha.6 (2025-05-02)**
+- Minor code adjustments
+
 **v13 (2025-04-30)**
 - Updated: ruRU localization (#6 - Thanks to Hollicsh)
 - Minor code adjustments
