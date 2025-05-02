@@ -24,6 +24,37 @@ permissions:
   contents: write
 
 jobs:
+  create-changelog:
+    name: Create Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generiere Changelog-Ausschnitt mit Versionskopf
+        run: |
+          version="${{ github.event.inputs.versionTag }}"
+          date=$(date -u +"%Y-%m-%d")
+
+          echo "**${version} (${date})**" > tmp_changelog.md
+
+          awk '
+            /^### \[.*\]/ { if (in_section) exit; in_section = 1; next }
+            in_section && /^### \[/ { exit }
+            in_section && /^\-/ { print }
+          ' CHANGELOG.md >> tmp_changelog.md
+
+      - name: Commit FULL-CHANGELOG.md
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add FULL-CHANGELOG.md
+          git commit -m "Update FULL-CHANGELOG.md für ${{ github.event.inputs.versionTag }}"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
+    
+      - name: Füge neuen Block an FULL-CHANGELOG.md an
+        run: |
+          touch FULL-CHANGELOG.md
+          cat tmp_changelog.md FULL-CHANGELOG.md > FULL-CHANGELOG.new.md
+          mv FULL-CHANGELOG.new.md FULL-CHANGELOG.md
+        
   build-github:
     name: Build Github
     runs-on: ubuntu-latest
@@ -35,15 +66,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Git
+      - name: Create and push tag
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-
-      - name: Create and push tag
-        run: |
           git tag ${{ github.event.inputs.versionTag }}
-        # git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ github.event.inputs.versionTag }}
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ github.event.inputs.versionTag }}
 
       - name: Package and publish for Github (Alpha)
         if: github.event.inputs.releaseType == 'alpha' 
