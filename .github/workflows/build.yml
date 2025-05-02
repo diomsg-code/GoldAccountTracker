@@ -3,17 +3,17 @@ name: Publish 'Gold & Currency Tracker'
 on:
   workflow_dispatch:
     inputs:
-      versionTag:
-        description: 'Release-Version (v15 oder v15-alpha.1)'
-        required: true
       releaseType:
-            description: 'Art des Releases'
-            required: true
-            default: 'release'
-            type: choice
-            options:
-              - release
-              - alpha
+        description: 'Art des Releases'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+          - release
+          - alpha
+      versionTag:
+        description: 'Optional: manueller Tag'
+        required: false
       buildRetail:
         description: 'Retail-Version bauen?'
         required: false
@@ -24,6 +24,72 @@ permissions:
   contents: write
 
 jobs:
+  version-and-tag:
+    runs-on: ubuntu-latest
+    outputs:
+      final_tag: ${{ steps.set-tag.outputs.final_tag }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Ermittle letzten Tag
+        id: get-latest
+        run: |
+          git fetch --tags
+          latest=$(git tag --sort=-creatordate | grep '^v' | head -n 1 || echo "v0")
+          echo "Letzter Tag: $latest"
+          echo "latest_tag=$latest" >> $GITHUB_OUTPUT
+
+      - name: Berechne neuen Tag
+        id: set-tag
+        run: |
+          input="${{ github.event.inputs.versionTag }}"
+          type="${{ github.event.inputs.releaseType }}"
+          latest="${{ steps.get-latest.outputs.latest_tag }}"
+
+          echo "Ausgangswert: $latest, gewählter Typ: $type"
+
+          if [[ -n "$input" ]]; then
+            echo "Benutzerdefinierter Tag: $input"
+            echo "final_tag=$input" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Split base and suffix (e.g. v1.2.3-alpha.2)
+          base=${latest%%-*}
+          suffix=${latest#"$base"}
+
+          # Extrahiere Versionsteile
+          version_num=${base#"v"}
+          major=$(echo "$version_num" | cut -d. -f1)
+          minor=$(echo "$version_num" | cut -d. -f2)
+          patch=$(echo "$version_num" | cut -d. -f3)
+
+          if [[ "$suffix" =~ ^-alpha\.[0-9]+$ ]]; then
+            alpha_num=$(echo "$suffix" | cut -d. -f2)
+          fi
+
+          if [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "alpha" ]]; then
+            next_alpha=$((alpha_num + 1))
+            newtag="v${major}.${minor}.${patch}-alpha.${next_alpha}"
+          elif [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "release" ]]; then
+            newtag="v${major}.${minor}.${patch}"
+          elif [[ -z "$suffix" && "$type" == "release" ]]; then
+            next_patch=$((patch + 1))
+            newtag="v${major}.${minor}.${next_patch}"
+          elif [[ -z "$suffix" && "$type" == "alpha" ]]; then
+            next_patch=$((patch + 1))
+            newtag="v${major}.${minor}.${next_patch}-alpha.1"
+          else
+            echo "❗ Unerwartete Kombination von vorherigem Tag und Typ"
+            exit 1
+          fi
+
+          echo "💡 Neuer vorgeschlagener Tag: $newtag"
+          echo "final_tag=$newtag" >> $GITHUB_OUTPUT
+
   create-changelog:
     name: Create Changelog
     runs-on: ubuntu-latest
