@@ -19,6 +19,11 @@ on:
         required: false
         default: true
         type: boolean
+      createChangelog:
+        description: 'Changelog erstellen'
+        required: false
+        default: true
+        type: boolean
 
 permissions:
   contents: write
@@ -88,8 +93,19 @@ jobs:
 
           echo "new_tag=$newtag" >> $GITHUB_OUTPUT
 
+      - name: Workflow‑Run umbenennen
+        env:
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+        run: |
+          curl -X PATCH \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
+          -H "Content-Type: application/json" \
+          -d "{\"name\":\"${{ steps.set-tag.outputs.new_tag }}\"}" \
+          https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
   create-changelog:
     name: Create Changelog
+    if: github.event.inputs.createChangelog == 'true'
     needs: define-new-tag
     runs-on: ubuntu-latest
     steps:
@@ -173,8 +189,8 @@ jobs:
         uses: BigWigsMods/packager@v2
 
   build-retail:
-    if: github.event.inputs.buildRetail == 'true'
     name: Build Retail
+    if: github.event.inputs.buildRetail == 'true'
     needs: 
       - build-github
       - define-new-tag
