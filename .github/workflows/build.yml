@@ -15,7 +15,7 @@ on:
         description: 'Optional: manueller Tag'
         required: false
       buildRetail:
-        description: 'Retail-Version bauen?'
+        description: 'Retail-Version'
         required: false
         default: true
         type: boolean
@@ -146,6 +146,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Get the latest version of main from the repository
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch origin main
+          git reset --hard origin/main
+
       - name: Create and push tag
         run: |
           git config user.name "github-actions"
@@ -181,6 +187,12 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Get the latest version of main from the repository
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch origin main
+          git reset --hard origin/main
 
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
