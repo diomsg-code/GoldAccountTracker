@@ -33,7 +33,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generiere Changelog-Ausschnitt mit Versionskopf
+      - name: Generate changelog section with version header
         run: |
           version="${{ github.event.inputs.versionTag }}"
           date=$(date -u +"%Y-%m-%d")
@@ -46,7 +46,9 @@ jobs:
             in_section && /^\-/ { print }
           ' CHANGELOG.md >> tmp_changelog.md
 
-      - name: Füge neuen Block an FULL-CHANGELOG.md an
+          echo "" >> tmp_changelog.md
+
+      - name: Add new block to FULL-CHANGELOG.md
         run: |
             touch FULL-CHANGELOG.md
             cat tmp_changelog.md FULL-CHANGELOG.md > FULL-CHANGELOG.new.md
