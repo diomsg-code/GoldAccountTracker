@@ -24,10 +24,11 @@ permissions:
   contents: write
 
 jobs:
-  version-and-tag:
-    name: Version berechnen & taggen
+  new-version:
+    name: Calculate new version
     runs-on: ubuntu-latest
     outputs:
+      latest_tag: ${{ steps.get-latest.outputs.latest_tag }}
       final_tag: ${{ steps.set-tag.outputs.final_tag }}
     steps:
       - name: Checkout
@@ -48,8 +49,6 @@ jobs:
           input="${{ github.event.inputs.versionTag }}"
           type="${{ github.event.inputs.releaseType }}"
           latest="${{ steps.get-latest.outputs.latest_tag }}"
-
-          echo "Letzter Tag: $latest"
 
           if [[ -n "$input" ]]; then
             echo "Benutzerdefinierter Tag: $input"
@@ -77,16 +76,14 @@ jobs:
             next_base=$((base_num + 1))
             newtag="v${next_base}-alpha.1"
           else
-            echo "❗ Unerwartete Kombination"
             exit 1
           fi
 
-          echo "💡 Neuer Tag: $newtag"
           echo "final_tag=$newtag" >> $GITHUB_OUTPUT
 
   create-changelog:
     name: Create Changelog
-    needs: version-and-tag
+    needs: new-version
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -96,7 +93,7 @@ jobs:
 
       - name: Generate changelog section with version header
         run: |
-          version="${{ needs.version-and-tag.outputs.final_tag }}"
+          version="${{ needs.new-version.outputs.final_tag }}"
           date=$(date -u +"%Y-%m-%d")
 
           echo "**${version} (${date})**" > tmp_changelog.md
@@ -120,14 +117,14 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add FULL-CHANGELOG.md
-          git commit -m "Update FULL-CHANGELOG.md für ${{ needs.version-and-tag.outputs.final_tag }}"
+          git commit -m "Update FULL-CHANGELOG.md für ${{ needs.new-version.outputs.final_tag }}"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
             
   build-github:
     name: Build Github
     needs: 
       - create-changelog
-      - version-and-tag
+      - new-version
     runs-on: ubuntu-latest
     env:
         GITHUB_OAUTH: ${{ secrets.G_TOKEN }}  
@@ -141,8 +138,13 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git tag ${{ needs.version-and-tag.outputs.final_tag }}
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ needs.version-and-tag.outputs.final_tag }}
+          git tag ${{ needs.new-version.outputs.final_tag }}
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ needs.new-version.outputs.final_tag }}
+
+      - name: Ersetze @old-project-version@ in CHANGELOG.md
+        run: |
+          old_tag="${{ needs.new-version.outputs.latest_tag }}"
+           sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Package and publish for Github (Alpha)
         if: github.event.inputs.releaseType == 'alpha' 
