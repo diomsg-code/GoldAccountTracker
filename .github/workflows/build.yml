@@ -93,9 +93,9 @@ jobs:
 
           echo "new_tag=$newtag" >> $GITHUB_OUTPUT
 
-      - name: Workflow‑Run umbenennen
+      - name: Rename workflow run
         env:
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -X PATCH \
           -H "Authorization: Bearer $GITHUB_TOKEN" \
