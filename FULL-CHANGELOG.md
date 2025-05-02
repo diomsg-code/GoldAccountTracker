@@ -1,9 +1,3 @@
-**v16-alpha.1 (2025-05-02)**
-- Minor code adjustments
-
-**v15 (2025-05-02)**
-- Minor code adjustments
-
 **v13 (2025-04-30)**
 - Updated: ruRU localization (#6 - Thanks to Hollicsh)
 - Minor code adjustments
