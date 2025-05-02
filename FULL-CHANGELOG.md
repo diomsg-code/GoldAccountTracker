@@ -1,3 +1,6 @@
+**v14-alpha.3 (2025-05-02)**
+- Minor code adjustments
+
 **v14-alpha.2 (2025-05-02)**
 - Minor code adjustments
 **v13 (2025-04-30)**
