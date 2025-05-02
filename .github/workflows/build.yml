@@ -86,6 +86,7 @@ jobs:
 
   create-changelog:
     name: Create Changelog
+    needs: version-and-tag
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
