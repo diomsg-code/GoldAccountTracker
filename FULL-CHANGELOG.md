@@ -1,4 +1,4 @@
-**v13 (@build-date@)**
+**v13 (2025-04-30)**
 - Updated: ruRU localization (#6 - Thanks to Hollicsh)
 - Minor code adjustments
 

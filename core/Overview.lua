@@ -422,7 +422,7 @@ local function InitializeFrames()
     overviewFrame:SetScript("OnDragStop", overviewFrame.StopMovingOrSizing)
     overviewFrame:SetTitle(L["addon-name"])
     overviewFrame:Hide()
-    tinsert(UISpecialFrames, "GCT_OverviewFrame")
+    tinsert(UISpecialFrames, overviewFrame:GetName())
 
     local portrait = overviewFrame:GetPortrait()
     portrait:SetPoint('TOPLEFT', -5, 8)
@@ -573,10 +573,10 @@ local function InitializeFrames()
                                 rightTexture:SetSize(18, 18)
                                 rightTexture:SetPoint("RIGHT")
                                 rightTexture:SetTexture(entry.iconFileID)
-        
+
                                 local fontString = button.fontString
                                 fontString:SetPoint("RIGHT")
-        
+
                                 local pad = 20
                                 local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth()
                                 local height = 20

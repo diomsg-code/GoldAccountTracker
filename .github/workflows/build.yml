@@ -1,0 +1,81 @@
+name: Publish 'Gold & Currency Tracker'
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionTag:
+        description: 'Release-Version (v15 oder v15-alpha.1)'
+        required: true
+      releaseType:
+            description: 'Art des Releases'
+            required: true
+            default: 'release'
+            type: choice
+            options:
+              - release
+              - alpha
+      buildRetail:
+        description: 'Retail-Version bauen?'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+jobs:
+  build-github:
+    name: Build Github
+    runs-on: ubuntu-latest
+    env:
+        GITHUB_OAUTH: ${{ secrets.G_TOKEN }}  
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+      - name: Create and push tag
+        run: |
+          git tag ${{ github.event.inputs.versionTag }}
+        # git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ github.event.inputs.versionTag }}
+
+      - name: Package and publish for Github (Alpha)
+        if: github.event.inputs.releaseType == 'alpha' 
+        uses: BigWigsMods/packager@v2
+
+      - name: Package and publish for Github (Release)
+        if: github.event.inputs.releaseType != 'alpha' 
+        uses: BigWigsMods/packager@v2
+
+  build-retail:
+    if: github.event.inputs.buildRetail == 'true'
+    name: Build Retail
+    needs: build-github
+    runs-on: ubuntu-latest
+    env:
+        CF_API_KEY: ${{ secrets.CF_API_KEY }}
+        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Package and publish for CourseForge and Wago (Alpha)
+        if: github.event.inputs.releaseType == 'alpha'    
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -p 1241700 -a EGPXP3G1
+
+      - name: Package and publish for CourseForge and Wago (Release)
+        if: github.event.inputs.releaseType != 'alpha'  
+        uses: BigWigsMods/packager@v2
+        with:
+          args: -p 1241700 -a EGPXP3G1
+

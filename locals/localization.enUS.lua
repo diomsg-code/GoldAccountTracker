@@ -7,7 +7,8 @@ GCT.localization = setmetatable({},{__index=function(self,key)
 
 local L = GCT.localization
 
-L["addon-name"] = "Gold & Currency Tracker"
+L["addon.name"] = "Gold & Currency Tracker"
+L["addon.version"] = "Version"
 
 L["month.jan"] = "January"
 L["month.feb"] = "February"
