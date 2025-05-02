@@ -96,7 +96,7 @@ jobs:
 
       - name: Generate changelog section with version header
         run: |
-          version="${{ github.event.inputs.versionTag }}"
+          version="${{ needs.version-and-tag.outputs.final_tag }}"
           date=$(date -u +"%Y-%m-%d")
 
           echo "**${version} (${date})**" > tmp_changelog.md
@@ -120,7 +120,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add FULL-CHANGELOG.md
-          git commit -m "Update FULL-CHANGELOG.md für ${{ github.event.inputs.versionTag }}"
+          git commit -m "Update FULL-CHANGELOG.md für ${{ needs.version-and-tag.outputs.final_tag }}"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} HEAD:main
             
   build-github:
@@ -139,8 +139,8 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git tag ${{ github.event.inputs.versionTag }}
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ github.event.inputs.versionTag }}
+          git tag ${{ needs.version-and-tag.outputs.final_tag }}
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ needs.version-and-tag.outputs.final_tag }}
 
       - name: Package and publish for Github (Alpha)
         if: github.event.inputs.releaseType == 'alpha' 
