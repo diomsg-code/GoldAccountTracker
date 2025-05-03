@@ -105,6 +105,8 @@ jobs:
 
           echo "Repo:    $GITHUB_REPOSITORY"
           echo "Run‑ID:  $GITHUB_RUN_ID"
+          # Achtung: Token wird in Logs maskiert, hier nur zur Kontrolle
+          echo "Token:   $GITHUB_TOKEN"
 
   create-changelog:
     name: Create Changelog
