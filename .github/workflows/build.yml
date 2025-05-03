@@ -95,13 +95,16 @@ jobs:
 
       - name: Rename workflow run
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
         run: |
           curl -X PATCH \
-          -H "Authorization: Bearer asfd" \
+          -H "Authorization: Bearer $GITHUB_TOKEN" \
           -H "Content-Type: application/json" \
           -d "{\"name\":\"${{ steps.set-tag.outputs.new_tag }}\"}" \
           https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+
+          echo "Repo:    $GITHUB_REPOSITORY"
+          echo "Run‑ID:  $GITHUB_RUN_ID"
 
   create-changelog:
     name: Create Changelog
