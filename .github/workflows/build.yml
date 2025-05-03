@@ -1,6 +1,5 @@
 name: Publish 'Gold & Currency Tracker'
 
-
 on:
   workflow_dispatch:
     inputs:
