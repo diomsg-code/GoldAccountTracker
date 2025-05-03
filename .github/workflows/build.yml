@@ -1,4 +1,5 @@
 name: Publish 'Gold & Currency Tracker'
+run-name: Build as ${{ github.event.inputs.releaseType }}
 
 on:
   workflow_dispatch:
@@ -9,8 +10,8 @@ on:
         default: 'release'
         type: choice
         options:
-          - release
-          - alpha
+          - Release
+          - Alpha
       versionTag:
         description: 'Optional: manueller Tag'
         required: false
@@ -27,27 +28,8 @@ on:
 
 permissions:
   contents: write
-  actions: write
 
 jobs:
-  rename:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Name berechnen
-        id: calc
-        run: |
-          NEW_NAME="Release-${GITHUB_REF##*/}"
-          echo "NEW_NAME=$NEW_NAME" >> $GITHUB_ENV
-
-      - name: Run‑Name patchen
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -X PATCH \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} \
-            -d "{\"name\":\"${NEW_NAME}\"}"
   define-new-tag:
     name: Define new tag
     runs-on: ubuntu-latest
@@ -95,15 +77,15 @@ jobs:
             alpha_num=$(echo "$suffix" | cut -d. -f2)
           fi
 
-          if [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "alpha" ]]; then
+          if [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Alpha" ]]; then
             next_alpha=$((alpha_num + 1))
             newtag="v${base_num}-alpha.${next_alpha}"
-          elif [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "release" ]]; then
+          elif [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Release" ]]; then
             newtag="v${base_num}"
-          elif [[ -z "$suffix" && "$type" == "release" ]]; then
+          elif [[ -z "$suffix" && "$type" == "Release" ]]; then
             next_base=$((base_num + 1))
             newtag="v${next_base}"
-          elif [[ -z "$suffix" && "$type" == "alpha" ]]; then
+          elif [[ -z "$suffix" && "$type" == "Alpha" ]]; then
             next_base=$((base_num + 1))
             newtag="v${next_base}-alpha.1"
           else
@@ -190,11 +172,11 @@ jobs:
           sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Package and publish for Github (Alpha)
-        if: github.event.inputs.releaseType == 'alpha' 
+        if: github.event.inputs.releaseType == 'Alpha' 
         uses: BigWigsMods/packager@v2
 
       - name: Package and publish for Github (Release)
-        if: github.event.inputs.releaseType != 'alpha' 
+        if: github.event.inputs.releaseType != 'Alpha' 
         uses: BigWigsMods/packager@v2
 
   build-retail:
@@ -229,13 +211,13 @@ jobs:
           git fetch --tags
 
       - name: Package and publish for CourseForge and Wago (Alpha)
-        if: github.event.inputs.releaseType == 'alpha'    
+        if: github.event.inputs.releaseType == 'Alpha'    
         uses: BigWigsMods/packager@v2
         with:
           args: -p 1241700 -a EGPXP3G1
 
       - name: Package and publish for CourseForge and Wago (Release)
-        if: github.event.inputs.releaseType != 'alpha'  
+        if: github.event.inputs.releaseType != 'Alpha'  
         uses: BigWigsMods/packager@v2
         with:
           args: -p 1241700 -a EGPXP3G1
