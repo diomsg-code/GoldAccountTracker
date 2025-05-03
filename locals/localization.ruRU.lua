@@ -5,7 +5,7 @@ if GetLocale() ~= "ruRU" then return end
 local L = GCT.localization
 
 L["addon.name"] = "Трекер золота и валюты"
-L["addon.version"] = "Version"
+L["addon.version"] = "Версия"
 
 L["month.jan"] = "Январь"
 L["month.feb"] = "Февраль"
