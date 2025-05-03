@@ -1,5 +1,5 @@
 name: Publish 'Gold & Currency Tracker'
-run-name: "Deploy ${{ github.ref_name }}"
+
 
 on:
   workflow_dispatch:
@@ -28,8 +28,27 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
+  rename:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Name berechnen
+        id: calc
+        run: |
+          NEW_NAME="Release-${GITHUB_REF##*/}"
+          echo "NEW_NAME=$NEW_NAME" >> $GITHUB_ENV
+
+      - name: Run‑Name patchen
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X PATCH \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID} \
+            -d "{\"name\":\"${NEW_NAME}\"}"
   define-new-tag:
     name: Define new tag
     runs-on: ubuntu-latest
@@ -93,21 +112,6 @@ jobs:
           fi
 
           echo "new_tag=$newtag" >> $GITHUB_OUTPUT
-
-      - name: Rename workflow run
-        env:
-          GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
-        run: |
-          curl -X PATCH \
-          -H "Authorization: Bearer $GITHUB_TOKEN" \
-          -H "Content-Type: application/json" \
-          -d "{\"name\":\"${{ steps.set-tag.outputs.new_tag }}\"}" \
-          https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
-
-          echo "Repo:    $GITHUB_REPOSITORY"
-          echo "Run‑ID:  $GITHUB_RUN_ID"
-          # Achtung: Token wird in Logs maskiert, hier nur zur Kontrolle
-          echo "Token:   $GITHUB_TOKEN"
 
   create-changelog:
     name: Create Changelog
