@@ -21,7 +21,7 @@ on:
         default: true
         type: boolean
       createChangelog:
-        description: 'Changelog erstellen'
+        description: 'vollständiges Changelog erstellen'
         required: false
         default: true
         type: boolean
