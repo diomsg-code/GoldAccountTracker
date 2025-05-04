@@ -36,8 +36,8 @@ jobs:
     env:
       GITHUB_OAUTH: ${{ secrets.G_TOKEN }}
     outputs:
-      last-release-tag: ${{ steps.get-old.outputs.last_release-tag }}
-      new-tag: ${{ steps.set-tag.outputs.new-tag }}
+      last-release-tag: ${{ steps.get-last-release-tag.outputs.tag }}
+      new-tag: ${{ steps.set-tag.outputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,25 +45,25 @@ jobs:
           fetch-depth: 0
 
       - name: Get last release tag
-        id: get-old
+        id: get-last-release-tag
         run: |
           git fetch --tags
           lastReleaseTag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-          echo "last-release-tag=$lastReleaseTag" >> $GITHUB_OUTPUT
+          echo "tag=$lastReleaseTag" >> $GITHUB_OUTPUT
 
       - name: Get last tag
-        id: get-last
+        id: get-last-tag
         run: |
           git fetch --tags
-          last-tag=$(git tag --sort=-creatordate | grep '^v[0-9]' | head -n 1 || echo "v0")
-          echo "last-tag=$last-tag" >> $GITHUB_OUTPUT
+          lastTag=$(git tag --sort=-creatordate | grep '^v[0-9]' | head -n 1 || echo "v0")
+          echo "tag=$lastTag" >> $GITHUB_OUTPUT
 
       - name: Set new tag
         id: set-tag
         run: |
           input="${{ github.event.inputs.versionTag }}"
           type="${{ github.event.inputs.releaseType }}"
-          last-tag="${{ steps.get-last.outputs.last-tag }}"
+          lastTag="${{ steps.get-last-tag.outputs.tag }}"
 
           if [[ -n "$input" ]]; then
             echo "new_tag=$input" >> $GITHUB_OUTPUT
@@ -80,25 +80,25 @@ jobs:
 
           if [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Alpha" ]]; then
             next_alpha=$((alpha_num + 1))
-            new-tag="v${base_num}-alpha.${next_alpha}"
+            newTag="v${base_num}-alpha.${next_alpha}"
           elif [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Release" ]]; then
-            new-tag="v${base_num}"
+            newTag="v${base_num}"
           elif [[ -z "$suffix" && "$type" == "Release" ]]; then
             next_base=$((base_num + 1))
-            new-tag="v${next_base}"
+            newTag="v${next_base}"
           elif [[ -z "$suffix" && "$type" == "Alpha" ]]; then
             next_base=$((base_num + 1))
-            new-tag="v${next_base}-alpha.1"
+            newTag="v${next_base}-alpha.1"
           else
             exit 1
           fi
 
-          echo "new-tag=$new-tag" >> $GITHUB_OUTPUT
+          echo "new-tag=$newTag" >> $GITHUB_OUTPUT
 
       - name: Generate changelog section with version header
         if: github.event.inputs.createChangelog == 'true'
         run: |
-          version="${{ steps.set-tag.outputs.new_tag }}"
+          version="${{ steps.set-tag.outputs.tag }}"
           date=$(date -u +"%Y-%m-%d")
 
           echo "**${version} (${date})**" > tmp_changelog.md
@@ -124,7 +124,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add FULL-CHANGELOG.md
-          git commit -m "Update FULL-CHANGELOG.md for ${{ steps.set-tag.outputs.new-tag }}"
+          git commit -m "Update FULL-CHANGELOG.md for ${{ steps.set-tag.outputs.tag }}"
           git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} HEAD:main
 
       - name: Get the latest version of main from the repository
