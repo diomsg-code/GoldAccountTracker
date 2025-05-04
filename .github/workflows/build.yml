@@ -33,6 +33,8 @@ jobs:
   build-changelog-github:
     name: Build Changelog and Github
     runs-on: ubuntu-latest
+    env:
+      GITHUB_OAUTH: ${{ secrets.G_TOKEN }}
     outputs:
       old_tag: ${{ steps.get-old.outputs.old_tag }}
       new_tag: ${{ steps.set-tag.outputs.new_tag }}
@@ -143,11 +145,6 @@ jobs:
           git config user.email "actions@github.com"
           git tag ${{ steps.set-tag.outputs.new_tag }}
           git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ steps.set-tag.outputs.new_tag }}
-
-      - name: Replace @old-project-version@ in CHANGELOG.md
-        run: |
-          old_tag=${{ steps.set-tag.outputs.old_tag }}
-          sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Package and publish for Github (Alpha)
         if: github.event.inputs.releaseType == 'Alpha' 
