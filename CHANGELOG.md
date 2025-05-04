@@ -6,4 +6,4 @@
 - Added: New subpage in the options menu with information about the addon
 - Changed: The classes and factions are now displayed in the character dropdown
 - Updated: ruRU localization (#7 - Thanks to Hollicsh)
-- Minor code adjustments
+- Refactoring of the addon structure and source code

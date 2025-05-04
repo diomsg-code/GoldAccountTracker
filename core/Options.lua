@@ -2,6 +2,7 @@ local addonName, GCT = ...
 
 local L = GCT.localization
 local Utils = GCT.utils
+local Dialog = GCT.dialog
 
 local Options = {}
 
@@ -29,9 +30,10 @@ local minimapProxy = setmetatable({}, {
         elseif key == "minimap-button-position" then
             GCT.data.options["minimap-button-position"] = value
 
-            local zone = {}
-            zone.hide = GCT.data.options["minimap-button-hide"]
-            zone.minimapPos = GCT.data.options["minimap-button-position"]
+            local zone = {
+                hide = GCT.data.options["minimap-button-hide"],
+                minimapPos = GCT.data.options["minimap-button-position"],
+            }
 
             Utils.minimapButton:Refresh("GoldCurrencyTracker", zone)
             Utils.minimapButton:Lock("GoldCurrencyTracker")
@@ -91,14 +93,16 @@ function Options:Initialize()
         descriptionFrame.title:SetText(L["info.description"])
 
         local text = descriptionFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        text:SetPoint("TOPLEFT", descriptionFrame, 15, -15)
-        text:SetJustifyH("LEFT")
-        text:SetWordWrap(true)
+        text:SetPoint("TOPLEFT", descriptionFrame, "TOPLEFT", 15, -15)
+        text:SetPoint("TOPRIGHT", descriptionFrame, "TOPRIGHT",  -15, -15)
         text:SetWidth(descriptionFrame:GetWidth() - 30)
+        text:SetJustifyH("LEFT")
         text:SetSpacing(2)
+        text:SetWordWrap(true)
         text:SetText(L["info.description.text"])
 
-        descriptionFrame:SetHeight(text:GetHeight() + 30)
+        local totalHeight = text:GetHeight() + 30
+        descriptionFrame:SetHeight(totalHeight)
 
         offsetY = offsetY - descriptionFrame:GetHeight() - spacing
     end
@@ -116,26 +120,27 @@ function Options:Initialize()
         helpFrame.title:SetText(L["info.help"])
 
         local text = helpFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        text:SetPoint("TOPLEFT", helpFrame, 15, -15)
-        text:SetJustifyH("LEFT")
-        text:SetWordWrap(true)
+        text:SetPoint("TOPLEFT", helpFrame, "TOPLEFT", 15, -15)
+        text:SetPoint("TOPRIGHT", helpFrame, "TOPRIGHT",  -15, -15)
         text:SetWidth(helpFrame:GetWidth() - 30)
+        text:SetJustifyH("LEFT")
         text:SetSpacing(2)
+        text:SetWordWrap(true)
         text:SetText(L["info.help.text"])
 
         local divider = helpFrame:CreateTexture(nil, "BACKGROUND")
-        divider:SetPoint("TOP", text, "BOTTOM", 0, -15)
+        divider:SetPoint("TOP", text, "BOTTOM", 0, -10)
         divider:SetSize(550, 6)
         divider:SetAtlas("thewarwithin-scenario-line-top-glowing")
         divider:SetDesaturated(true)
         divider:SetVertexColor(Utils:HexToRGB("ffB9B9B9"))
 
         local buttonReset = CreateFrame("Button", nil, helpFrame, "UIPanelButtonTemplate")
-        buttonReset:SetPoint("TOP", divider, "BOTTOM", 0, -15)
+        buttonReset:SetPoint("TOP", divider, "BOTTOM", 0, -10)
         buttonReset:SetSize(200, 22)
         buttonReset:SetText(L["info.help.reset-button.name"])
         buttonReset:SetScript("OnClick", function(self)
-            StaticPopup_Show("GCT_RESET_OPTIONS")
+            Dialog:ShowResetOptionsDialog()
         end)
         buttonReset:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -147,8 +152,8 @@ function Options:Initialize()
             GameTooltip:Hide()
         end)
 
-        local heightHelp = text:GetHeight() + 58
-        helpFrame:SetHeight(heightHelp + 30)
+        local totalHeight = text:GetHeight() + 48 + 30
+        helpFrame:SetHeight(totalHeight)
 
         offsetY = offsetY - helpFrame:GetHeight() - spacing
     end
@@ -166,26 +171,27 @@ function Options:Initialize()
         aboutFrame.title:SetText(L["info.about"])
 
         local text = aboutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        text:SetPoint("TOPLEFT", aboutFrame, 15, -15)
-        text:SetJustifyH("LEFT")
-        text:SetWordWrap(true)
+        text:SetPoint("TOPLEFT", aboutFrame, "TOPLEFT", 15, -15)
+        text:SetPoint("TOPRIGHT", aboutFrame, "TOPRIGHT",  -15, -15)
         text:SetWidth(aboutFrame:GetWidth() - 30)
-        text:SetSpacing(5)
+        text:SetJustifyH("LEFT")
+        text:SetSpacing(2)
+        text:SetWordWrap(true)
         text:SetText(L["info.about.text"]:format(GCT.COLOR_GOLD_FONT, GCT.GAME_VERSION .. " (" .. GCT.GAME_FLAVOR .. ")", GCT.COLOR_GOLD_FONT, GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.COLOR_GOLD_FONT, GCT.ADDON_AUTHOR))
 
         local divider = aboutFrame:CreateTexture(nil, "BACKGROUND")
-        divider:SetPoint("TOP", text, "BOTTOM", 0, -15)
+        divider:SetPoint("TOP", text, "BOTTOM", 0, -10)
         divider:SetSize(550, 6)
         divider:SetAtlas("thewarwithin-scenario-line-top-glowing")
         divider:SetDesaturated(true)
         divider:SetVertexColor(Utils:HexToRGB("ffB9B9B9"))
 
         local buttonGithub = CreateFrame("Button", nil, aboutFrame, "UIPanelButtonTemplate")
-        buttonGithub:SetPoint("TOP", divider, "BOTTOM", -100, -15)
+        buttonGithub:SetPoint("TOP", divider, "BOTTOM", -100, -10)
         buttonGithub:SetSize(150, 22)
         buttonGithub:SetText(L["info.help.github-button.name"])
         buttonGithub:SetScript("OnClick", function(self)
-            StaticPopup_Show("GCT_COPY_ADDRESS", nil, nil, GCT.LINK_GITHUB)
+            Dialog:ShowCopyAddressDialog(GCT.LINK_GITHUB)
         end)
         buttonGithub:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -198,11 +204,11 @@ function Options:Initialize()
         end)
 
         local buttonCurseforge = CreateFrame("Button", nil, aboutFrame, "UIPanelButtonTemplate")
-        buttonCurseforge:SetPoint("TOP", divider, "BOTTOM", 100, -15)
+        buttonCurseforge:SetPoint("TOP", divider, "BOTTOM", 100, -10)
         buttonCurseforge:SetSize(150, 22)
         buttonCurseforge:SetText(L["info.help.curseforge-button.name"])
         buttonCurseforge:SetScript("OnClick", function(self)
-            StaticPopup_Show("GCT_COPY_ADDRESS", nil, nil, GCT.LINK_CURSEFORGE)
+            Dialog:ShowCopyAddressDialog(GCT.LINK_CURSEFORGE)
         end)
         buttonCurseforge:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
@@ -214,12 +220,11 @@ function Options:Initialize()
             GameTooltip:Hide()
         end)
 
-        local heightHelp = text:GetHeight() + 58
-        aboutFrame:SetHeight(heightHelp + 30)
+        local totalHeight = text:GetHeight() + 48 + 30
+        aboutFrame:SetHeight(totalHeight)
 
         local lastLine = aboutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-        lastLine:SetPoint("TOPLEFT", aboutFrame, "BOTTOMLEFT", 0, 0)
-        lastLine:SetText(" ")
+        lastLine:SetPoint("TOPLEFT", aboutFrame, "BOTTOMLEFT", 0, -10)
     end
 
     local mainCategory = Settings.RegisterCanvasLayoutCategory(canvasFrame, L["addon.name"])

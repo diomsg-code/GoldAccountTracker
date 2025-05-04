@@ -140,50 +140,14 @@ function Utils:InitializeMinimapButton()
     zone.hide = GCT.data.options["minimap-button-hide"]
     zone.minimapPos = GCT.data.options["minimap-button-position"]
 
+    local zone = {
+        hide = GCT.data.options["minimap-button-hide"],
+        minimapPos = GCT.data.options["minimap-button-position"],
+    }
+
     self.minimapButton = LibStub("LibDBIcon-1.0")
     self.minimapButton:Register("GoldCurrencyTracker", LDB, zone)
     self.minimapButton:Lock("GoldCurrencyTracker")
 end
 
 GCT.utils = Utils
-
----------------
---- Dialogs ---
----------------
-
-StaticPopupDialogs["GCT_RESET_OPTIONS"] = {
-    text = L["popup.reset-options.confirmation-text"],
-    button1 = YES,
-    button2 = CANCEL,
-    timeout = 0,
-    whileDead = true,
-    hideOnEscape = true,
-    OnAccept = function()
-        GCT.data.options["open-on-login"] = false
-        GCT.data.options["minimap-button-hide"] = false
-        GCT.data.options["minimap-button-position"] = 250
-        GCT.data.options["debug-mode"] = false
-
-        local zone = {}
-        zone.hide = GCT.data.options["minimap-button-hide"]
-        zone.minimapPos = GCT.data.options["minimap-button-position"]
-
-        Utils.minimapButton:Refresh("GoldCurrencyTracker", zone)
-        Utils.minimapButton:Lock("GoldCurrencyTracker")
-
-        GCT.utils:PrintMessage(L["chat.reset-options.success"])
-    end,
-}
-
-StaticPopupDialogs["GCT_COPY_ADDRESS"] = {
-    text = L["popup.copy-address.desc"],
-	button1 = CLOSE,
-	hasEditBox = true,
-	editBoxWidth = 300,
-	timeout = 0,
-	whileDead = true,
-    OnShow = function(self, data)
-        self.editBox:SetText(data or "")
-        self.editBox:HighlightText()
-    end,
-}

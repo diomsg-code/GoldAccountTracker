@@ -89,7 +89,7 @@ L["options.debug-mode.tooltip"] = "Enabling the debug mode displays additional i
 
 L["chat.reset-options.success"] = "Options successfully reseted."
 
--- Popup
+-- Dialog
 
-L["popup.copy-address.desc"] = "To copy the link press CTRL + C."
-L["popup.reset-options.confirmation-text"] = "Do you really want to reset the options?"
+L["dialog.copy-address.text"] = "To copy the link press CTRL + C."
+L["dialog.reset-options.text"] = "Do you really want to reset the options?"

@@ -86,7 +86,7 @@ L["options.debug-mode.tooltip"] = "Die Aktivierung des Debugmodus zeigt zusätzl
 
 L["chat.reset-options.success"] = "Einstellungen erfolgreich zurückgesetzt."
 
--- Popup
+-- Dialog
 
-L["popup.copy-address.desc"] = "Um den Link zu kopieren drücke STRG + C."
-L["popup.reset-options.confirmation-text"] = "Sollen die Einstellungen wirklich zurückgesetzt werden?"
+L["dialog.copy-address.text"] = "Um den Link zu kopieren drücke STRG + C."
+L["dialog.reset-options.text"] = "Sollen die Einstellungen wirklich zurückgesetzt werden?"
