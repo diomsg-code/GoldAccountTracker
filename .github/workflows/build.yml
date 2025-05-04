@@ -48,8 +48,8 @@ jobs:
         id: get-old
         run: |
           git fetch --tags
-          last-release-tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-          echo "last-release-tag=$last-release-tag" >> $GITHUB_OUTPUT
+          lastReleaseTag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
+          echo "last-release-tag=$lastReleaseTag" >> $GITHUB_OUTPUT
 
       - name: Get last tag
         id: get-last
