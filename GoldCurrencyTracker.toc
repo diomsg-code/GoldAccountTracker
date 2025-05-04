@@ -4,7 +4,7 @@
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\GoldCurrencyTracker\media\icon.blp
 ## X-Flavor: Retail
-## X-BuildDate: @build-date@
+## X-BuildDate: @build-date-iso@
 ## X-E-Mail: feedback@wow-addon.dev
 ## X-Github: https://github.com/diomsg-code/GoldCurrencyTracker
 ## X-Curseforge: https://www.curseforge.com/wow/addons/gold-currency-tracker
