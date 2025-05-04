@@ -48,30 +48,30 @@ jobs:
         id: get-last-release-tag
         run: |
           git fetch --tags
-          lastReleaseTag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-          echo "tag=$lastReleaseTag" >> $GITHUB_OUTPUT
+          last_release_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
+          echo "tag=$last_release_tag" >> $GITHUB_OUTPUT
 
       - name: Get last tag
         id: get-last-tag
         run: |
           git fetch --tags
-          lastTag=$(git tag --sort=-creatordate | grep '^v[0-9]' | head -n 1 || echo "v0")
-          echo "tag=$lastTag" >> $GITHUB_OUTPUT
+          last_tag=$(git tag --sort=-creatordate | grep '^v[0-9]' | head -n 1 || echo "v0")
+          echo "tag=$last_tag" >> $GITHUB_OUTPUT
 
       - name: Set new tag
         id: set-tag
         run: |
           input="${{ github.event.inputs.versionTag }}"
           type="${{ github.event.inputs.releaseType }}"
-          lastTag="${{ steps.get-last-tag.outputs.tag }}"
+          last_tag="${{ steps.get-last-tag.outputs.tag }}"
 
           if [[ -n "$input" ]]; then
             echo "tag=$input" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          base=${lastTag%%-*}
-          suffix=${lastTag#"$base"}
+          base=${last_tag%%-*}
+          suffix=${last_tag#"$base"}
           base_num=${base#"v"}
 
           if [[ "$suffix" =~ ^-alpha\.[0-9]+$ ]]; then
@@ -80,20 +80,20 @@ jobs:
 
           if [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Alpha" ]]; then
             next_alpha=$((alpha_num + 1))
-            newTag="v${base_num}-alpha.${next_alpha}"
+            new_tag="v${base_num}-alpha.${next_alpha}"
           elif [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Release" ]]; then
-            newTag="v${base_num}"
+            new_tag="v${base_num}"
           elif [[ -z "$suffix" && "$type" == "Release" ]]; then
             next_base=$((base_num + 1))
-            newTag="v${next_base}"
+            new_tag="v${next_base}"
           elif [[ -z "$suffix" && "$type" == "Alpha" ]]; then
             next_base=$((base_num + 1))
-            newTag="v${next_base}-alpha.1"
+            new_tag="v${next_base}-alpha.1"
           else
             exit 1
           fi
 
-          echo "tag=$newTag" >> $GITHUB_OUTPUT
+          echo "tag=$new_tag" >> $GITHUB_OUTPUT
 
       - name: Generate changelog section with version header
         if: github.event.inputs.createChangelog == 'true'
