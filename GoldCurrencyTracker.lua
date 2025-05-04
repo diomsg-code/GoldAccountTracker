@@ -2,6 +2,7 @@ local addonName, GCT = ...
 
 local L = GCT.localization
 local Utils = GCT.utils
+local Dialog = GCT.dialog
 local Options = GCT.options
 local Overview = GCT.overview
 
@@ -156,6 +157,8 @@ function goldCurrencyTrackerFrame:ADDON_LOADED(_, addOnName)
     if addOnName == addonName then
         Utils:InitializeDatabase()
         Utils:InitializeMinimapButton()
+
+        Dialog:InitializeDialog()
 
         Options:Initialize()
         Overview:Initialize()
