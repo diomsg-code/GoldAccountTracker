@@ -420,7 +420,7 @@ local function InitializeFrames()
     overviewFrame:RegisterForDrag("LeftButton")
     overviewFrame:SetScript("OnDragStart", overviewFrame.StartMoving)
     overviewFrame:SetScript("OnDragStop", overviewFrame.StopMovingOrSizing)
-    overviewFrame:SetTitle(L["addon-name"])
+    overviewFrame:SetTitle(L["addon.name"])
     overviewFrame:Hide()
     tinsert(UISpecialFrames, overviewFrame:GetName())
 
@@ -428,9 +428,13 @@ local function InitializeFrames()
     portrait:SetPoint('TOPLEFT', -5, 8)
     portrait:SetTexture(GCT.MEDIA_PATH .. "iconRound.blp")
 
-    local background = CreateFrame("Frame", nil, overviewFrame, "AccountStoreInsetFrameTemplate")
+    local background = CreateFrame("Frame", nil, overviewFrame, "InsetFrameTemplate")
     background:SetSize(440, 415)
     background:SetPoint("TOPLEFT", overviewFrame, "TOPLEFT", 5, -100)
+    background.texture = background:CreateTexture()
+    background.texture:SetSize(430, 405)
+    background.texture:SetPoint("CENTER")
+    background.texture:SetAtlas("character-panel-background")
 
     local function ShowTab(i)
         PanelTemplates_SetTab(overviewFrame, i)
@@ -532,16 +536,15 @@ local function InitializeFrames()
                 local goldButton = root:CreateRadio("Gold", IsSelected, SetSelected, "gold");
                 goldButton:AddInitializer(function(button, description, menu)
                     local rightTexture = button:AttachTexture()
-                    rightTexture:SetSize(18, 18)
+                    rightTexture:SetSize(16, 16)
                     rightTexture:SetPoint("RIGHT")
                     rightTexture:SetTexture(237618)
 
                     local fontString = button.fontString
                     fontString:SetPoint("RIGHT")
 
-                    local pad = 20
-                    local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth()
-                    local height = 20
+                    local width = fontString:GetUnboundedStringWidth() + rightTexture:GetWidth() + 20
+                    local height = rightTexture:GetHeight() + 4
                     return width, height
                 end)
 
@@ -570,16 +573,15 @@ local function InitializeFrames()
                             local currencyButton = categoryButton:CreateRadio(entry.name, IsSelected, SetSelected, entry.id)
                             currencyButton:AddInitializer(function(button, description, menu)
                                 local rightTexture = button:AttachTexture()
-                                rightTexture:SetSize(18, 18)
+                                rightTexture:SetSize(16, 16)
                                 rightTexture:SetPoint("RIGHT")
                                 rightTexture:SetTexture(entry.iconFileID)
 
                                 local fontString = button.fontString
                                 fontString:SetPoint("RIGHT")
 
-                                local pad = 20
-                                local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth()
-                                local height = 20
+                                local width = fontString:GetUnboundedStringWidth() + rightTexture:GetWidth() + 20
+                                local height = rightTexture:GetHeight() + 4
                                 return width, height
                             end);
                         end
@@ -628,9 +630,8 @@ local function InitializeFrames()
                                 local fontString = button.fontString
                                 fontString:SetPoint("RIGHT")
 
-                                local pad = 20
-                                local width = pad + fontString:GetUnboundedStringWidth() + rightTexture:GetWidth()
-                                local height = 20
+                                local width = fontString:GetUnboundedStringWidth() + rightTexture:GetWidth() + 20
+                                local height = rightTexture:GetHeight() + 4
                                 return width, height
                             end);
                         end
@@ -675,17 +676,41 @@ local function InitializeFrames()
 
                     table.sort(chars)
 
-                    local info = C_CurrencyInfo.GetCurrencyInfo(2032)
-
                     for _, charKey in ipairs(chars) do
                         local charButton = realmButton:CreateRadio(charKey, IsSelected, SetSelected, realmKey .. "-" .. charKey)
                         charButton:AddInitializer(function(button, description, menu)
+                            local factionFileID = 0
+                            local classColor = GCT.WHITE_FONT_COLOR
+
+                            if GCT.data.character[realmKey][charKey] then
+                                local class = GCT.data.character[realmKey][charKey].class
+                                local faction = GCT.data.character[realmKey][charKey].faction
+
+                                classColor = C_ClassColor.GetClassColor(class):GenerateHexColor()
+
+                                if faction == "Alliance" then
+                                    factionFileID = 136758
+                                elseif faction == "Horde" then
+                                    factionFileID = 136759
+                                end
+                            end
+
+                            local rightTexture = button:AttachTexture()
+                            rightTexture:SetSize(18, 18)
+                            rightTexture:SetPoint("RIGHT")
+
+                            if factionFileID == 0 then
+                                rightTexture:SetAtlas("Warfronts-BaseMapIcons-Empty-Barracks")
+                            else
+                                rightTexture:SetTexture(factionFileID)
+                            end
+
                             local fontString = button.fontString
                             fontString:SetPoint("RIGHT")
-
-                            local pad = 20
-                            local width = pad + fontString:GetUnboundedStringWidth()
-                            local height = 20
+                            fontString:SetTextColor(Utils:HexToRGB(classColor))
+                            
+                            local width = fontString:GetUnboundedStringWidth() + rightTexture:GetWidth() + 20
+                            local height = rightTexture:GetHeight() + 4
                             return width, height
                         end)
                     end

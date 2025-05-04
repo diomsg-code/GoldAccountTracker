@@ -9,7 +9,7 @@ local Overview = GCT.overview
 --- Local funtions ---
 ----------------------
 
-local function AddSavedDate(dateStr)
+local function SavedDate(dateStr)
     local dates = GCT.data.dates
 
     for _, d in ipairs(dates) do
@@ -22,11 +22,19 @@ local function AddSavedDate(dateStr)
     table.sort(dates)
 end
 
+local function SaveCharacterInfo(realm, char)
+    local classFilename = UnitClassBase("player")
+    local englishFaction = UnitFactionGroup("player")
+
+    GCT.data.character[realm][char] = {class = classFilename, faction = englishFaction}
+end
+
 local function SaveBalance()
     local realm, char = Utils:GetCharacterInfo()
     local today = Utils:GetToday()
 
-    AddSavedDate(today)
+    SavedDate(today)
+    SaveCharacterInfo(realm, char)
 
     local warbandHistory  = GCT.data.balance["Warband"]
     local characterHistory  = GCT.data.balance[realm][char]

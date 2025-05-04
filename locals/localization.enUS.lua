@@ -57,6 +57,29 @@ L["minimap-button.tooltip"] = "|c%sLeft-click|r to open the gold and currency ov
 
 -- Options
 
+L["info.description"] = "Description"
+L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time."
+                            .." These functions are currently implemented (more are planned):\n\n"
+                            .." • Gold and currency overview with a daily and monthly view\n"
+                            .." • Individual saving and view for each character\n"
+                            .." • Separate display of character and warband currencies\n"
+                            .." • Display of the sum of all currencies across all characters\n"
+                            .." • Minimap button to open the gold and currency overview and the options\n"
+                            .." • Supported languages: English, German, Russian"
+
+L["info.help"] = "Help"
+L["info.help.text"] = "In case of problems after an update or if you want to, you can reset the options here."
+L["info.help.reset-button.name"] = "Reset Options"
+L["info.help.reset-button.desc"] = "Resets the options to the default values. This applies to all characters."
+L["info.help.github-button.name"] = "Github"
+L["info.help.github-button.desc"] = "Opens a popup window with a link to Github."
+L["info.help.curseforge-button.name"] = "Curseforge"
+L["info.help.curseforge-button.desc"] = "Opens a popup window with a link to Curseforge."
+
+L["info.about"] = "About"
+L["info.about.text"] = "|c%sGame version:|r %s\n|c%sAddon version:|r %s\n\n|c%sAuthor:|r %s"
+
+L["options"] = "Options"
 L["options.general"] = "General Options"
 L["options.open-on-login.name"] = "Gold and Currency Overview"
 L["options.open-on-login.tooltip"] = "When this is enabled, the gold and currency overview opens automatically when logging in."
@@ -68,3 +91,12 @@ L["options.minimap-button-position.tooltip"] = "Determines the position of the m
 L["options.other"] = "Other Options"
 L["options.debug-mode.name"] = "Debug Mode"
 L["options.debug-mode.tooltip"] = "Enabling the debug mode displays additional information in the chat."
+
+-- Chat
+
+L["chat.reset-options.success"] = "Options successfully reseted."
+
+-- Popup
+
+L["popup.copy-address.desc"] = "To copy the link press CTRL + C."
+L["popup.reset-options.confirmation-text"] = "Do you really want to reset the options?"

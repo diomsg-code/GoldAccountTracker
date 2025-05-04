@@ -1,8 +1,20 @@
 local addonName, GCT = ...
 
+GCT.ADDON_AUTHOR = C_AddOns.GetAddOnMetadata(addonName, "Author")
 GCT.ADDON_VERSION = C_AddOns.GetAddOnMetadata(addonName, "Version")
+GCT.ADDON_BUILD_DATE = C_AddOns.GetAddOnMetadata(addonName, "X-BuildDate")
 
-GCT.LINK_FONT_COLOR = "ff66BBFF"
+GCT.GAME_VERSION = GetBuildInfo()
+GCT.GAME_FLAVOR = C_AddOns.GetAddOnMetadata(addonName, "X-Flavor")
+
+GCT.LINK_GITHUB = C_AddOns.GetAddOnMetadata(addonName, "X-Github")
+GCT.LINK_CURSEFORGE = C_AddOns.GetAddOnMetadata(addonName, "X-Curseforge")
+
+GCT.NORMAL_FONT_COLOR = "ffFFD200"      -- #1
+GCT.WHITE_FONT_COLOR = "ffFFFFFF"       -- #2
+GCT.ORANGE_FONT_COLOR = "ffFF8040"      -- 13
+GCT.COLOR_GOLD_FONT = "ffF2E699"        -- #22
+GCT.LINK_FONT_COLOR = "ff66BBFF"        -- #36
 
 GCT.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
 GCT.MONTH_KEYS = {
@@ -23,7 +35,7 @@ GCT.CURRENCY_CATEGORY_ORDER = {
     --"legion",       -- 141
     --"bfa",          -- 143
     --"sl",           -- 245
-    --"df",           -- 250
+    "df",           -- 250
     "tww"           -- 260
 }
 
@@ -46,6 +58,15 @@ GCT.CHARACTER_CURRENCIES = {
     },
     dungeonraid = {
         1166	-- Zeitverzerrtes Abzeichen
+    },
+    df = {
+        2003,	-- Vorräte der Dracheninseln
+        2118,	-- Elementarüberfluss
+        2122,	-- Sturmsiegel
+        2594,	-- Parakausale Flocken
+        2650,	-- Smaragdgrüner Tautropfen
+        2657,	-- Mysteriöses Fragment
+        2777,	-- Trauminfusion
     },
     tww = {
         2815,	-- Resonanzkristalle

@@ -8,6 +8,25 @@ local Utils = {}
 --- Main Funtions ---
 ---------------------
 
+function Utils:HexToRGB(hex)
+    hex = hex:gsub("^#","")
+    hex = hex:gsub("^ff","")
+
+    local r = tonumber(hex:sub(1,2), 16) / 255
+    local g = tonumber(hex:sub(3,4), 16) / 255
+    local b = tonumber(hex:sub(5,6), 16) / 255
+
+    return r, g, b
+end
+
+function Utils:RGBToHex(r, g, b)
+    r = math.min(math.max(r,0),1)
+    g = math.min(math.max(g,0),1)
+    b = math.min(math.max(b,0),1)
+
+    return string.format("ff%02X%02X%02X", r * 255, g * 255, b * 255)
+end
+
 function Utils:GetToday()
     return date("%Y-%m-%d")
 end
@@ -31,20 +50,26 @@ function Utils:PrintDebug(msg)
             local name, _, _, _, _, _, shown, locked, docked, uni = GetChatWindowInfo(i)
 
             if name == "Debug" and docked ~= nil then
-                _G['ChatFrame' .. i]:AddMessage(WrapTextInColorCode("Gold & Currency Tracker (Debug): ", "ffFF8040") .. msg)
+                _G['ChatFrame' .. i]:AddMessage(WrapTextInColorCode("Gold & Currency Tracker (Debug): ", GCT.ORANGE_FONT_COLOR) .. msg)
                 notfound = false
                 break
             end
         end
 
         if notfound then
-            DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode("Gold & Currency Tracker (Debug): ", "ffFF8040")  .. msg)
+            DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode("Gold & Currency Tracker (Debug): ", GCT.ORANGE_FONT_COLOR)  .. msg)
         end
 	end
 end
 
+function Utils:PrintMessage(msg)
+    DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode("Gold & Currency Tracker: ", GCT.NORMAL_FONT_COLOR) .. msg)
+end
+
 function Utils:InitializeDatabase()
     local realm, char = Utils:GetCharacterInfo()
+
+    -- Options
 
     if (not GoldCurrencyTracker_Options) then
         GoldCurrencyTracker_Options = {}
@@ -52,6 +77,27 @@ function Utils:InitializeDatabase()
 
     GCT.data = {}
     GCT.data.options = GoldCurrencyTracker_Options
+
+    -- Dates
+
+    if (not GoldCurrencyTracker_DataDates) then
+        GoldCurrencyTracker_DataDates = {}
+    end
+
+    GCT.data.dates = GoldCurrencyTracker_DataDates
+
+    -- Character
+
+    if (not GoldCurrencyTracker_DataCharacter) then
+        GoldCurrencyTracker_DataCharacter = {}
+    end
+
+    GCT.data.character = GoldCurrencyTracker_DataCharacter
+
+    GCT.data.character[realm] =  GCT.data.character[realm] or {}
+    GCT.data.character[realm][char] =  GCT.data.character[realm][char] or {}
+
+    -- Balance
 
     if (not GoldCurrencyTracker_DataBalance_v2) then
         GoldCurrencyTracker_DataBalance_v2 = {}
@@ -64,12 +110,6 @@ function Utils:InitializeDatabase()
 
     GCT.data.balance[realm] =  GCT.data.balance[realm] or {}
     GCT.data.balance[realm][char] =  GCT.data.balance[realm][char] or {}
-
-    if (not GoldCurrencyTracker_DataDates) then
-        GoldCurrencyTracker_DataDates = {}
-    end
-
-    GCT.data.dates = GoldCurrencyTracker_DataDates
 end
 
 function Utils:InitializeMinimapButton()
@@ -89,7 +129,8 @@ function Utils:InitializeMinimapButton()
             end
         end,
         OnTooltipShow = function(tooltip)
-            tooltip:AddDoubleLine(L["addon.name"], GCT.ADDON_VERSION)
+            tooltip:AddLine(L["addon.name"])
+            tooltip:AddLine(WrapTextInColorCode(GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.WHITE_FONT_COLOR))
             tooltip:AddLine(" ")
             tooltip:AddLine(L["minimap-button.tooltip"]:format(GCT.LINK_FONT_COLOR, GCT.LINK_FONT_COLOR), 1, 1, 1)
         end,
@@ -105,3 +146,44 @@ function Utils:InitializeMinimapButton()
 end
 
 GCT.utils = Utils
+
+---------------
+--- Dialogs ---
+---------------
+
+StaticPopupDialogs["GCT_RESET_OPTIONS"] = {
+    text = L["popup.reset-options.confirmation-text"],
+    button1 = YES,
+    button2 = CANCEL,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+    OnAccept = function()
+        GCT.data.options["open-on-login"] = false
+        GCT.data.options["minimap-button-hide"] = false
+        GCT.data.options["minimap-button-position"] = 250
+        GCT.data.options["debug-mode"] = false
+
+        local zone = {}
+        zone.hide = GCT.data.options["minimap-button-hide"]
+        zone.minimapPos = GCT.data.options["minimap-button-position"]
+
+        Utils.minimapButton:Refresh("GoldCurrencyTracker", zone)
+        Utils.minimapButton:Lock("GoldCurrencyTracker")
+
+        GCT.utils:PrintMessage(L["chat.reset-options.success"])
+    end,
+}
+
+StaticPopupDialogs["GCT_COPY_ADDRESS"] = {
+    text = L["popup.copy-address.desc"],
+	button1 = CLOSE,
+	hasEditBox = true,
+	editBoxWidth = 300,
+	timeout = 0,
+	whileDead = true,
+    OnShow = function(self, data)
+        self.editBox:SetText(data or "")
+        self.editBox:HighlightText()
+    end,
+}

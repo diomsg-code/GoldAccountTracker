@@ -54,6 +54,29 @@ L["minimap-button.tooltip"] = "|c%sLinksklick|r zum Öffnen der Gold- und Währu
 
 -- Options
 
+L["info.description"] = "Beschreibung"
+L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time."
+                            .." These functions are currently implemented (more are planned):\n\n"
+                            .." • Gold and currency overview with a daily and monthly view\n"
+                            .." • Individual saving and view for each character\n"
+                            .." • Separate display of character and warband currencies\n"
+                            .." • Display of the sum of all currencies across all characters\n"
+                            .." • Minimap button to open the gold and currency overview and the options\n"
+                            .." • Supported languages: English, German, Russian"
+
+L["info.help"] = "Hilfe"
+L["info.help.text"] = "Bei Problemen nach einem Update oder wenn Du es möchtest, kannst Du hier die Einstellungen zurücksetzen."
+L["info.help.reset-button.name"] = "Einstellungen zurücksetzen"
+L["info.help.reset-button.desc"] = "Setzt die Einstellungen auf die Standardwerte zurück. Dies gilt für alle Charaktere."
+L["info.help.github-button.name"] = "Github"
+L["info.help.github-button.desc"] = "Öffnet ein Popup-Fenster mit einem Link nach Github."
+L["info.help.curseforge-button.name"] = "Curseforge"
+L["info.help.curseforge-button.desc"] = "Öffnet ein Popup-Fenster mit einem Link nach Curseforge."
+
+L["info.about"] = "Über"
+L["info.about.text"] = "|c%sSpielversion:|r %s\n|c%sAddonversion:|r %s\n\n|c%Autor:|r %s"
+
+L["options"] = "Einstellungen"
 L["options.general"] = "allgemeine Einstellungen"
 L["options.open-on-login.name"] = "Gold- und Währungsübersicht"
 L["options.open-on-login.tooltip"] = "Bei Aktivierung öffnet sich die Gold- und Währungsübersicht beim Login automatisch."
@@ -65,3 +88,12 @@ L["options.minimap-button-position.tooltip"] = "Legt die Position des Minimap Bu
 L["options.other"] = "sonstige Einstellungen"
 L["options.debug-mode.name"] = "Debugmodus"
 L["options.debug-mode.tooltip"] = "Die Aktivierung des Debugmodus zeigt zusätzliche Informationen im Chat an."
+
+-- Chat
+
+L["chat.reset-options.success"] = "Einstellungen erfolgreich zurückgesetzt."
+
+-- Popup
+
+L["popup.copy-address.desc"] = "Um den Link zu kopieren drücke STRG + C."
+L["popup.reset-options.confirmation-text"] = "Sollen die Einstellungen wirklich zurückgesetzt werden?"

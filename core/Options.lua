@@ -46,9 +46,187 @@ local minimapProxy = setmetatable({}, {
 ---------------------
 
 function Options:Initialize()
+    local offsetY = -20
+    local spacing = 30
+
+    local backdrop = {
+        bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+        edgeFile = "Interface\\Friendsframe\\UI-Toast-Border",
+        tileEdge = true,
+        edgeSize = 8,
+    }
+
+    local canvasFrame = CreateFrame("Frame", nil, UIParent)
+    canvasFrame:ClearAllPoints()
+    canvasFrame:SetPoint("TOPLEFT")
+    canvasFrame:Hide()
+
+    local header = canvasFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightHuge")
+    header:SetPoint("TOPLEFT", canvasFrame, 7, -22)
+    header:SetText("Gold & Currency Tracker")
+
+    canvasFrame.scrollFrame = CreateFrame("ScrollFrame", nil, canvasFrame, "QuestScrollFrameTemplate")
+    canvasFrame.scrollFrame:SetPoint("TOPLEFT", 0, -54)
+    canvasFrame.scrollFrame:SetPoint("BOTTOMRIGHT", -29, 0)
+    canvasFrame.scrollFrame:EnableMouseWheel(true)
+    canvasFrame.scrollFrame:SetScript("OnMouseWheel", function(self, delta)
+        local newValue = math.max(0, math.min(self:GetVerticalScroll() - delta * 20, self:GetVerticalScrollRange()))
+        self:SetVerticalScroll(newValue)
+    end)
+
+    canvasFrame.scrollFrame.scrollView = CreateFrame("Frame", nil, canvasFrame.scrollFrame)
+    canvasFrame.scrollFrame.scrollView:SetSize(1, 1)
+    canvasFrame.scrollFrame:SetScrollChild(canvasFrame.scrollFrame.scrollView)
+
+    do
+        local descriptionFrame = CreateFrame("Frame", nil, canvasFrame.scrollFrame.scrollView, "BackdropTemplate")
+        descriptionFrame:ClearAllPoints()
+        descriptionFrame:SetPoint("TOPLEFT", canvasFrame.scrollFrame.scrollView, "TOPLEFT", 10, offsetY)
+        descriptionFrame:SetWidth(615)
+        descriptionFrame:SetBackdrop(backdrop)
+        descriptionFrame:SetBackdropColor(0,0,0,0.2)
+
+        descriptionFrame.title = descriptionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        descriptionFrame.title:SetPoint("TOPLEFT", 8, 15)
+        descriptionFrame.title:SetText(L["info.description"])
+
+        local text = descriptionFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        text:SetPoint("TOPLEFT", descriptionFrame, 15, -15)
+        text:SetJustifyH("LEFT")
+        text:SetWordWrap(true)
+        text:SetWidth(descriptionFrame:GetWidth() - 30)
+        text:SetSpacing(2)
+        text:SetText(L["info.description.text"])
+
+        descriptionFrame:SetHeight(text:GetHeight() + 30)
+
+        offsetY = offsetY - descriptionFrame:GetHeight() - spacing
+    end
+
+    do
+        local helpFrame = CreateFrame("Frame", nil, canvasFrame.scrollFrame.scrollView, "BackdropTemplate")
+        helpFrame:ClearAllPoints()
+        helpFrame:SetPoint("TOPLEFT", canvasFrame.scrollFrame.scrollView, "TOPLEFT", 10, offsetY)
+        helpFrame:SetWidth(615)
+        helpFrame:SetBackdrop(backdrop)
+        helpFrame:SetBackdropColor(0,0,0,0.2)
+
+        helpFrame.title = helpFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        helpFrame.title:SetPoint("TOPLEFT", 8, 15)
+        helpFrame.title:SetText(L["info.help"])
+
+        local text = helpFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        text:SetPoint("TOPLEFT", helpFrame, 15, -15)
+        text:SetJustifyH("LEFT")
+        text:SetWordWrap(true)
+        text:SetWidth(helpFrame:GetWidth() - 30)
+        text:SetSpacing(2)
+        text:SetText(L["info.help.text"])
+
+        local divider = helpFrame:CreateTexture(nil, "BACKGROUND")
+        divider:SetPoint("TOP", text, "BOTTOM", 0, -15)
+        divider:SetSize(550,6)
+        divider:SetAtlas("thewarwithin-scenario-line-top-glowing")
+        divider:SetDesaturated(true)
+        divider:SetVertexColor(Utils:HexToRGB("ffB9B9B9"))
+
+        local buttonReset = CreateFrame("Button", nil, helpFrame, "UIPanelButtonTemplate")
+        buttonReset:SetPoint("TOP", divider, "BOTTOM", 0, -15)
+        buttonReset:SetSize(200, 22)
+        buttonReset:SetText(L["info.help.reset-button.name"])
+        buttonReset:SetScript("OnClick", function(self)
+            StaticPopup_Show("GCT_RESET_OPTIONS")
+        end)
+        buttonReset:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+            GameTooltip:SetText(L["info.help.reset-button.name"], 1, 1, 1, true)
+            GameTooltip:AddLine(L["info.help.reset-button.desc"], true)
+            GameTooltip:Show()
+        end)
+        buttonReset:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+
+        local heightHelp = text:GetHeight() + 58
+        helpFrame:SetHeight(heightHelp + 30)
+
+        offsetY = offsetY - helpFrame:GetHeight() - spacing
+    end
+
+    do
+        local aboutFrame = CreateFrame("Frame", nil, canvasFrame.scrollFrame.scrollView, "BackdropTemplate")
+        aboutFrame:ClearAllPoints()
+        aboutFrame:SetPoint("TOPLEFT", canvasFrame.scrollFrame.scrollView, "TOPLEFT", 10, offsetY)
+        aboutFrame:SetWidth(615)
+        aboutFrame:SetBackdrop(backdrop)
+        aboutFrame:SetBackdropColor(0,0,0,0.2)
+
+        aboutFrame.title = aboutFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        aboutFrame.title:SetPoint("TOPLEFT", 8, 15)
+        aboutFrame.title:SetText(L["info.about"])
+
+        local text = aboutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        text:SetPoint("TOPLEFT", aboutFrame, 15, -15)
+        text:SetJustifyH("LEFT")
+        text:SetWordWrap(true)
+        text:SetWidth(aboutFrame:GetWidth() - 30)
+        text:SetSpacing(5)
+        text:SetText(L["info.about.text"]:format(GCT.COLOR_GOLD_FONT, GCT.GAME_VERSION .. " (" .. GCT.GAME_FLAVOR .. ")", GCT.COLOR_GOLD_FONT, GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.COLOR_GOLD_FONT, GCT.ADDON_AUTHOR))
+
+        local divider = aboutFrame:CreateTexture(nil, "BACKGROUND")
+        divider:SetPoint("TOP", text, "BOTTOM", 0, -15)
+        divider:SetSize(550,6)
+        divider:SetAtlas("thewarwithin-scenario-line-top-glowing")
+        divider:SetDesaturated(true)
+        divider:SetVertexColor(Utils:HexToRGB("ffB9B9B9"))
+
+        local buttonGithub = CreateFrame("Button", nil, aboutFrame, "UIPanelButtonTemplate")
+        buttonGithub:SetPoint("TOP", divider, "BOTTOM", -100, -15)
+        buttonGithub:SetSize(150, 22)
+        buttonGithub:SetText(L["info.help.github-button.name"])
+        buttonGithub:SetScript("OnClick", function(self)
+            StaticPopup_Show("GCT_COPY_ADDRESS", nil, nil, GCT.LINK_GITHUB)
+        end)
+        buttonGithub:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+            GameTooltip:SetText(L["info.help.github-button.name"], 1, 1, 1, true)
+            GameTooltip:AddLine(L["info.help.github-button.desc"], true)
+            GameTooltip:Show()
+        end)
+        buttonGithub:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+
+        local buttonCurseforge = CreateFrame("Button", nil, aboutFrame, "UIPanelButtonTemplate")
+        buttonCurseforge:SetPoint("TOP", divider, "BOTTOM", 100, -15)
+        buttonCurseforge:SetSize(150, 22)
+        buttonCurseforge:SetText(L["info.help.curseforge-button.name"])
+        buttonCurseforge:SetScript("OnClick", function(self)
+            StaticPopup_Show("GCT_COPY_ADDRESS", nil, nil, GCT.LINK_CURSEFORGE)
+        end)
+        buttonCurseforge:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
+            GameTooltip:SetText(L["info.help.curseforge-button.name"], 1, 1, 1, true)
+            GameTooltip:AddLine(L["info.help.curseforge-button.desc"], true)
+            GameTooltip:Show()
+        end)
+        buttonCurseforge:SetScript("OnLeave", function()
+            GameTooltip:Hide()
+        end)
+
+        local heightHelp = text:GetHeight() + 58
+        aboutFrame:SetHeight(heightHelp + 30)
+
+        local lastLine = aboutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        lastLine:SetPoint("TOPLEFT", aboutFrame, "BOTTOMLEFT", 0, 0)
+        lastLine:SetText(" ")
+    end
+
+    local mainCategory = Settings.RegisterCanvasLayoutCategory(canvasFrame, L["addon.name"])
+    mainCategory.ID = L["addon.name"]
+
     local variableTable = GCT.data.options
-    local category, layout = Settings.RegisterVerticalLayoutCategory("Gold & Currency Tracker")
-    category.ID = "Gold & Currency Tracker"
+    local category, layout = Settings.RegisterVerticalLayoutSubcategory(mainCategory, L["options"])
 
     local parentSettingMinimapButton
 
@@ -105,7 +283,7 @@ function Options:Initialize()
         Settings.CreateCheckbox(category, setting, tooltip)
     end
 
-    Settings.RegisterAddOnCategory(category)
+    Settings.RegisterAddOnCategory(mainCategory)
 end
 
 GCT.options = Options
