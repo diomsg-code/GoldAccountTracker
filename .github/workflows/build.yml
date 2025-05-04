@@ -44,10 +44,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Aktuelles Datum ausgeben
+      - name: Aktuelles Datum ausgeben1
+        run:  |
+            echo "Datum: $(date -u '+%Y-%m-%d')"
+      - name: Aktuelle Uhrzeit ausgeben1
+        run:  |
+            echo "Uhrzeit: $(date -u '+%H:%M:%S')"
+
+      - name: Aktuelles Datum ausgeben2
         run:  |
           echo "Datum: $(date '+%Y-%m-%d')"
-      - name: Aktuelle Uhrzeit ausgeben
+      - name: Aktuelle Uhrzeit ausgeben2
         run:  |
           echo "Uhrzeit: $(date '+%H:%M:%S')"
 
