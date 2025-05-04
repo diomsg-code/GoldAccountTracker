@@ -136,8 +136,8 @@ jobs:
 
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
-          old_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-          sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
+          last_release_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
+          sed -i "s/@old-project-version@/$last_release_tag/g" CHANGELOG.md
 
       - name: Create and push tag
         run: |
@@ -177,8 +177,8 @@ jobs:
 
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
-          old_tag=${{ needs.build-changelog-github.outputs.last-release-tag }}
-          sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
+          last_release_tag=${{ needs.build-changelog-github.outputs.last-release-tag }}
+          sed -i "s/@old-project-version@/$last_release_tag/g" CHANGELOG.md
 
       - name: Get current tags
         run: |
