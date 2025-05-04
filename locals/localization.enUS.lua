@@ -58,14 +58,7 @@ L["minimap-button.tooltip"] = "|c%sLeft-click|r to open the gold and currency ov
 -- Options
 
 L["info.description"] = "Description"
-L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time."
-                            .." These functions are currently implemented (more are planned):\n\n"
-                            .." • Gold and currency overview with a daily and monthly view\n"
-                            .." • Individual saving and view for each character\n"
-                            .." • Separate display of character and warband currencies\n"
-                            .." • Display of the sum of all currencies across all characters\n"
-                            .." • Minimap button to open the gold and currency overview and the options\n"
-                            .." • Supported languages: English, German, Russian"
+L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time. These functions are currently implemented (more are planned):\n\n • Gold and currency overview with a daily and monthly view\n • Individual saving and view for each character\n • Separate display of character and warband currencies\n • Display of the sum of all currencies across all characters\n • Minimap button to open the gold and currency overview and the options\n • Supported languages: English, German, Russian"
 
 L["info.help"] = "Help"
 L["info.help.text"] = "In case of problems after an update or if you want to, you can reset the options here."
