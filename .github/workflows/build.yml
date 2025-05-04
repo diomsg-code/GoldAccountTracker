@@ -44,6 +44,13 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Aktuelles Datum ausgeben
+        run:  |
+          echo "Datum: $(date '+%Y-%m-%d')"
+      - name: Aktuelle Uhrzeit ausgeben
+        run:  |
+          echo "Uhrzeit: $(date '+%H:%M:%S')"
+
       - name: Get old tag
         id: get-old
         run: |
@@ -66,7 +73,6 @@ jobs:
           last="${{ steps.get-last.outputs.last_tag }}"
 
           if [[ -n "$input" ]]; then
-            echo "Benutzerdefinierter Tag: $input"
             echo "new_tag=$input" >> $GITHUB_OUTPUT
             exit 0
           fi
