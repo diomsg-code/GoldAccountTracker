@@ -1,5 +1,5 @@
 name: Publish 'Gold & Currency Tracker'
-run-name: Build as ${{ github.event.inputs.releaseType }}
+run-name: Publish 'Gold & Currency Tracker' (${{ github.event.inputs.releaseType }})
 
 on:
   workflow_dispatch:
@@ -30,8 +30,8 @@ permissions:
   contents: write
 
 jobs:
-  define-new-tag:
-    name: Define new tag
+  build-changelog-github:
+    name: Build Changelog and Github
     runs-on: ubuntu-latest
     outputs:
       old_tag: ${{ steps.get-old.outputs.old_tag }}
@@ -94,25 +94,15 @@ jobs:
 
           echo "new_tag=$newtag" >> $GITHUB_OUTPUT
 
-  create-changelog:
-    name: Create Changelog
-    if: github.event.inputs.createChangelog == 'true'
-    needs: define-new-tag
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
           old_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
           sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Generate changelog section with version header
+        if: github.event.inputs.createChangelog == 'true'
         run: |
-          version="${{ needs.define-new-tag.outputs.new_tag }}"
+          version="${{ steps.set-tag.outputs.new_tag }}"
           date=$(date -u +"%Y-%m-%d")
 
           echo "**${version} (${date})**" > tmp_changelog.md
@@ -126,32 +116,20 @@ jobs:
           echo "" >> tmp_changelog.md
 
       - name: Add new block to FULL-CHANGELOG.md
+        if: github.event.inputs.createChangelog == 'true'
         run: |
             touch FULL-CHANGELOG.md
             cat tmp_changelog.md FULL-CHANGELOG.md > FULL-CHANGELOG.new.md
             mv FULL-CHANGELOG.new.md FULL-CHANGELOG.md
 
       - name: Commit FULL-CHANGELOG.md
+        if: github.event.inputs.createChangelog == 'true'
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add FULL-CHANGELOG.md
-          git commit -m "Update FULL-CHANGELOG.md for ${{ needs.define-new-tag.outputs.new_tag }}"
+          git commit -m "Update FULL-CHANGELOG.md for ${{ steps.set-tag.outputs.new_tag }}"
           git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} HEAD:main
-
-  build-github:
-    name: Build Github
-    needs: 
-      - create-changelog
-      - define-new-tag
-    runs-on: ubuntu-latest
-    env:
-        GITHUB_OAUTH: ${{ secrets.G_TOKEN }}  
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Get the latest version of main from the repository
         run: |
@@ -163,12 +141,12 @@ jobs:
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git tag ${{ needs.define-new-tag.outputs.new_tag }}
-          git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ needs.define-new-tag.outputs.new_tag }}
+          git tag ${{ steps.set-tag.outputs.new_tag }}
+          git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ steps.set-tag.outputs.new_tag }}
 
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
-          old_tag=${{ needs.define-new-tag.outputs.old_tag }}
+          old_tag=${{ steps.set-tag.outputs.old_tag }}
           sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Package and publish for Github (Alpha)
@@ -183,8 +161,7 @@ jobs:
     name: Build Retail
     if: github.event.inputs.buildRetail == 'true'
     needs: 
-      - build-github
-      - define-new-tag
+      - build-changelog-github
     runs-on: ubuntu-latest
     env:
         CF_API_KEY: ${{ secrets.CF_API_KEY }}
@@ -203,7 +180,7 @@ jobs:
 
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
-          old_tag=${{ needs.define-new-tag.outputs.old_tag }}
+          old_tag=${{ needs.build-changelog-github.outputs.old_tag }}
           sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Get current tags
