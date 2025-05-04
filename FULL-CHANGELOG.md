@@ -1,3 +1,31 @@
+**v18 (2025-05-04)**
+- Added: Currencies from Dragonflight
+- Added: New subpage in the options menu with information about the addon
+- Changed: The classes and factions are now displayed in the character dropdown
+- Updated: ruRU localization (#7 - Thanks to Hollicsh)
+- Refactoring of the addon structure and source code
+
+**v18-alpha.2 (2025-05-04)**
+- Added: Currencies from Dragonflight
+- Added: New subpage in the options menu with information about the addon
+- Changed: The classes and factions are now displayed in the character dropdown
+- Updated: ruRU localization (#7 - Thanks to Hollicsh)
+- Refactoring of the addon structure and source code
+
+**v18-alpha.1 (2025-05-04)**
+- Added: Currencies from Dragonflight
+- Added: New subpage in the options menu with information about the addon
+- Changed: The classes and factions are now displayed in the character dropdown
+- Updated: ruRU localization (#7 - Thanks to Hollicsh)
+- Refactoring of the addon structure and source code
+
+**v17 (2025-05-04)**
+- Added: Currencies from Dragonflight
+- Added: New subpage in the options menu with information about the addon
+- Changed: The classes and factions are now displayed in the character dropdown
+- Updated: ruRU localization (#7 - Thanks to Hollicsh)
+- Refactoring of the addon structure and source code
+
 **v15 (2025-05-04)**
 - Added: Currencies from Dragonflight
 - Added: New subpage in the options menu with information about the addon
