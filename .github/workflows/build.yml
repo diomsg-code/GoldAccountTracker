@@ -96,11 +96,6 @@ jobs:
 
           echo "new_tag=$newtag" >> $GITHUB_OUTPUT
 
-      - name: Replace @old-project-version@ in CHANGELOG.md
-        run: |
-          old_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-          sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
-
       - name: Generate changelog section with version header
         if: github.event.inputs.createChangelog == 'true'
         run: |
@@ -134,10 +129,16 @@ jobs:
           git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} HEAD:main
 
       - name: Get the latest version of main from the repository
+        if: github.event.inputs.createChangelog == 'true'
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git fetch origin main
           git reset --hard origin/main
+
+      - name: Replace @old-project-version@ in CHANGELOG.md
+        run: |
+          old_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
+          sed -i "s/@old-project-version@/$old_tag/g" CHANGELOG.md
 
       - name: Create and push tag
         run: |
