@@ -464,8 +464,8 @@ local function InitializeFrames()
 
         if i ~= 1 then scrollFrame:Hide() end
 
-        scrollFrame.scrollView = CreateFrame("Frame", nil, scrollFrame)
-        scrollFrame.scrollView:SetSize(scrollFrame:GetWidth(), 50)
+        scrollFrame.scrollView = CreateFrame("Frame")
+        scrollFrame.scrollView:SetSize(1, 1)
         scrollFrame:SetScrollChild(scrollFrame.scrollView)
 
         scrollFrame.nextButton = CreateFrame("Button", nil, scrollFrame, "UIPanelButtonTemplate")

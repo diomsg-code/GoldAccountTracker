@@ -59,31 +59,23 @@ function Options:Initialize()
     }
 
     local canvasFrame = CreateFrame("Frame", nil, UIParent)
-    canvasFrame:ClearAllPoints()
-    canvasFrame:SetPoint("TOPLEFT")
-    canvasFrame:Hide()
 
     local header = canvasFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightHuge")
     header:SetPoint("TOPLEFT", canvasFrame, 7, -22)
     header:SetText(L["addon.name"])
 
-    canvasFrame.scrollFrame = CreateFrame("ScrollFrame", nil, canvasFrame, "QuestScrollFrameTemplate")
-    canvasFrame.scrollFrame:SetPoint("TOPLEFT", 0, -54)
-    canvasFrame.scrollFrame:SetPoint("BOTTOMRIGHT", -29, 0)
-    canvasFrame.scrollFrame:EnableMouseWheel(true)
-    canvasFrame.scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-        local newValue = math.max(0, math.min(self:GetVerticalScroll() - delta * 20, self:GetVerticalScrollRange()))
-        self:SetVerticalScroll(newValue)
-    end)
+    local scrollFrame = CreateFrame("ScrollFrame", nil, canvasFrame, "QuestScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", canvasFrame, "TOPLEFT", 0, -54)
+    scrollFrame:SetPoint("BOTTOMRIGHT", canvasFrame, "BOTTOMRIGHT", -29, 0)
 
-    canvasFrame.scrollFrame.scrollView = CreateFrame("Frame", nil, canvasFrame.scrollFrame)
-    canvasFrame.scrollFrame.scrollView:SetSize(1, 1)
-    canvasFrame.scrollFrame:SetScrollChild(canvasFrame.scrollFrame.scrollView)
+    local scrollView = CreateFrame("Frame")
+    scrollView:SetSize(1, 1)
+    scrollFrame:SetScrollChild(scrollView)
 
     do
-        local descriptionFrame = CreateFrame("Frame", nil, canvasFrame.scrollFrame.scrollView, "BackdropTemplate")
+        local descriptionFrame = CreateFrame("Frame", nil, scrollView, "BackdropTemplate")
         descriptionFrame:ClearAllPoints()
-        descriptionFrame:SetPoint("TOPLEFT", canvasFrame.scrollFrame.scrollView, "TOPLEFT", 10, offsetY)
+        descriptionFrame:SetPoint("TOPLEFT", scrollView, "TOPLEFT", 10, offsetY)
         descriptionFrame:SetWidth(615)
         descriptionFrame:SetBackdrop(backdrop)
         descriptionFrame:SetBackdropColor(0,0,0,0.2)
@@ -108,9 +100,9 @@ function Options:Initialize()
     end
 
     do
-        local helpFrame = CreateFrame("Frame", nil, canvasFrame.scrollFrame.scrollView, "BackdropTemplate")
+        local helpFrame = CreateFrame("Frame", nil, scrollView, "BackdropTemplate")
         helpFrame:ClearAllPoints()
-        helpFrame:SetPoint("TOPLEFT", canvasFrame.scrollFrame.scrollView, "TOPLEFT", 10, offsetY)
+        helpFrame:SetPoint("TOPLEFT", scrollView, "TOPLEFT", 10, offsetY)
         helpFrame:SetWidth(615)
         helpFrame:SetBackdrop(backdrop)
         helpFrame:SetBackdropColor(0,0,0,0.2)
@@ -159,9 +151,9 @@ function Options:Initialize()
     end
 
     do
-        local aboutFrame = CreateFrame("Frame", nil, canvasFrame.scrollFrame.scrollView, "BackdropTemplate")
+        local aboutFrame = CreateFrame("Frame", nil, scrollView, "BackdropTemplate")
         aboutFrame:ClearAllPoints()
-        aboutFrame:SetPoint("TOPLEFT", canvasFrame.scrollFrame.scrollView, "TOPLEFT", 10, offsetY)
+        aboutFrame:SetPoint("TOPLEFT", scrollView, "TOPLEFT", 10, offsetY)
         aboutFrame:SetWidth(615)
         aboutFrame:SetBackdrop(backdrop)
         aboutFrame:SetBackdropColor(0,0,0,0.2)
