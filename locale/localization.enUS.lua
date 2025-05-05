@@ -61,7 +61,9 @@ L["minimap-button.tooltip"] = "|c%sLeft-click|r to open the gold and currency ov
 
 -- Options
 
-L["info.description.text"] = "Der Skyriding Race Tracker ist ein Addon, das die aktuellen Rennzeit während eines Rennens anzeigen (Race Tracker) und einen Überblick über alle Rennzeiten geben kann. (Race Time Overview)\n\nThis addon is compatible with all race types such as dragonriding, skyriding, skyrocketing and breakneck (D.R.I.V.E.).\n\nSolltest Du einen Fehler finden oder Fragen zum Addon haben, so kannst Du über Github oder Curseforge Kontakt aufnehmen. Über diese beiden Plattformen kannst Du mir auch bei der Übersetzung helfen. Vielen Dank."
+L["info.description"] = "Description"
+L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time.\n\nIf you find a bug or have questions about the addon, you can contact me via Github or Curseforge. You can also help me with the translation via these two platforms. Thank you."
+
 L["info.help"] = "Help"
 L["info.help.text"] = "In case of problems after an update or if you want to, you can reset the options here."
 L["info.help.reset-button.name"] = "Reset Options"
@@ -72,7 +74,7 @@ L["info.help.curseforge-button.name"] = "Curseforge"
 L["info.help.curseforge-button.desc"] = "Opens a popup window with a link to Curseforge."
 
 L["info.about"] = "About"
-L["info.about.text"] = "|c%sGame version:|r %s\n|c%sAddon version:|r %s\n\n|c%sAuthor:|r %s"
+L["info.about.text"] = "|cffF2E699Game version:|r %s\n|cffF2E699Addon version:|r %s\n\n|cffF2E699Author:|r %s"
 
 L["options"] = "Options"
 L["options.general"] = "General Options"

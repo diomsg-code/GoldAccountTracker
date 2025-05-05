@@ -93,7 +93,7 @@ function Options:Initialize()
         text:SetWordWrap(true)
         text:SetText(L["info.description.text"])
 
-        local totalHeight = text:GetHeight() + 30
+        local totalHeight = text:GetStringHeight() + 30
         descriptionFrame:SetHeight(totalHeight)
 
         offsetY = offsetY - descriptionFrame:GetHeight() - spacing
@@ -144,7 +144,7 @@ function Options:Initialize()
             GameTooltip:Hide()
         end)
 
-        local totalHeight = text:GetHeight() + 48 + 30
+        local totalHeight = text:GetStringHeight() + 48 + 30
         helpFrame:SetHeight(totalHeight)
 
         offsetY = offsetY - helpFrame:GetHeight() - spacing
@@ -169,7 +169,7 @@ function Options:Initialize()
         text:SetJustifyH("LEFT")
         text:SetSpacing(2)
         text:SetWordWrap(true)
-        text:SetText(L["info.about.text"]:format(GCT.GOLD_FONT_COLOR, GCT.GAME_VERSION .. " (" .. GCT.GAME_FLAVOR .. ")", GCT.GOLD_FONT_COLOR, GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.GOLD_FONT_COLOR, GCT.ADDON_AUTHOR))
+        text:SetText(L["info.about.text"]:format(GCT.GAME_VERSION .. " (" .. GCT.GAME_FLAVOR .. ")",GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.ADDON_AUTHOR))
 
         local divider = aboutFrame:CreateTexture(nil, "BACKGROUND")
         divider:SetPoint("TOP", text, "BOTTOM", 0, -10)
@@ -206,15 +206,13 @@ function Options:Initialize()
             GameTooltip:SetOwner(self, "ANCHOR_CURSOR")
             GameTooltip:SetText(L["info.help.curseforge-button.name"], 1, 1, 1, true)
             GameTooltip:AddLine(L["info.help.curseforge-button.desc"], true)
-            GameTooltip:SetWidth(200)
-            GameTooltip:SetHeight(200)
             GameTooltip:Show()
         end)
         buttonCurseforge:SetScript("OnLeave", function()
             GameTooltip:Hide()
         end)
 
-        local totalHeight = text:GetHeight() + 48 + 30
+        local totalHeight = text:GetStringHeight() + 48 + 30
         aboutFrame:SetHeight(totalHeight)
 
         local lastLine = aboutFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
