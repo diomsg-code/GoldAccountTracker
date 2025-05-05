@@ -13,10 +13,11 @@ GCT.LINK_CURSEFORGE = C_AddOns.GetAddOnMetadata(addonName, "X-Curseforge")
 GCT.NORMAL_FONT_COLOR = "ffFFD200"      -- #1
 GCT.WHITE_FONT_COLOR = "ffFFFFFF"       -- #2
 GCT.ORANGE_FONT_COLOR = "ffFF8040"      -- 13
-GCT.COLOR_GOLD_FONT = "ffF2E699"        -- #22
+GCT.GOLD_FONT_COLOR = "ffF2E699"        -- #22
 GCT.LINK_FONT_COLOR = "ff66BBFF"        -- #36
 
 GCT.MEDIA_PATH = "Interface\\AddOns\\" .. addonName .. "\\media\\"
+
 GCT.MONTH_KEYS = {
     "month.jan", "month.feb", "month.mar", "month.apr", "month.may", "month.jun",
     "month.jul", "month.aug", "month.sep", "month.oct", "month.nov", "month.dec"

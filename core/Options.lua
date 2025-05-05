@@ -169,7 +169,7 @@ function Options:Initialize()
         text:SetJustifyH("LEFT")
         text:SetSpacing(2)
         text:SetWordWrap(true)
-        text:SetText(L["info.about.text"]:format(GCT.COLOR_GOLD_FONT, GCT.GAME_VERSION .. " (" .. GCT.GAME_FLAVOR .. ")", GCT.COLOR_GOLD_FONT, GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.COLOR_GOLD_FONT, GCT.ADDON_AUTHOR))
+        text:SetText(L["info.about.text"]:format(GCT.GOLD_FONT_COLOR, GCT.GAME_VERSION .. " (" .. GCT.GAME_FLAVOR .. ")", GCT.GOLD_FONT_COLOR, GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.GOLD_FONT_COLOR, GCT.ADDON_AUTHOR))
 
         local divider = aboutFrame:CreateTexture(nil, "BACKGROUND")
         divider:SetPoint("TOP", text, "BOTTOM", 0, -10)

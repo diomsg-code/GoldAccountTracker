@@ -4,9 +4,24 @@ local L = GCT.localization
 
 local Utils = {}
 
----------------------
---- Main Funtions ---
----------------------
+-----------------------
+--- Helper Funtions ---
+-----------------------
+
+function Utils:GetToday()
+    return date("%Y-%m-%d")
+end
+
+function Utils:GetGold()
+    return GetMoney()
+end
+
+function Utils:GetCharacterInfo()
+    local char = UnitName("player")
+    local realm = GetRealmName()
+
+    return realm, char
+end
 
 function Utils:HexToRGB(hex)
     hex = hex:gsub("^#","")
@@ -27,20 +42,9 @@ function Utils:RGBToHex(r, g, b)
     return string.format("ff%02X%02X%02X", r * 255, g * 255, b * 255)
 end
 
-function Utils:GetToday()
-    return date("%Y-%m-%d")
-end
-
-function Utils:GetGold()
-    return GetMoney()
-end
-
-function Utils:GetCharacterInfo()
-    local char = UnitName("player")
-    local realm = GetRealmName()
-
-    return realm, char
-end
+---------------------
+--- Main Funtions ---
+---------------------
 
 function Utils:PrintDebug(msg)
     if GCT.data.options["debug-mode"] then
