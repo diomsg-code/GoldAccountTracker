@@ -4,8 +4,12 @@ if GetLocale() ~= "deDE" then return end
 
 local L = GCT.localization
 
+-- Generel
+
 L["addon.name"] = "Gold & Currency Tracker"
 L["addon.version"] = "Version"
+
+-- Addon specific
 
 L["month.jan"] = "Januar"
 L["month.feb"] = "Februar"

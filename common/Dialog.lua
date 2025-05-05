@@ -92,7 +92,7 @@ function Dialog:InitializeDialog()
         Utils.minimapButton:Refresh("GoldCurrencyTracker", zone)
         Utils.minimapButton:Lock("GoldCurrencyTracker")
 
-        GCT.utils:PrintMessage(L["chat.reset-options.success"])
+        Utils:PrintMessage(L["chat.reset-options.success"])
         resetOptionsDialog:Hide()
     end)
 
