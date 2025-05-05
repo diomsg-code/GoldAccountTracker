@@ -2,4 +2,5 @@
 ..\..\FrameXML\UI.xsd">
     <Script file="Options.lua" />
     <Script file="Overview.lua" />
+    <Include file="Overview.xml" />
 </Ui>

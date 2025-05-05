@@ -63,7 +63,7 @@ function Utils:PrintDebug(msg)
 end
 
 function Utils:PrintMessage(msg)
-    DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode("Gold & Currency Tracker: ", GCT.NORMAL_FONT_COLOR) .. msg)
+    DEFAULT_CHAT_FRAME:AddMessage(WrapTextInColorCode(L["addon.name"] .. ": ", GCT.NORMAL_FONT_COLOR) .. msg)
 end
 
 function Utils:InitializeDatabase()

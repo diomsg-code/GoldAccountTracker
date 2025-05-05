@@ -17,7 +17,7 @@ local selectedRealm, selectedChar = Utils:GetCharacterInfo()
 --------------
 
 local overviewFrame
-local contentFrames = {}
+local scrollFrames = {}
 
 ----------------------
 --- Local Funtions ---
@@ -292,12 +292,12 @@ end
 --- Frame Funtions ---
 ----------------------
 
-local function UpdateOverview(selectedCurrency, currentMonthOffset, history, contentFrame)
+local function UpdateOverview(selectedCurrency, currentMonthOffset, history, scrollFrame)
     local filterPrefix = GetYearMonthString(currentMonthOffset)
     local monthHistory = BuildMonthHistory(history, filterPrefix)
 
-    if contentFrame.rows then
-        for _, row in ipairs(contentFrame.rows) do
+    if scrollFrame.rows then
+        for _, row in ipairs(scrollFrame.rows) do
             for _, element in ipairs(row) do
                 element:Hide()
                 element:SetParent(nil)
@@ -305,37 +305,37 @@ local function UpdateOverview(selectedCurrency, currentMonthOffset, history, con
         end
     end
 
-    contentFrame.rows = {}
+    scrollFrame.rows = {}
 
-    local header = contentFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-    header:SetPoint("TOP", 0, -40)
+    local header = scrollFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    header:SetPoint("TOP", 0, 70)
     header:SetText(FormatMonthText(filterPrefix))
-    table.insert(contentFrame.rows, {header})
+    table.insert(scrollFrame.rows, {header})
 
     if #monthHistory == 0 then
-        local noEntry = contentFrame.scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        noEntry:SetPoint("TOPLEFT", 15, -10)
+        local noEntry = scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        noEntry:SetPoint("TOP", 0, 0)
         noEntry:SetText(L["table.no-entries"])
-        table.insert(contentFrame.rows, {noEntry})
+        table.insert(scrollFrame.rows, {noEntry})
         return
     end
 
-    local offsetY = -10
+    local offsetY = 0
     local spacing = 10
 
-    local headerDate = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    headerDate:SetPoint("TOPLEFT", 15, offsetY)
+    local headerDate = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    headerDate:SetPoint("TOPLEFT", 0, offsetY)
     headerDate:SetText(L["table.date"])
 
-    local headerAmount  = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    headerAmount:SetPoint("TOPLEFT", 100, offsetY)
+    local headerAmount  = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    headerAmount:SetPoint("TOPLEFT", 80, offsetY)
     headerAmount:SetText(L["table.amount"])
 
-    local headerDifference = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
-    headerDifference:SetPoint("TOPLEFT", 250, offsetY)
+    local headerDifference = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    headerDifference:SetPoint("TOPLEFT", 230, offsetY)
     headerDifference:SetText(L["table.difference"])
 
-    table.insert(contentFrame.rows, {headerDate, headerAmount, headerDifference})
+    table.insert(scrollFrame.rows, {headerDate, headerAmount, headerDifference})
 
     offsetY = offsetY - 20
 
@@ -350,16 +350,16 @@ local function UpdateOverview(selectedCurrency, currentMonthOffset, history, con
             prevValue = GetPreviousValueFromHistory(history, dateStr) or 0
         end
 
-        local rowDate = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-        rowDate:SetPoint("TOPLEFT", 15, offsetY)
+        local rowDate = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+        rowDate:SetPoint("TOPLEFT", 0, offsetY)
         rowDate:SetText(entry.date)
 
-        local rowAmount = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-        rowAmount:SetPoint("TOPLEFT", 100, offsetY)
+        local rowAmount = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+        rowAmount:SetPoint("TOPLEFT", 80, offsetY)
         rowAmount:SetText(FormatCurrency(currentValue, selectedCurrency))
 
-        local rowDifference = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-        rowDifference:SetPoint("TOPLEFT", 250, offsetY)
+        local rowDifference = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+        rowDifference:SetPoint("TOPLEFT", 230, offsetY)
 
         local firstDate = history[1].date
 
@@ -378,35 +378,30 @@ local function UpdateOverview(selectedCurrency, currentMonthOffset, history, con
             rowDifference:SetTextColor(1,1,1)
         end
 
-        table.insert(contentFrame.rows, {rowDate, rowAmount, rowDifference})
+        table.insert(scrollFrame.rows, {rowDate, rowAmount, rowDifference})
         offsetY = offsetY - rowDate:GetHeight() - spacing
     end
 
-    local lastLine = contentFrame.scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
-    lastLine:SetPoint("TOPLEFT", 10, offsetY)
-
-    table.insert(contentFrame.rows, {lastLine})
-
-    contentFrame.prevButton:SetEnabled(HasAnyDataBeforeMonth(history, filterPrefix))
-    contentFrame.nextButton:SetEnabled(HasAnyDataAfterMonth(history, filterPrefix))
+    scrollFrame.prevButton:SetEnabled(HasAnyDataBeforeMonth(history, filterPrefix))
+    scrollFrame.nextButton:SetEnabled(HasAnyDataAfterMonth(history, filterPrefix))
 end
 
 local function UpdateCharacterOverview()
     local characterHistory = BuildCharacterHistory(selectedRealm, selectedChar, selectedCurrency[1])
 
-    UpdateOverview(selectedCurrency[1], currentMonthOffset[1], characterHistory, contentFrames[1])
+    UpdateOverview(selectedCurrency[1], currentMonthOffset[1], characterHistory, scrollFrames[1])
 end
 
 local function UpdateWarbandOverview()
     local warbandHistory = BuildWarbandHistory(selectedCurrency[2])
 
-    UpdateOverview(selectedCurrency[2], currentMonthOffset[2], warbandHistory, contentFrames[2])
+    UpdateOverview(selectedCurrency[2], currentMonthOffset[2], warbandHistory, scrollFrames[2])
 end
 
 local function UpdateAccountOverview()
     local accountHistory = BuildAccountHistory(selectedCurrency[3])
 
-    UpdateOverview(selectedCurrency[3], currentMonthOffset[3], accountHistory, contentFrames[3])
+    UpdateOverview(selectedCurrency[3], currentMonthOffset[3], accountHistory, scrollFrames[3])
 end
 
 local function InitializeFrames()
@@ -414,7 +409,7 @@ local function InitializeFrames()
 
     overviewFrame = CreateFrame("Frame", "GCT_OverviewFrame", UIParent, "PortraitFrameTemplate")
     overviewFrame:SetPoint("CENTER")
-    overviewFrame:SetSize(450, 550)
+    overviewFrame:SetSize(470, 550)
     overviewFrame:SetMovable(true)
     overviewFrame:EnableMouse(true)
     overviewFrame:RegisterForDrag("LeftButton")
@@ -428,18 +423,18 @@ local function InitializeFrames()
     portrait:SetPoint('TOPLEFT', -5, 8)
     portrait:SetTexture(GCT.MEDIA_PATH .. "iconRound.blp")
 
-    local background = CreateFrame("Frame", nil, overviewFrame, "InsetFrameTemplate")
-    background:SetSize(440, 415)
-    background:SetPoint("TOPLEFT", overviewFrame, "TOPLEFT", 5, -100)
-    background.texture = background:CreateTexture()
-    background.texture:SetSize(430, 405)
+    local background = CreateFrame("Frame", nil, overviewFrame, "InsetFrameTemplate4")
+    background:SetSize(450, 420)
+    background:SetPoint("BOTTOM", overviewFrame, "BOTTOM", 0, 37)
+    background.texture = background:CreateTexture(nil, "BACKGROUND")
+    background.texture:SetAllPoints(background)
     background.texture:SetPoint("CENTER")
-    background.texture:SetAtlas("character-panel-background")
+    background.texture:SetAtlas("character-panel-background", true)
 
     local function ShowTab(i)
         PanelTemplates_SetTab(overviewFrame, i)
-        for idx, c in ipairs(contentFrames) do
-            if idx == i then c:Show() else c:Hide() end
+        for idx, s in ipairs(scrollFrames) do
+            if idx == i then s:Show() else s:Hide() end
         end
     end
 
@@ -463,29 +458,21 @@ local function InitializeFrames()
         end)
         tabs[i] = tab
 
-        local contentFrame = CreateFrame("Frame", nil, overviewFrame)
-        contentFrame:SetPoint("TOPLEFT", 0, 0)
-        contentFrame:SetSize(450, 550)
-        if i ~= 1 then contentFrame:Hide() end
+        local scrollFrame = CreateFrame("ScrollFrame", nil, background, "GTC_OverviewScrollFrameTemplate")
+        scrollFrame:SetPoint("TOPLEFT", background, "TOPLEFT", 15, -15)
+        scrollFrame:SetPoint("BOTTOMRIGHT", background, "BOTTOMRIGHT", -25, 15)
 
-        contentFrame.scrollFrame = CreateFrame("ScrollFrame", nil, contentFrame, "QuestScrollFrameTemplate")
-        contentFrame.scrollFrame:SetPoint("TOPLEFT", 5, -104)
-        contentFrame.scrollFrame:SetPoint("BOTTOMRIGHT", -32, 37)
-        contentFrame.scrollFrame:EnableMouseWheel(true)
-        contentFrame.scrollFrame:SetScript("OnMouseWheel", function(self, delta)
-            local newValue = math.max(0, math.min(self:GetVerticalScroll() - delta * 20, self:GetVerticalScrollRange()))
-            self:SetVerticalScroll(newValue)
-        end)
+        if i ~= 1 then scrollFrame:Hide() end
 
-        contentFrame.scrollFrame.scrollView = CreateFrame("Frame", nil, contentFrame.scrollFrame)
-        contentFrame.scrollFrame.scrollView:SetSize(200, 200)
-        contentFrame.scrollFrame:SetScrollChild(contentFrame.scrollFrame.scrollView)
+        scrollFrame.scrollView = CreateFrame("Frame", nil, scrollFrame)
+        scrollFrame.scrollView:SetSize(scrollFrame:GetWidth(), 50)
+        scrollFrame:SetScrollChild(scrollFrame.scrollView)
 
-        contentFrame.nextButton = CreateFrame("Button", nil, contentFrame, "UIPanelButtonTemplate")
-        contentFrame.nextButton:SetPoint("BOTTOMRIGHT", contentFrame, "BOTTOMRIGHT", -10, 8)
-        contentFrame.nextButton:SetSize(100, 22)
-        contentFrame.nextButton:SetText(L["button.next"])
-        contentFrame.nextButton:SetScript("OnClick", function()
+        scrollFrame.nextButton = CreateFrame("Button", nil, scrollFrame, "UIPanelButtonTemplate")
+        scrollFrame.nextButton:SetPoint("TOPRIGHT", background, "BOTTOMRIGHT", -5, -5)
+        scrollFrame.nextButton:SetSize(100, 22)
+        scrollFrame.nextButton:SetText(L["button.next"])
+        scrollFrame.nextButton:SetScript("OnClick", function()
             currentMonthOffset[i] = currentMonthOffset[i] - 1
 
             if i == 1 then
@@ -497,11 +484,11 @@ local function InitializeFrames()
             end
         end)
 
-        contentFrame.prevButton = CreateFrame("Button", nil, contentFrame, "UIPanelButtonTemplate")
-        contentFrame.prevButton:SetPoint("BOTTOMLEFT", contentFrame, "BOTTOMLEFT", 10, 8)
-        contentFrame.prevButton:SetSize(100, 22)
-        contentFrame.prevButton:SetText(L["button.prev"])
-        contentFrame.prevButton:SetScript("OnClick", function()
+        scrollFrame.prevButton = CreateFrame("Button", nil, scrollFrame, "UIPanelButtonTemplate")
+        scrollFrame.prevButton:SetPoint("TOPLEFT", background, "BOTTOMLEFT", 5, -5)
+        scrollFrame.prevButton:SetSize(100, 22)
+        scrollFrame.prevButton:SetText(L["button.prev"])
+        scrollFrame.prevButton:SetScript("OnClick", function()
             currentMonthOffset[i] = currentMonthOffset[i] + 1
 
             if i == 1 then
@@ -513,8 +500,8 @@ local function InitializeFrames()
             end
         end)
 
-        local currencyDropdown = CreateFrame("DropdownButton", nil, contentFrame, "WowStyle1DropdownTemplate")
-        currencyDropdown:SetPoint("TOPRIGHT", overviewFrame, "TOPRIGHT", -10, -70)
+        local currencyDropdown = CreateFrame("DropdownButton", nil, scrollFrame, "WowStyle1DropdownTemplate")
+        currencyDropdown:SetPoint("BOTTOMRIGHT", background, "TOPRIGHT", -5, 5)
         currencyDropdown:SetSize(200, 25)
 
         if i == 1 or i == 3 then
@@ -641,8 +628,8 @@ local function InitializeFrames()
         end
 
         if i == 1 then
-            local characterDropdown = CreateFrame("DropdownButton", nil, contentFrame, "WowStyle1DropdownTemplate")
-            characterDropdown:SetPoint("TOPLEFT", overviewFrame, "TOPLEFT", 10, -70)
+            local characterDropdown = CreateFrame("DropdownButton", nil, scrollFrame, "WowStyle1DropdownTemplate")
+            characterDropdown:SetPoint("BOTTOMLEFT", background, "TOPLEFT", 5, 5)
             characterDropdown:SetSize(125, 25)
 
             characterDropdown:SetupMenu(function(self, root)
@@ -718,7 +705,7 @@ local function InitializeFrames()
             end)
         end
 
-        contentFrames[i] = contentFrame
+        scrollFrames[i] = scrollFrame
     end
 
     PanelTemplates_SetNumTabs(overviewFrame, 3)

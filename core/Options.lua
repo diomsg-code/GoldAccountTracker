@@ -65,7 +65,7 @@ function Options:Initialize()
 
     local header = canvasFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightHuge")
     header:SetPoint("TOPLEFT", canvasFrame, 7, -22)
-    header:SetText("Gold & Currency Tracker")
+    header:SetText(L["addon.name"])
 
     canvasFrame.scrollFrame = CreateFrame("ScrollFrame", nil, canvasFrame, "QuestScrollFrameTemplate")
     canvasFrame.scrollFrame:SetPoint("TOPLEFT", 0, -54)

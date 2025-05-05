@@ -3,3 +3,4 @@
 [Full Changelog](https://github.com/diomsg-code/GoldCurrencyTracker/compare/@old-project-version@...@project-version@) - [Previous Releases](https://github.com/diomsg-code/GoldCurrencyTracker/releases)
 
 - Fixed: Incorrect addon versions were displayed
+- Minor code adjustments
