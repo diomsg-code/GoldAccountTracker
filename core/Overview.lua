@@ -323,15 +323,15 @@ local function UpdateOverview(selectedCurrency, currentMonthOffset, history, scr
     local offsetY = 0
     local spacing = 10
 
-    local headerDate = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    local headerDate = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY", "GameFontNormal")
     headerDate:SetPoint("TOPLEFT", 0, offsetY)
     headerDate:SetText(L["table.date"])
 
-    local headerAmount  = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    local headerAmount  = scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     headerAmount:SetPoint("TOPLEFT", 80, offsetY)
     headerAmount:SetText(L["table.amount"])
 
-    local headerDifference = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontNormal")
+    local headerDifference = scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     headerDifference:SetPoint("TOPLEFT", 230, offsetY)
     headerDifference:SetText(L["table.difference"])
 
@@ -350,15 +350,15 @@ local function UpdateOverview(selectedCurrency, currentMonthOffset, history, scr
             prevValue = GetPreviousValueFromHistory(history, dateStr) or 0
         end
 
-        local rowDate = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+        local rowDate = scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rowDate:SetPoint("TOPLEFT", 0, offsetY)
         rowDate:SetText(entry.date)
 
-        local rowAmount = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+        local rowAmount = scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rowAmount:SetPoint("TOPLEFT", 80, offsetY)
         rowAmount:SetText(FormatCurrency(currentValue, selectedCurrency))
 
-        local rowDifference = scrollFrame.scrollView:CreateFontString(nil,"OVERLAY","GameFontHighlightSmall")
+        local rowDifference = scrollFrame.scrollView:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         rowDifference:SetPoint("TOPLEFT", 230, offsetY)
 
         local firstDate = history[1].date
@@ -695,7 +695,7 @@ local function InitializeFrames()
                             local fontString = button.fontString
                             fontString:SetPoint("RIGHT")
                             fontString:SetTextColor(Utils:HexToRGB(classColor))
-                            
+
                             local width = fontString:GetUnboundedStringWidth() + rightTexture:GetWidth() + 20
                             local height = rightTexture:GetHeight() + 4
                             return width, height
