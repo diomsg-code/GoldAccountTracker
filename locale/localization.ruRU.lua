@@ -59,7 +59,7 @@ L["minimap-button.tooltip"] = "|c%sЛКМ|r - открыть обзор золо
 -- Options
 
 L["info.description"] = "Description"
-L["info.description.text.row.1"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time.\n\nIf you find a bug or have questions about the addon, you can contact me via Github or Curseforge. You can also help me with the translation via these two platforms. Thank you very much."
+L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time.\n\nIf you find a bug or have questions about the addon, you can contact me via Github or Curseforge. You can also help me with the translation via these two platforms. Thank you very much."
 
 L["info.help"] = "Help"
 L["info.help.text"] = "In case of problems after an update or if you want to, you can reset the options here."

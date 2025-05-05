@@ -59,7 +59,7 @@ L["minimap-button.tooltip"] = "|c%sLinksklick|r zum Öffnen der Gold- und Währu
 -- Options
 
 L["info.description"] = "Beschreibung"
-L["info.description.text.row.1"] = "Der Gold & Currency Tracker ist ein Addon, das den Kontostand von Gold und verschiedenen Währungen speichert und im Zeitverlauf anzeigen kann.\n\nSolltest Du einen Fehler finden oder Fragen zum Addon haben, so kannst Du über Github oder Curseforge Kontakt aufnehmen. Über diese beiden Plattformen kannst Du mir auch bei der Übersetzung helfen. Vielen Dank."
+L["info.description.text"] = "Der Gold & Currency Tracker ist ein Addon, das den Kontostand von Gold und verschiedenen Währungen speichert und im Zeitverlauf anzeigen kann.\n\nSolltest Du einen Fehler finden oder Fragen zum Addon haben, so kannst Du über Github oder Curseforge Kontakt aufnehmen. Über diese beiden Plattformen kannst Du mir auch bei der Übersetzung helfen. Vielen Dank."
 
 L["info.help"] = "Hilfe"
 L["info.help.text"] = "Bei Problemen nach einem Update oder wenn Du es möchtest, kannst Du hier die Einstellungen zurücksetzen."
