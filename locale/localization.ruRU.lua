@@ -4,7 +4,7 @@ if GetLocale() ~= "ruRU" then return end
 
 local L = GCT.localization
 
--- Главное
+-- Generel
 
 L["addon.name"] = "Трекер золота и валюты"
 L["addon.version"] = "Версия"
@@ -56,7 +56,7 @@ L["table.no-entries"] = "Нет записей за этот месяц."
 
 L["minimap-button.tooltip"] = "|c%sЛКМ|r - открыть обзор золота и валюты.\n|c%sПКМ|r - открыть настройки."
 
--- Параметры
+-- Options
 
 L["info.description"] = "Описание"
 L["info.description.text"] = "Gold & Currency Tracker — это дополнение, сохраняющее количество золота и различных валют на аккаунте и отображающий его в истории.\n\nЕсли Вы нашли ошибку или у Вас есть вопросы по аддону, Вы можете связаться со мной через Github или Curseforge. Вы также можете помочь мне с переводом через эти две платформы. Большое спасибо."
@@ -86,7 +86,7 @@ L["options.other"] = "Другие параметры"
 L["options.debug-mode.name"] = "Режим отладки"
 L["options.debug-mode.tooltip"] = "Включение режима отладки отображает дополнительную информацию в чате."
 
--- Чат
+-- Chat
 
 L["chat.reset-options.success"] = "Параметры успешно сброшены."
 
