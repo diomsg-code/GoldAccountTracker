@@ -12,8 +12,11 @@ on:
         options:
           - Release
           - Alpha
-      versionTag:
-        description: 'Optional: manueller Tag'
+      newVersionTag:
+        description: 'Optional: neuer Tag'
+        required: false
+      oldVersionTag:
+        description: 'Optional: alter Tag'
         required: false
       buildRetail:
         description: 'Retail-Version'
@@ -47,10 +50,15 @@ jobs:
       - name: Get last release tag
         id: get-last-release-tag
         run: |
-          git fetch --tags
-          last_release_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-          echo "tag=$last_release_tag" >> $GITHUB_OUTPUT
+          input="${{ github.event.inputs.oldVersionTag }}"
 
+          if [[ -n "$input" ]]; then
+            echo "tag=$input" >> $GITHUB_OUTPUT
+          else
+            git fetch --tags
+            last_release_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
+            echo "tag=$last_release_tag" >> $GITHUB_OUTPUT
+          fi
       - name: Get last tag
         id: get-last-tag
         run: |
@@ -61,7 +69,7 @@ jobs:
       - name: Set new tag
         id: set-new-tag
         run: |
-          input="${{ github.event.inputs.versionTag }}"
+          input="${{ github.event.inputs.newVersionTag }}"
           type="${{ github.event.inputs.releaseType }}"
           last_tag="${{ steps.get-last-tag.outputs.tag }}"
 
@@ -136,7 +144,7 @@ jobs:
 
       - name: Replace @old-project-version@ in CHANGELOG.md
         run: |
-          last_release_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
+          last_release_tag=${{ steps.get-last-release-tag.outputs.tag }}
           sed -i "s/@old-project-version@/$last_release_tag/g" CHANGELOG.md
 
       - name: Create and push tag
@@ -189,10 +197,9 @@ jobs:
         uses: BigWigsMods/packager@v2
         with:
           args: -p ${{ vars.CF_ID }} -a ${{ vars.WAGO_ID }}
-  
+
       - name: Package and publish for CourseForge and Wago (Release)
         if: github.event.inputs.releaseType != 'Alpha'  
         uses: BigWigsMods/packager@v2
         with:
           args: -p ${{ vars.CF_ID }} -a ${{ vars.WAGO_ID }}
-
