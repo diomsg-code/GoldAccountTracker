@@ -1,3 +1,7 @@
+**v16 (2025-05-06)**
+- Fixed: Incorrect addon versions were displayed
+- Minor code adjustments
+
 **v15 (2025-05-04)**
 - Added: Currencies from Dragonflight
 - Added: New subpage in the options menu with information about the addon
