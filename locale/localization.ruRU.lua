@@ -4,7 +4,7 @@ if GetLocale() ~= "ruRU" then return end
 
 local L = GCT.localization
 
--- Generel
+-- Главное
 
 L["addon.name"] = "Трекер золота и валюты"
 L["addon.version"] = "Версия"
@@ -56,24 +56,24 @@ L["table.no-entries"] = "Нет записей за этот месяц."
 
 L["minimap-button.tooltip"] = "|c%sЛКМ|r - открыть обзор золота и валюты.\n|c%sПКМ|r - открыть настройки."
 
--- Options
+-- Параметры
 
-L["info.description"] = "Description"
-L["info.description.text"] = "The Gold & Currency Tracker is an addon that saves the account balance of gold and various currencies and can display it over time.\n\nIf you find a bug or have questions about the addon, you can contact me via Github or Curseforge. You can also help me with the translation via these two platforms. Thank you very much."
+L["info.description"] = "Описание"
+L["info.description.text"] = "Gold & Currency Tracker — это дополнение, сохраняющее количество золота и различных валют на аккаунте и отображающий его в истории.\n\nЕсли Вы нашли ошибку или у Вас есть вопросы по аддону, Вы можете связаться со мной через Github или Curseforge. Вы также можете помочь мне с переводом через эти две платформы. Большое спасибо."
 
-L["info.help"] = "Help"
-L["info.help.text"] = "In case of problems after an update or if you want to, you can reset the options here."
-L["info.help.reset-button.name"] = "Reset Options"
-L["info.help.reset-button.desc"] = "Resets the options to the default values. This applies to all characters."
+L["info.help"] = "Помощь"
+L["info.help.text"] = "В случае возникновения проблем после обновления, Вы можете сбросить настройки здесь."
+L["info.help.reset-button.name"] = "Сбросить параметры"
+L["info.help.reset-button.desc"] = "Сбрасывает параметры на значения по умолчанию. Это касается всех персонажей."
 L["info.help.github-button.name"] = "Github"
-L["info.help.github-button.desc"] = "Opens a popup window with a link to Github."
+L["info.help.github-button.desc"] = "Открывает всплывающее окно со ссылкой на Github."
 L["info.help.curseforge-button.name"] = "Curseforge"
-L["info.help.curseforge-button.desc"] = "Opens a popup window with a link to Curseforge."
+L["info.help.curseforge-button.desc"] = "Открывает всплывающее окно со ссылкой на Curseforge."
 
-L["info.about"] = "About"
-L["info.about.text"] = "|cffF2E699Game version:|r %s\n|cffF2E699Addon version:|r %s\n\n|cffF2E699Author:|r %s"
+L["info.about"] = "Об аддоне"
+L["info.about.text"] = "|cffF2E699Версия игры:|r %s\n|cffF2E699Версия дополнения:|r %s\n\n|cffF2E699Автор:|r %s"
 
-L["options"] = "Options"
+L["options"] = "Параметры"
 L["options.general"] = "Общие параметры"
 L["options.open-on-login.name"] = "Обзор золота и валюты"
 L["options.open-on-login.tooltip"] = "Если эта функция включена, обзор золота и валюты открывается автоматически при входе в систему."
@@ -86,11 +86,11 @@ L["options.other"] = "Другие параметры"
 L["options.debug-mode.name"] = "Режим отладки"
 L["options.debug-mode.tooltip"] = "Включение режима отладки отображает дополнительную информацию в чате."
 
--- Chat
+-- Чат
 
-L["chat.reset-options.success"] = "Options successfully reseted."
+L["chat.reset-options.success"] = "Параметры успешно сброшены."
 
 -- Dialog
 
-L["dialog.copy-address.text"] = "To copy the link press CTRL + C."
-L["dialog.reset-options.text"] = "Do you really want to reset the options?"
+L["dialog.copy-address.text"] = "Чтобы скопировать ссылку, нажмите CTRL + C."
+L["dialog.reset-options.text"] = "Вы действительно хотите сбросить настройки?"
