@@ -1,3 +1,6 @@
+**v17 (2025-05-07)**
+- Updated: ruRU localization (#8 - Thanks to Hollicsh)
+
 **v16 (2025-05-06)**
 - Fixed: Incorrect addon versions were displayed
 - Minor code adjustments
