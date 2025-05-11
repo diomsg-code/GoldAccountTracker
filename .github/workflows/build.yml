@@ -17,16 +17,6 @@ on:
         required: false
         default: true
         type: boolean
-      build-classic:
-        description: 'Classic-Version'
-        required: false
-        default: true
-        type: boolean
-      build-cata:
-        description: 'Cata-Version'
-        required: false
-        default: true
-        type: boolean
       full-changelog:
         description: 'vollständiges Changelog'
         required: false
