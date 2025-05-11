@@ -1,10 +1,10 @@
 name: Publish 'Gold & Currency Tracker'
-run-name: Publish 'Gold & Currency Tracker' (${{ github.event.inputs.releaseType }})
+run-name: Publish 'Gold & Currency Tracker' (${{ github.event.inputs.release-type }})
 
 on:
   workflow_dispatch:
     inputs:
-      releaseType:
+      release-type:
         description: 'Art des Releases'
         required: true
         default: 'release'
@@ -12,18 +12,22 @@ on:
         options:
           - Release
           - Alpha
-      newVersionTag:
-        description: 'Optional: neuer Tag'
-        required: false
-      oldVersionTag:
-        description: 'Optional: alter Tag'
-        required: false
-      buildRetail:
+      build-retail:
         description: 'Retail-Version'
         required: false
         default: true
         type: boolean
-      createChangelog:
+      build-classic:
+        description: 'Classic-Version'
+        required: false
+        default: true
+        type: boolean
+      build-cata:
+        description: 'Cata-Version'
+        required: false
+        default: true
+        type: boolean
+      full-changelog:
         description: 'vollständiges Changelog'
         required: false
         default: true
@@ -33,149 +37,35 @@ permissions:
   contents: write
 
 jobs:
-  build-changelog-github:
-    name: Build Changelog and Github
+  prework:
+    name: Prework
     runs-on: ubuntu-latest
     env:
-      GITHUB_OAUTH: ${{ secrets.G_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.G_TOKEN }}
+      GITHUB_REPOSITORY: ${{ github.repository }}
     outputs:
-      last-release-tag: ${{ steps.get-last-release-tag.outputs.tag }}
-      new-tag: ${{ steps.set-new-tag.outputs.tag }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get last release tag
-        id: get-last-release-tag
-        run: |
-          input="${{ github.event.inputs.oldVersionTag }}"
-
-          if [[ -n "$input" ]]; then
-            echo "tag=$input" >> $GITHUB_OUTPUT
-          else
-            git fetch --tags
-            last_release_tag=$(git tag --sort=-creatordate | grep '^v[0-9]\+$' | head -n 1 || echo "v0")
-            echo "tag=$last_release_tag" >> $GITHUB_OUTPUT
-          fi
-      - name: Get last tag
-        id: get-last-tag
-        run: |
-          git fetch --tags
-          last_tag=$(git tag --sort=-creatordate | grep '^v[0-9]' | head -n 1 || echo "v0")
-          echo "tag=$last_tag" >> $GITHUB_OUTPUT
-
-      - name: Set new tag
-        id: set-new-tag
-        run: |
-          input="${{ github.event.inputs.newVersionTag }}"
-          type="${{ github.event.inputs.releaseType }}"
-          last_tag="${{ steps.get-last-tag.outputs.tag }}"
-
-          if [[ -n "$input" ]]; then
-            echo "tag=$input" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          base=${last_tag%%-*}
-          suffix=${last_tag#"$base"}
-          base_num=${base#"v"}
-
-          if [[ "$suffix" =~ ^-alpha\.[0-9]+$ ]]; then
-            alpha_num=$(echo "$suffix" | cut -d. -f2)
-          fi
-
-          if [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Alpha" ]]; then
-            next_alpha=$((alpha_num + 1))
-            new_tag="v${base_num}-alpha.${next_alpha}"
-          elif [[ "$suffix" =~ ^-alpha\.[0-9]+$ && "$type" == "Release" ]]; then
-            new_tag="v${base_num}"
-          elif [[ -z "$suffix" && "$type" == "Release" ]]; then
-            next_base=$((base_num + 1))
-            new_tag="v${next_base}"
-          elif [[ -z "$suffix" && "$type" == "Alpha" ]]; then
-            next_base=$((base_num + 1))
-            new_tag="v${next_base}-alpha.1"
-          else
-            exit 1
-          fi
-
-          echo "tag=$new_tag" >> $GITHUB_OUTPUT
-
-      - name: Generate changelog section with version header
-        if: github.event.inputs.createChangelog == 'true'
-        run: |
-          version="${{ steps.set-new-tag.outputs.tag }}"
-          date=$(date -u +"%Y-%m-%d")
-
-          echo "**${version} (${date})**" > tmp_changelog.md
-
-          awk '
-            /^### \[.*\]/ { if (in_section) exit; in_section = 1; next }
-            in_section && /^### \[/ { exit }
-            in_section && /^\-/ { print }
-          ' CHANGELOG.md >> tmp_changelog.md
-
-          echo "" >> tmp_changelog.md
-
-      - name: Add new block to FULL-CHANGELOG.md
-        if: github.event.inputs.createChangelog == 'true'
-        run: |
-            touch FULL-CHANGELOG.md
-            cat tmp_changelog.md FULL-CHANGELOG.md > FULL-CHANGELOG.new.md
-            mv FULL-CHANGELOG.new.md FULL-CHANGELOG.md
-
-      - name: Commit FULL-CHANGELOG.md
-        if: github.event.inputs.createChangelog == 'true'
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add FULL-CHANGELOG.md
-          git commit -m "Update FULL-CHANGELOG.md for ${{ steps.set-new-tag.outputs.tag }}"
-          git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} HEAD:main
-
-      - name: Get the latest version of main from the repository
-        if: github.event.inputs.createChangelog == 'true'
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git fetch origin main
-          git reset --hard origin/main
-
-      - name: Replace @old-project-version@ in CHANGELOG.md
-        run: |
-          last_release_tag=${{ steps.get-last-release-tag.outputs.tag }}
-          sed -i "s/@old-project-version@/$last_release_tag/g" CHANGELOG.md
-
-      - name: Create and push tag
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git tag ${{ steps.set-new-tag.outputs.tag }}
-          git push https://x-access-token:${{ secrets.G_TOKEN }}@github.com/${{ github.repository }} refs/tags/${{ steps.set-new-tag.outputs.tag }}
-
-      - name: Package and publish for Github (Alpha)
-        if: github.event.inputs.releaseType == 'Alpha' 
-        uses: BigWigsMods/packager@v2
-
-      - name: Package and publish for Github (Release)
-        if: github.event.inputs.releaseType != 'Alpha' 
-        uses: BigWigsMods/packager@v2
-
-  build-retail:
-    name: Build Retail
-    if: github.event.inputs.buildRetail == 'true'
-    needs: 
-      - build-changelog-github
-    runs-on: ubuntu-latest
-    env:
-        CF_API_KEY: ${{ secrets.CF_API_KEY }}
-        WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+      last-release-tag: ${{ steps.tag.outputs.last_release_tag }}
+      last-tag: ${{ steps.tag.outputs.last_tag }}
+      new-tag: ${{ steps.tag.outputs.new_tag }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          persist-credentials: true
+
+      - name: Specify old Git tags and define a new Git tag
+        id: tag
+        run: |
+          eval "$(python3 script/tag_define.py ${{ github.event.inputs.release-type }})"
+          echo "last_release_tag=$LAST_RELEASE_TAG" >> $GITHUB_OUTPUT
+          echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+
+      - name: Extend FULL-CHANGELOG.md with the current release notes
+        if: github.event.inputs.full-changelog == 'true'
+        run: |
+          python3 script/changelog_builder.py --version ${{ steps.tag.outputs.new_tag }}
 
       - name: Get the latest version of main from the repository
         run: |
@@ -183,23 +73,32 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-      - name: Replace @old-project-version@ in CHANGELOG.md
+      - name: Set and push Git tag
         run: |
-          last_release_tag=${{ needs.build-changelog-github.outputs.last-release-tag }}
-          sed -i "s/@old-project-version@/$last_release_tag/g" CHANGELOG.md
+          python3 script/tag_push.py ${{ steps.tag.outputs.new_tag }} "Release ${{ steps.tag.outputs.new_tag }}"
+  release-retail:
+    name: Release Retail
+    if: github.event.inputs.build-retail == 'true'
+    runs-on: ubuntu-latest
+    needs: prework
+    env:
+      CF_PROJECT_ID: ${{ vars.CF_PROJECT_ID }}
+      WAGO_PROJECT_ID: ${{ vars.WAGO_PROJECT_ID }}
+      GITHUB_OAUTH: ${{ secrets.G_TOKEN }}
+      CF_API_KEY: ${{ secrets.CF_API_TOKEN }}
+      WAGO_API_TOKEN: ${{ secrets.WAGO_API_TOKEN }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Get current tags
+      - name: Get the latest version of main from the repository
         run: |
-          git fetch --tags
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git fetch origin main
+          git reset --hard origin/main
 
-      - name: Package and publish for CourseForge and Wago (Alpha)
-        if: github.event.inputs.releaseType == 'Alpha'    
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -p ${{ vars.CF_ID }} -a ${{ vars.WAGO_ID }}
-
-      - name: Package and publish for CourseForge and Wago (Release)
-        if: github.event.inputs.releaseType != 'Alpha'  
-        uses: BigWigsMods/packager@v2
-        with:
-          args: -p ${{ vars.CF_ID }} -a ${{ vars.WAGO_ID }}
+      - name: Package Retail
+        run: |
+          bash script/packager.sh --version ${{ needs.prework.outputs.new-tag }} --last-version ${{ needs.prework.outputs.last-tag }} --game retail

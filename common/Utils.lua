@@ -133,7 +133,7 @@ function Utils:InitializeMinimapButton()
             end
         end,
         OnTooltipShow = function(tooltip)
-            tooltip:AddLine(L["addon.name"])
+            tooltip:SetText(L["addon.name"])
             tooltip:AddLine(WrapTextInColorCode(GCT.ADDON_VERSION .. " (" .. GCT.ADDON_BUILD_DATE .. ")", GCT.WHITE_FONT_COLOR))
             tooltip:AddLine(" ")
             tooltip:AddLine(L["minimap-button.tooltip"]:format(GCT.LINK_FONT_COLOR, GCT.LINK_FONT_COLOR), 1, 1, 1)

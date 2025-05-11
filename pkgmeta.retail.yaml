@@ -1,7 +1,10 @@
 package-as: GoldCurrencyTracker
 
 ignore:
+  - script
   - README.md
+  - pkgmeta.retail.yaml
+
 
 manual-changelog:
   filename: CHANGELOG.md
