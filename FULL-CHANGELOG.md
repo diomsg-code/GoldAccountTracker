@@ -1,3 +1,7 @@
+**v18 (2025-05-11)**
+- Added: Access to the addon and the options via the addon compartment
+- Minor code adjustments
+
 **v17 (2025-05-07)**
 - Updated: ruRU localization (#8 - Thanks to Hollicsh)
 
