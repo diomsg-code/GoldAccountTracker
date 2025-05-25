@@ -1,3 +1,5 @@
+This repository has moved to: https://github.com/wow-addon-dev/Aurarium
+
 # Gold & Currency Tracker
 
 [![GitHub Release](https://img.shields.io/github/v/release/diomsg-code/GoldCurrencyTracker?logo=github&cacheSeconds=600)](https://github.com/diomsg-code/GoldCurrencyTracker/releases)
